@@ -258,7 +258,7 @@ ol.steps{margin:0;padding-left:1.4em;display:grid;gap:8px;color:var(--muted)}
 ol.steps li::marker{font-family:var(--font-mono);color:var(--ai);font-weight:600}
 .code{grid-column:1/-1}
 .code pre{margin:12px 0 0;background:#050810;border:1px solid var(--line);border-radius:14px;padding:14px;overflow:auto;max-height:380px;font-size:.8rem;line-height:1.55;color:#C9D6F0}
-@media (max-width:860px){.build{grid-template-columns:1fr}}
+@media (max-width:860px){.build{grid-template-columns:minmax(0,1fr)}}
 
 .about{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px;align-items:start}
 .about dl{position:relative;display:grid;grid-template-columns:auto 1fr;gap:10px 18px;margin:0;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
@@ -874,6 +874,7 @@ sc_title:"Шприцтен құбыр желісіне",sc_lead:"Стендте�
 sc_kwh:"Үнемделген энергия, кВт·сағ/жыл",sc_money:"Үнем, ₸/жыл",sc_co2:"CO₂ азаяды, т/жыл",
 sc_note:"Есептеу болжамға негізделген: тариф пен үнем пайызын өзгертуге болады. Зертханадағы 55% өнеркәсіпте төмен болуы мүмкін, сондықтан әдепкі мән 30%. CO₂ коэффициенті шамамен 0,6 кг/кВт·сағ.",
 pr_stand:"Біздің стенд",pr_pump:"Шағын сорғы",pr_concrete:"Бетон сорғысы",pr_oil:"Мұнай айдау станциясы",
+qr_text_site:"QR кодты телефон камерасымен сканерлеңіз: сайт бірден ашылады.",
 qr_title:"Телефоннан ашу",qr_text:"QR кодты сканерлеңіз. Сілтеме басқаларға ашылуы үшін оны Share мәзірі арқылы бөлісіңіз.",btn_copylink:"Сілтемені көшіру",
 tour_prev:"Артқа",tour_next:"Келесі",tour_done:"Аяқтау",
 tour:[["Мәселе","Қою мұнай, бетон, пасталар тыныштықта қатып, құбырды бітейді. Оларды айдау үшін зауыттар көп электр энергиясын жұмсайды."],["Біздің стенд","Arduino, HC-SR04 датчигі, MOSFET және вибромотор. Модель бөлшектерге бөлінді: кез келген детальды басып, не істейтінін көруге болады."],["Классика мен ЖИ","Екі шприц қатар жұмыс істейді: классика моторды үнемі 255-те ұстайды, ЖИ қуатты ағынға қарай өзі таңдайды."],["ЖИ қалай ойлайды","Әр 0,25 с сайын модель әр PWM үшін ағынды болжайды. ЖИ ағынды сақтайтын ең үнемді нұсқаны таңдайды, ал кептелісті аномалия ретінде анықтайды."],["Нәтиже","Бірдей 60 секундта ЖИ энергияны шамамен 55% аз жұмсайды, ал өнімділік сақталады. Тәжірибеде: 151,2 Дж → 68,4 Дж."],["Деректер және Random Forest","Стендтен жазылған CSV жүктелгенде, Random Forest моделі дәл осы жерде оқытылады: R², болжам графигі және белгілердің маңыздылығы."],["Масштаб","Сол принцип мұнай айдау станциясына көшірілсе, жылдық үнем миллиондаған теңгеге жетуі мүмкін."],["Рақмет!","Сайтты телефоннан ашу үшін QR кодты сканерлеңіз. Сұрақтарыңызға дайынбыз."]],fb3d:"3D модель жүктелмеді: интернет байланысын тексеріңіз."
@@ -953,6 +954,7 @@ sc_title:"От шприца к трубопроводу",sc_lead:"Перенес
 sc_kwh:"Сэкономлено энергии, кВт·ч/год",sc_money:"Экономия, ₸/год",sc_co2:"Меньше CO₂, т/год",
 sc_note:"Расчёт оценочный: тариф и процент экономии можно менять. Лабораторные 55% в промышленности могут быть ниже, поэтому по умолчанию стоит 30%. Коэффициент CO₂ около 0,6 кг/кВт·ч.",
 pr_stand:"Наш стенд",pr_pump:"Малый насос",pr_concrete:"Бетононасос",pr_oil:"Нефтеперекачивающая станция",
+qr_text_site:"Наведите камеру телефона на QR-код: сайт откроется сразу.",
 qr_title:"Открыть на телефоне",qr_text:"Отсканируйте QR-код. Чтобы ссылка открывалась у других, поделитесь ею через меню Share.",btn_copylink:"Копировать ссылку",
 tour_prev:"Назад",tour_next:"Далее",tour_done:"Завершить",
 tour:[["Проблема","Густая нефть, бетон и пасты застывают в покое и забивают трубы. На их перекачку заводы тратят много электроэнергии."],["Наш стенд","Arduino, датчик HC-SR04, MOSFET и вибромотор. Модель разобрана на детали: нажмите на любую, чтобы узнать, что она делает."],["Классика против ИИ","Два шприца работают рядом: классика всегда держит мотор на 255, ИИ сам подбирает мощность по потоку."],["Как думает ИИ","Каждые 0,25 с модель предсказывает поток для каждого PWM. ИИ выбирает самый экономный вариант, сохраняющий поток, а затор распознаёт как аномалию."],["Результат","За одинаковые 60 секунд ИИ тратит примерно на 55% меньше энергии без потери производительности. В эксперименте: 151,2 Дж → 68,4 Дж."],["Данные и Random Forest","Когда загружен CSV со стенда, Random Forest обучается прямо здесь: R², график прогноза и важность признаков."],["Масштаб","Если перенести этот принцип на нефтеперекачивающую станцию, годовая экономия может достигать миллионов тенге."],["Спасибо!","Отсканируйте QR-код, чтобы открыть сайт на телефоне. Готовы ответить на вопросы."]],fb3d:"3D-модель не загрузилась: проверьте подключение к интернету."
@@ -1032,6 +1034,7 @@ sc_title:"From syringe to pipeline",sc_lead:"Carry the rig's principle over to r
 sc_kwh:"Energy saved, kWh/year",sc_money:"Savings, ₸/year",sc_co2:"Less CO₂, t/year",
 sc_note:"This is an estimate: tariff and savings can be changed. The lab's 55% may be lower in industry, so the default is 30%. CO₂ factor is about 0.6 kg/kWh.",
 pr_stand:"Our rig",pr_pump:"Small pump",pr_concrete:"Concrete pump",pr_oil:"Oil pumping station",
+qr_text_site:"Point your phone camera at the QR code: the site opens right away.",
 qr_title:"Open on a phone",qr_text:"Scan the QR code. To let others open the link, share it from the Share menu.",btn_copylink:"Copy link",
 tour_prev:"Back",tour_next:"Next",tour_done:"Finish",
 tour:[["The problem","Heavy oil, concrete and pastes set at rest and clog pipes. Plants spend a lot of electricity pumping them."],["Our rig","Arduino, HC-SR04 sensor, MOSFET and a vibration motor. The model is exploded into parts: click any one to see what it does."],["Classic vs AI","Two syringes run side by side: classic keeps the motor at 255, the AI picks power to match the flow."],["How the AI thinks","Every 0.25 s the model predicts flow for each PWM. The AI picks the cheapest option that keeps the flow and flags a jam as an anomaly."],["Result","Over the same 60 seconds the AI uses about 55% less energy with no loss of throughput. Experiment: 151.2 J → 68.4 J."],["Data and Random Forest","When a CSV from the rig is loaded, the Random Forest trains right here: R², a prediction chart and feature importance."],["Scale","Applied to an oil pumping station, the same principle could save millions of tenge a year."],["Thank you!","Scan the QR code to open the site on your phone. We are happy to take questions."]],fb3d:"The 3D model did not load: check your internet connection."
@@ -1659,6 +1662,7 @@ const SITE_URL=(function(){try{const h=location.hostname;
   return 'https://claude.ai/artifact/V9w9rdanei4x5PCpwyDqrg'})();
 (function(){const el=document.getElementById('qr');
   const u=document.createElement('div');u.className='qr-url mono';u.textContent=SITE_URL.replace(/^https?:\/\//,'');el.after(u);
+  if(!/claude\.ai/.test(SITE_URL)){const p=document.querySelector('#qr-card [data-i18n="qr_text"]');if(p){p.dataset.i18n='qr_text_site';p.textContent=t('qr_text_site')}}
   try{new QRCode(el,{text:SITE_URL,width:300,height:300,colorDark:'#0B1220',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M})}
   catch(e){el.style.lineHeight='1.4';el.style.width='170px';el.style.color='#0B1220';el.style.fontSize='.75rem';el.textContent=SITE_URL}})();
 document.getElementById('copy-link').onclick=()=>copyText(SITE_URL);
