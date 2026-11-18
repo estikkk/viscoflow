@@ -1,0 +1,1731 @@
+<!doctype html>
+<html lang="kk">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ViscoFlow AI</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap&subset=cyrillic-ext">
+<style>
+/* Layout: night lab under liquid glass. A fixed, switchable backdrop (aurora / lab / crude / light) sits behind frosted glass instrument panels; orange = paste, blue = AI. */
+:root{
+  color-scheme:dark;
+  --bg:#05070F; --surface:#0F1728; --surface2:#0B1220; --ink:#EAF0FA; --muted:#97A2BA; --line:rgba(150,175,230,.16);
+  --paste:#FF5A36; --starch:#E8DDBE; --ai:#4F80FF; --classic:#FFB02E; --warn:#FF5C4D; --ok:#3DDC97; --on-ai:#FFFFFF;
+  --glow-ai:rgba(79,128,255,.35); --glow-paste:rgba(255,90,54,.28);
+  --tint:rgba(6,10,18,.55); --header-bg:rgba(6,10,18,.55);
+  --glass-bg:rgba(20,28,48,.42); --glass-edge:rgba(255,255,255,.16); --glass-hi:rgba(255,255,255,.22); --glass-shade:rgba(0,0,0,.55);
+  --stage-bg:radial-gradient(90% 70% at 50% 35%,rgba(79,128,255,.22),transparent 70%),radial-gradient(60% 40% at 50% 100%,rgba(255,90,54,.14),transparent 70%),linear-gradient(180deg,rgba(13,21,40,.85),rgba(7,11,20,.9));
+  --font-display:"Montserrat","Segoe UI",system-ui,sans-serif;
+  --font-body:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+  --font-mono:"JetBrains Mono",Consolas,"Courier New",monospace;
+  --r:22px;
+}
+html[data-bg="light"]{
+  color-scheme:light;
+  --bg:#EAF0F8; --surface:#FFFFFF; --surface2:#F1F4FA; --ink:#0E1626; --muted:#566079; --line:rgba(30,45,90,.13);
+  --paste:#EA4A26; --starch:#B8A574; --ai:#2F62F5; --classic:#D98E0B; --warn:#D93A2B; --ok:#169B5B; --on-ai:#FFFFFF;
+  --glow-ai:rgba(47,98,245,.28); --glow-paste:rgba(234,74,38,.22);
+  --tint:rgba(255,255,255,.6); --header-bg:rgba(255,255,255,.55);
+  --glass-bg:rgba(255,255,255,.42); --glass-edge:rgba(255,255,255,.75); --glass-hi:rgba(255,255,255,.95); --glass-shade:rgba(30,45,90,.22);
+  --stage-bg:radial-gradient(90% 70% at 50% 35%,rgba(47,98,245,.16),transparent 70%),radial-gradient(60% 40% at 50% 100%,rgba(234,74,38,.12),transparent 70%),linear-gradient(180deg,rgba(255,255,255,.6),rgba(230,237,248,.75));
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{margin:0;color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.6;background:transparent}
+[hidden]{display:none!important}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+
+/* ---------- switchable backdrop ---------- */
+#bgfx{position:fixed;inset:0;z-index:-1;overflow:hidden;background:var(--bg);pointer-events:none}
+#bgfx i{position:absolute;border-radius:50%;filter:blur(70px);opacity:.6;will-change:transform}
+#bgfx i:nth-child(1){width:55vmax;height:55vmax;left:-15vmax;top:-20vmax;background:#FF5A36;animation:drift1 26s ease-in-out infinite alternate}
+#bgfx i:nth-child(2){width:50vmax;height:50vmax;right:-18vmax;top:-10vmax;background:#2F62F5;animation:drift2 30s ease-in-out infinite alternate}
+#bgfx i:nth-child(3){width:40vmax;height:40vmax;left:25vw;bottom:-22vmax;background:#12B5A5;animation:drift3 34s ease-in-out infinite alternate}
+#bgfx i:nth-child(4){width:30vmax;height:30vmax;right:8vw;bottom:5vh;background:#FFB02E;opacity:.35;animation:drift1 38s ease-in-out infinite alternate-reverse}
+#bgfx::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 0%,transparent 40%,rgba(5,7,15,.55) 100%)}
+@keyframes drift1{to{transform:translate(18vw,22vh) scale(1.15)}}
+@keyframes drift2{to{transform:translate(-20vw,26vh) scale(.9)}}
+@keyframes drift3{to{transform:translate(-14vw,-30vh) scale(1.2)}}
+/* lab: graph paper + soft glows */
+html[data-bg="lab"] #bgfx{background-color:#060A12;background-image:linear-gradient(rgba(140,165,220,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(140,165,220,.06) 1px,transparent 1px);background-size:32px 32px}
+html[data-bg="lab"] #bgfx i{opacity:.22;filter:blur(90px)}
+html[data-bg="lab"] #bgfx i:nth-child(3),html[data-bg="lab"] #bgfx i:nth-child(4){display:none}
+/* crude: black oil with amber heat */
+html[data-bg="oil"] #bgfx{background:#070504}
+html[data-bg="oil"] #bgfx i:nth-child(1){background:#FF7A1A;opacity:.5}
+html[data-bg="oil"] #bgfx i:nth-child(2){background:#B3260F;opacity:.45}
+html[data-bg="oil"] #bgfx i:nth-child(3){background:#FFB02E;opacity:.3}
+html[data-bg="oil"] #bgfx i:nth-child(4){background:#3A1C0C;opacity:.6}
+/* light: pastel aurora */
+html[data-bg="light"] #bgfx i{opacity:.42;filter:blur(80px)}
+html[data-bg="light"] #bgfx i:nth-child(1){background:#FFA48A}
+html[data-bg="light"] #bgfx i:nth-child(2){background:#8FB0FF}
+html[data-bg="light"] #bgfx i:nth-child(3){background:#86E3D6}
+html[data-bg="light"] #bgfx i:nth-child(4){background:#FFD58A}
+html[data-bg="light"] #bgfx::after{background:none}
+
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--font-display);font-weight:800;line-height:1.12;text-wrap:balance;margin:0;letter-spacing:-.015em}
+h2{font-size:clamp(1.6rem,3.2vw,2.4rem)}
+h3{font-size:1rem;font-weight:700;letter-spacing:0}
+p{margin:0}
+.mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+a{color:var(--ai)}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--ai);outline-offset:3px}
+::selection{background:var(--ai);color:#fff}
+
+/* header */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--header-bg);backdrop-filter:blur(18px) saturate(160%);-webkit-backdrop-filter:blur(18px) saturate(160%);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:14px;padding-block:12px;flex-wrap:wrap}
+.brand{font-family:var(--font-display);font-weight:800;font-size:1.1rem;display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);letter-spacing:-.01em}
+.brand i{width:14px;height:14px;border-radius:50%;background:var(--paste);box-shadow:0 0 14px var(--glow-paste),7px 0 0 -2px var(--ai);display:inline-block}
+nav.links{display:flex;gap:2px;flex-wrap:wrap;flex:1;min-width:0;justify-content:center}
+nav.links a{color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:999px;font-size:.88rem;font-weight:500;transition:color .2s,background .2s}
+nav.links a:hover{color:var(--ink);background:var(--tint)}
+.langs{display:flex;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--tint)}
+.langs button{border:0;background:none;padding:5px 11px;border-radius:999px;cursor:pointer;font-size:.75rem;font-weight:700;letter-spacing:.06em;color:var(--muted)}
+.langs button[aria-pressed="true"]{background:var(--ai);color:var(--on-ai);box-shadow:0 0 16px var(--glow-ai)}
+@media (max-width:1100px){nav.links{order:3;flex-basis:100%;overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start}nav.links a{white-space:nowrap}.langs{margin-left:auto}}
+
+/* design switcher */
+.design{position:relative}
+.design > button{display:flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--tint);border-radius:999px;padding:6px 12px 6px 7px;cursor:pointer;font-size:.8rem;font-weight:700}
+.design > button::before{content:"";width:18px;height:18px;border-radius:50%;background:conic-gradient(from 200deg,#FF5A36,#FFB02E,#12B5A5,#2F62F5,#FF5A36);box-shadow:inset 0 0 0 2px rgba(255,255,255,.5)}
+.design-pop{position:fixed;right:max(16px,env(safe-area-inset-right,0px));top:calc(70px + env(safe-area-inset-top,0px));width:270px;max-width:calc(100vw - 32px);padding:14px;border-radius:20px;z-index:40;display:grid;gap:12px}
+.design-pop h4{margin:0;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.swatches button{border:0;background:none;padding:0;cursor:pointer;display:grid;gap:5px;justify-items:center;font-size:.7rem;color:var(--muted);font-weight:600}
+.swatches button span{width:100%;aspect-ratio:1;border-radius:14px;border:2px solid transparent;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.swatches button[aria-pressed="true"]{color:var(--ink)}
+.swatches button[aria-pressed="true"] span{border-color:var(--ai);box-shadow:0 0 0 3px var(--glow-ai)}
+.sw-aurora{background:radial-gradient(circle at 25% 25%,#FF5A36,transparent 55%),radial-gradient(circle at 80% 30%,#2F62F5,transparent 55%),radial-gradient(circle at 50% 90%,#12B5A5,transparent 60%),#05070F}
+.sw-lab{background:linear-gradient(rgba(140,165,220,.25) 1px,transparent 1px) 0 0/8px 8px,linear-gradient(90deg,rgba(140,165,220,.25) 1px,transparent 1px) 0 0/8px 8px,#060A12}
+.sw-oil{background:radial-gradient(circle at 30% 30%,#FF7A1A,transparent 55%),radial-gradient(circle at 75% 70%,#B3260F,transparent 55%),#070504}
+.sw-light{background:radial-gradient(circle at 25% 25%,#FFA48A,transparent 55%),radial-gradient(circle at 80% 35%,#8FB0FF,transparent 55%),radial-gradient(circle at 50% 90%,#86E3D6,transparent 60%),#EAF0F8}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:.88rem;font-weight:600}
+.switch{position:relative;width:46px;height:26px;border-radius:999px;border:1px solid var(--line);background:var(--tint);cursor:pointer;padding:0;flex:none}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--muted);transition:transform .2s,background .2s}
+.switch[aria-checked="true"]{background:var(--ai);border-color:var(--ai)}
+.switch[aria-checked="true"]::after{transform:translateX(20px);background:#fff}
+
+/* hero */
+.hero{padding-block:56px 40px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:40px;align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);font-weight:700;margin-bottom:20px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--tint)}
+.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.hero h1{font-size:clamp(2rem,4.4vw,3.3rem)}
+.hero h1 em{font-style:normal;background:linear-gradient(92deg,var(--paste),var(--classic));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .lead{margin-top:20px;max-width:56ch;color:var(--muted);font-size:1.05rem}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:28px}
+.kpi{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 14px 12px;min-width:0;overflow:hidden}
+.kpi b{display:block;font-family:var(--font-display);font-size:.98rem;font-weight:800;line-height:1.25}
+.kpi b.big{font-size:2.2rem;line-height:1.05;color:var(--ai);text-shadow:0 0 24px var(--glow-ai)}
+.kpi span{color:var(--muted);font-size:.76rem;line-height:1.35;display:block;margin-top:4px}
+.stage{position:relative;aspect-ratio:1/0.9;max-width:100%;border-radius:30px;overflow:hidden;border:1px solid var(--glass-edge);background:var(--stage-bg);
+  box-shadow:inset 0 1px 0 var(--glass-hi),0 30px 80px -30px var(--glow-ai),0 40px 60px -40px var(--glass-shade)}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}
+.stage canvas:active{cursor:grabbing}
+.stage .hud{position:absolute;left:14px;right:14px;top:14px;display:flex;justify-content:space-between;align-items:start;gap:8px;pointer-events:none;flex-wrap:wrap}
+.stage .hud > *{pointer-events:auto}
+.stage .readout{display:flex;gap:6px;flex-wrap:wrap}
+.stage .readout span{background:var(--tint);backdrop-filter:blur(10px) saturate(160%);-webkit-backdrop-filter:blur(10px) saturate(160%);border:1px solid var(--glass-edge);border-radius:999px;padding:5px 10px;font-family:var(--font-mono);font-size:.74rem;font-variant-numeric:tabular-nums;box-shadow:inset 0 1px 0 var(--glass-hi)}
+.stage .readout b{color:var(--ai)}
+.stage .hint{position:absolute;left:16px;bottom:12px;font-size:.74rem;color:var(--muted);pointer-events:none;display:flex;align-items:center;gap:6px}
+.stage .hint::before{content:"⟲";font-size:.95rem;color:var(--ai)}
+.stage .fallback{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:var(--muted);font-size:.9rem}
+@media (max-width:920px){.hero{grid-template-columns:1fr;padding-block:36px 28px}}
+@media (max-width:520px){.kpis{grid-template-columns:1fr 1fr}.kpis .kpi:last-child{grid-column:1/-1}}
+
+section{padding-block:64px}
+section + section{border-top:1px solid var(--line)}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.sec-head h2::before{content:"";display:block;width:40px;height:4px;border-radius:2px;background:linear-gradient(90deg,var(--paste),var(--classic));margin-bottom:16px;box-shadow:0 0 14px var(--glow-paste)}
+.sec-head p{max-width:70ch;color:var(--muted);margin-top:10px}
+
+/* panels (solid look; liquid glass overrides below) */
+.panel{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:0 24px 48px -28px var(--glass-shade)}
+.controls{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:end;padding:16px 18px}
+.field{display:grid;gap:6px;font-size:.78rem;color:var(--muted);font-weight:500}
+.field select,.field input[type=number]{background:var(--tint);border:1px solid var(--line);border-radius:12px;padding:8px 12px;min-width:0}
+.field input[type=range]{accent-color:var(--ai);width:160px}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-left:auto}
+.btn{border:1px solid var(--line);background:var(--tint);padding:9px 16px;border-radius:999px;cursor:pointer;font-weight:600;font-size:.88rem;transition:transform .15s,border-color .2s,box-shadow .2s}
+.btn:hover{border-color:var(--muted);transform:translateY(-1px)}
+.btn.primary{background:var(--ai);border-color:var(--ai);color:var(--on-ai);box-shadow:0 8px 24px -8px var(--glow-ai)}
+.btn.primary:hover{box-shadow:0 10px 30px -6px var(--glow-ai)}
+.btn.danger{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.seg{display:inline-flex;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--tint)}
+.seg button{border:0;background:none;padding:6px 13px;border-radius:999px;cursor:pointer;font-weight:600;font-size:.84rem;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ai);color:var(--on-ai);box-shadow:0 0 14px var(--glow-ai)}
+
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.lane{padding:16px;display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:14px}
+.lane::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(60% 50% at 30% 0%,color-mix(in srgb,var(--c) 16%,transparent),transparent 70%)}
+.lane > *{position:relative}
+.lane header{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.lane h3{display:flex;align-items:center;gap:8px;font-size:1.05rem}
+.lane h3::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c)}
+.lane .sub{font-size:.8rem;color:var(--muted)}
+.lane canvas{width:100%;height:330px;display:block;min-width:0}
+.stats{display:grid;gap:8px;align-content:start}
+.stat{background:var(--tint);border:1px solid var(--line);border-radius:14px;padding:9px 12px}
+.stat small{display:block;font-size:.7rem;color:var(--muted);letter-spacing:.04em}
+.stat b{font-family:var(--font-mono);font-size:1.3rem;font-weight:600}
+.pwmbar{height:6px;background:var(--line);border-radius:3px;margin-top:6px;overflow:hidden}
+.pwmbar i{display:block;height:100%;background:var(--c);width:0;box-shadow:0 0 10px var(--c);transition:width .2s}
+.pill{font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:999px;border:1px solid currentColor;white-space:nowrap;background:var(--tint)}
+.pill.flow,.pill.flowing{color:var(--ok)} .pill.jam{color:var(--warn);box-shadow:0 0 14px color-mix(in srgb,var(--warn) 40%,transparent)} .pill.solid{color:var(--muted)}
+@media (max-width:980px){.lanes{grid-template-columns:1fr}}
+@media (max-width:460px){.lane{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.lane canvas{height:290px}}
+
+.scoreboard{display:grid;grid-template-columns:auto auto 1fr;gap:16px;margin-top:16px;align-items:stretch}
+.score{padding:16px 22px;min-width:0}
+.score small{display:block;font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+.score b{font-family:var(--font-display);font-weight:800;font-size:clamp(2.6rem,6vw,4rem);line-height:1.05;color:var(--ai);font-variant-numeric:tabular-nums;text-shadow:0 0 30px var(--glow-ai)}
+.score.prod b{color:var(--ink);text-shadow:none}
+.score .formula{font-family:var(--font-mono);font-size:.78rem;color:var(--muted);margin-top:6px}
+.log{padding:14px 16px;min-width:0;display:flex;flex-direction:column}
+.log h3{font-size:.8rem;margin-bottom:8px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.log ol{list-style:none;margin:0;padding:0;font-size:.82rem;max-height:122px;overflow:auto;display:grid;gap:5px;align-content:start}
+.log li{border-left:3px solid var(--ai);padding-left:9px}
+.log li.j{border-color:var(--warn)}
+@media (max-width:860px){.scoreboard{grid-template-columns:1fr 1fr}.log{grid-column:1/-1}}
+
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.chart{padding:14px 16px;min-width:0}
+.chart-head{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.86rem;font-weight:600;margin-bottom:8px}
+.legend{display:flex;gap:14px;font-weight:500;color:var(--muted);font-size:.8rem}
+.legend span::before{content:"";display:inline-block;width:14px;height:3px;border-radius:2px;background:var(--c);vertical-align:middle;margin-right:6px;box-shadow:0 0 8px var(--c)}
+.chart canvas{width:100%;height:200px;display:block}
+@media (max-width:860px){.charts{grid-template-columns:1fr}}
+.note{font-size:.82rem;color:var(--muted);margin-top:12px}
+.result{margin-top:16px;padding:16px 20px;border:1px solid color-mix(in srgb,var(--ai) 50%,transparent);border-radius:var(--r);background:color-mix(in srgb,var(--ai) 12%,var(--tint));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 0 40px -16px var(--glow-ai)}
+.result p{font-family:var(--font-mono);font-size:.92rem;overflow-wrap:anywhere}
+
+/* pipeline */
+.pipe{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:4px}
+.pipe .node{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:9px 13px;font-size:.86rem;font-weight:600}
+.pipe .node b{display:block;font-family:var(--font-mono);font-size:.74rem;color:var(--muted);font-weight:400}
+.pipe .node.ai{border-color:var(--ai);box-shadow:0 0 22px -6px var(--glow-ai)}
+.pipe .arr{color:var(--ai);font-family:var(--font-mono)}
+
+/* live */
+.live-grid{display:grid;grid-template-columns:310px minmax(0,1fr);gap:16px}
+.live-side{padding:16px;display:grid;gap:14px;align-content:start}
+.live-main{display:grid;gap:16px;min-width:0}
+.statusrow{display:flex;justify-content:space-between;align-items:center}
+.alert{font-size:.85rem;padding:10px 12px;border-radius:12px;background:color-mix(in srgb,var(--warn) 12%,transparent);border:1px solid color-mix(in srgb,var(--warn) 40%,transparent)}
+.info{font-size:.8rem;color:var(--muted)}
+.live-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+@media (max-width:900px){.live-grid{grid-template-columns:1fr}.live-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* theory */
+.theory{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;align-items:start}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px}
+.card:last-child{grid-column:1/-1}
+.card h3{margin-bottom:6px}
+.card p{color:var(--muted);max-width:65ch;font-size:.92rem}
+.card .eq{font-family:var(--font-mono);color:var(--ink);background:var(--tint);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin-top:10px;overflow-x:auto;white-space:nowrap}
+.theory > div:last-child{position:sticky;top:90px}
+figure{margin:0;padding:16px}
+figure svg{width:100%;height:auto;display:block}
+figcaption{font-size:.8rem;color:var(--muted);margin-top:8px}
+@media (max-width:860px){.theory{grid-template-columns:1fr}.theory > div:last-child{position:static}.cards{grid-template-columns:1fr}}
+
+.apps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.app{padding:20px;overflow:hidden}
+.app::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:radial-gradient(closest-side,var(--glow-paste),transparent);pointer-events:none}
+.app:nth-child(2)::after{background:radial-gradient(closest-side,rgba(232,221,190,.25),transparent)}
+.app:nth-child(3)::after{background:radial-gradient(closest-side,var(--glow-ai),transparent)}
+.app .tag{font-family:var(--font-mono);font-size:.74rem;color:var(--muted)}
+.app h3{margin:8px 0;font-size:1.15rem}
+.app p{color:var(--muted);font-size:.92rem}
+@media (max-width:860px){.apps{grid-template-columns:1fr}}
+
+.build{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.build .panel{padding:18px}
+.build h3{margin-bottom:12px}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+td,th{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.72rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+td.mono{white-space:nowrap;color:var(--classic)}
+ol.steps{margin:0;padding-left:1.4em;display:grid;gap:8px;color:var(--muted)}
+ol.steps li::marker{font-family:var(--font-mono);color:var(--ai);font-weight:600}
+.code{grid-column:1/-1}
+.code pre{margin:12px 0 0;background:#050810;border:1px solid var(--line);border-radius:14px;padding:14px;overflow:auto;max-height:380px;font-size:.8rem;line-height:1.55;color:#C9D6F0}
+@media (max-width:860px){.build{grid-template-columns:1fr}}
+
+.about{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:28px;align-items:start}
+.about dl{position:relative;display:grid;grid-template-columns:auto 1fr;gap:10px 18px;margin:0;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.about dt{color:var(--muted);font-size:.85rem}
+.about dd{margin:0;font-weight:600}
+@media (max-width:760px){.about{grid-template-columns:1fr}}
+footer{padding-block:28px 44px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ai);color:var(--on-ai);padding:9px 16px;border-radius:999px;font-size:.85rem;z-index:30;box-shadow:0 10px 30px -8px var(--glow-ai)}
+
+/* ---------- liquid glass ---------- */
+html[data-glass="on"] :is(.panel,.kpi,.card,.about dl,.pipe .node,.design-pop){
+  background:linear-gradient(135deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,.05) 32%,rgba(255,255,255,0) 55%,rgba(255,255,255,.07) 100%),var(--glass-bg);
+  backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);
+  border:1px solid var(--glass-edge);
+  box-shadow:inset 0 1px 0 var(--glass-hi),inset 1px 0 0 rgba(255,255,255,.06),inset 0 -1px 0 rgba(255,255,255,.04),inset 0 -14px 30px -18px rgba(255,255,255,.12),0 24px 50px -26px var(--glass-shade)}
+html[data-glass="on"] .pipe .node.ai{border-color:var(--ai)}
+html[data-glass="on"] :is(.stat,.btn:not(.primary),.seg,.langs,.field select,.field input[type=number],.eyebrow,.design > button){
+  backdrop-filter:blur(12px) saturate(170%);-webkit-backdrop-filter:blur(12px) saturate(170%);box-shadow:inset 0 1px 0 var(--glass-hi)}
+html[data-glass="on"] .btn.primary,html[data-glass="on"] .seg button[aria-pressed="true"],html[data-glass="on"] .langs button[aria-pressed="true"]{
+  background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0) 55%),var(--ai);box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 8px 24px -8px var(--glow-ai)}
+html[data-glass="off"] .design-pop{background:var(--surface);border:1px solid var(--line);box-shadow:0 24px 50px -20px var(--glass-shade)}
+html[data-glass="off"] header.top{background:var(--surface)}
+/* ---------- AI brain ---------- */
+.brain{margin-top:16px;padding:16px 18px}
+.brain-head{display:flex;justify-content:space-between;gap:12px;align-items:start;flex-wrap:wrap}
+.brain-head p{max-width:70ch;margin-top:4px}
+.bars{position:relative;display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:8px;height:150px;margin-top:14px;padding-top:6px;--thr:95%}
+.bar .col::after{content:"";position:absolute;left:0;right:0;bottom:95%;border-top:1px dashed var(--ok);z-index:1}
+.bar{display:grid;grid-template-rows:1fr auto;gap:4px;min-width:0}
+.bar .col{position:relative;height:120px;border-radius:8px;background:var(--tint);border:1px solid var(--line);overflow:hidden;align-self:end}
+.bar .col i{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,var(--warn),color-mix(in srgb,var(--warn) 40%,transparent));transition:height .35s var(--ease,ease)}
+.bar.ok .col i{background:linear-gradient(180deg,var(--muted),color-mix(in srgb,var(--muted) 30%,transparent))}
+.bar.pick .col{border-color:var(--ai);box-shadow:0 0 18px -2px var(--glow-ai)}
+.bar.pick .col i{background:linear-gradient(180deg,var(--ai),color-mix(in srgb,var(--ai) 35%,transparent))}
+.bar small{font-family:var(--font-mono);font-size:.7rem;text-align:center;color:var(--muted)}
+.bar.pick small{color:var(--ai);font-weight:700}
+.bars.jam .bar .col i{height:0!important}
+.bars.jam .bar:last-child .col{border-color:var(--warn);box-shadow:0 0 18px -2px var(--warn)}
+.bars.jam .bar:last-child .col i{height:100%!important;background:linear-gradient(180deg,var(--warn),transparent)}
+
+/* ---------- 3D extras ---------- */
+.s3-explode{position:absolute;right:14px;bottom:12px;font-size:.8rem;padding:7px 14px}
+.s3-label{position:absolute;z-index:3;transform:translate(-50%,calc(-100% - 12px));max-width:230px;padding:9px 12px;border-radius:14px;background:var(--tint);backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);border:1px solid var(--glass-edge);box-shadow:inset 0 1px 0 var(--glass-hi),0 10px 30px -10px rgba(0,0,0,.6);pointer-events:none;animation:popIn .3s var(--spring,ease)}
+.s3-label b{display:block;font-family:var(--font-display);font-size:.88rem;color:var(--ai)}
+.s3-label span{display:block;font-size:.78rem;color:var(--ink);line-height:1.4;margin-top:2px}
+.stage canvas.hovering{cursor:pointer}
+
+/* ---------- data lab ---------- */
+.lab-note{font-size:.85rem;color:var(--muted);margin:-8px 0 14px;padding:8px 12px;border-left:3px solid var(--classic);background:var(--tint);border-radius:0 10px 10px 0}
+.lab-note.real{border-color:var(--ok)}
+.lab-note.err{border-color:var(--warn)}
+.lab-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.imp{display:grid;gap:12px;margin-top:8px}
+.imp-row{display:grid;grid-template-columns:110px 1fr 52px;gap:10px;align-items:center;font-size:.86rem}
+.imp-row .trk{height:12px;border-radius:6px;background:var(--tint);border:1px solid var(--line);overflow:hidden}
+.imp-row .trk i{display:block;height:100%;background:linear-gradient(90deg,var(--ai),color-mix(in srgb,var(--ai) 50%,var(--paste)));border-radius:6px;transition:width .8s var(--ease,ease)}
+.imp-row b{font-family:var(--font-mono);text-align:right}
+@media (max-width:860px){.lab-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.lab-grid{grid-template-columns:1fr}}
+
+/* ---------- scale ---------- */
+.scale-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:16px;align-items:start}
+.scale-in{padding:18px;display:grid;gap:16px}
+.presets{display:flex;gap:8px;flex-wrap:wrap}
+.presets .btn[aria-pressed="true"]{border-color:var(--ai);color:var(--ai);box-shadow:0 0 16px -4px var(--glow-ai)}
+.scale-out{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.scale-out .ladder,.scale-out .info{grid-column:1/-1}
+.scale-out .wide{grid-column:1/-1}
+.ladder{padding:16px 18px}
+.ladder-track{position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--ai),var(--classic),var(--paste))}
+.ladder-track i{position:absolute;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px var(--glow-ai),0 4px 10px rgba(0,0,0,.4);transition:left .5s var(--spring,ease)}
+.ladder-labels{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:.72rem;color:var(--muted);margin-top:8px}
+.scale-out .score b{font-size:clamp(1.5rem,3.2vw,2.3rem);overflow-wrap:anywhere;display:block}
+@media (max-width:860px){.scale-grid{grid-template-columns:1fr}}
+
+/* ---------- QR ---------- */
+.about{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) 230px}
+.qr-card{padding:16px;display:grid;gap:8px;justify-items:start}
+.qr{background:#fff;padding:10px;border-radius:14px;line-height:0}
+.qr img,.qr canvas{width:150px!important;height:150px!important}
+.qr-url{font-size:.7rem;color:var(--muted);overflow-wrap:anywhere;max-width:190px}
+@media (max-width:980px){.about{grid-template-columns:1fr 1fr}.about > div:first-child{grid-column:1/-1}}
+@media (max-width:560px){.about{grid-template-columns:1fr}}
+
+/* ---------- presentation ---------- */
+.present-btn{padding:7px 14px;font-size:.82rem}
+.spot{position:relative;z-index:45!important;border-radius:var(--r);box-shadow:0 0 0 100vmax rgba(3,5,10,.62),0 0 0 3px var(--ai),0 0 40px 4px var(--glow-ai)!important;transition:box-shadow .5s}
+.tour{position:fixed;z-index:60;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(560px,calc(100vw - 32px));padding:16px 18px;border-radius:22px;
+  background:linear-gradient(135deg,rgba(255,255,255,.16),rgba(255,255,255,.03) 45%),var(--glass-bg);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);border:1px solid var(--glass-edge);box-shadow:inset 0 1px 0 var(--glass-hi),0 30px 60px -20px rgba(0,0,0,.7)}
+.tour:not([hidden]){animation:tourIn .5s var(--spring,ease)}
+@keyframes tourIn{from{opacity:0;transform:translate(-50%,20px) scale(.96)}to{opacity:1;transform:translate(-50%,0)}}
+.tour-top{display:flex;align-items:center;gap:10px;font-size:.78rem;color:var(--muted)}
+.tour-dots{display:flex;gap:5px;flex:1}
+.tour-dots i{width:7px;height:7px;border-radius:4px;background:var(--line);transition:width .3s,background .3s}
+.tour-dots i.on{width:22px;background:var(--ai)}
+.tour-x{border:0;background:none;color:var(--muted);cursor:pointer;font-size:1rem;padding:4px}
+.tour h3{font-size:1.3rem;margin:8px 0 4px}
+.tour p{color:var(--muted);font-size:.95rem}
+.tour .x{animation:fadeTxt .45s var(--ease,ease)}
+.tour-btns{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+
+/* ---------- motion ---------- */
+:root{--spring:cubic-bezier(.34,1.56,.64,1);--ease:cubic-bezier(.22,1,.36,1)}
+/* smooth theme / glass changes */
+body,.panel,.kpi,.card,.about dl,.pipe .node,.stat,.btn,.seg,.langs,.eyebrow,.pill,header.top,.stage,.field select,.field input{
+  transition:background-color .6s var(--ease),background .6s var(--ease),border-color .6s var(--ease),color .4s var(--ease),box-shadow .5s var(--ease),backdrop-filter .6s var(--ease),transform .25s var(--ease)}
+#bgfx{transition:background-color .9s var(--ease)}
+#bgfx i{transition:background-color 1.1s var(--ease),opacity 1.1s var(--ease),filter 1.1s var(--ease)}
+/* background wave on switch */
+.bg-wave{position:fixed;z-index:-1;width:40px;height:40px;margin:-20px 0 0 -20px;border-radius:50%;pointer-events:none;animation:wave 1.1s var(--ease) forwards}
+@keyframes wave{0%{transform:scale(0);opacity:.9}70%{opacity:.55}100%{transform:scale(90);opacity:0}}
+/* popover */
+.design-pop:not([hidden]){animation:popIn .38s var(--spring) both;transform-origin:calc(100% - 40px) 0}
+@keyframes popIn{from{opacity:0;transform:translateY(-8px) scale(.94)}to{opacity:1;transform:none}}
+.design-pop:not([hidden]) > *{animation:rise .45s var(--ease) both}
+.design-pop:not([hidden]) > *:nth-child(2){animation-delay:.05s}
+.design-pop:not([hidden]) > *:nth-child(3){animation-delay:.1s}
+.design > button{transition:transform .25s var(--spring),box-shadow .3s}
+.design > button:hover::before{transform:rotate(180deg)}
+.design > button::before{transition:transform .6s var(--ease)}
+.design > button[aria-expanded="true"]{box-shadow:0 0 0 3px var(--glow-ai)}
+/* swatches */
+.swatches button span{transition:transform .3s var(--spring),box-shadow .3s,border-color .3s}
+.swatches button:hover span{transform:translateY(-3px) scale(1.04)}
+.swatches button.pick span{animation:pick .55s var(--spring)}
+@keyframes pick{0%{transform:scale(1)}35%{transform:scale(.86)}100%{transform:scale(1)}}
+.swatches button[aria-pressed="true"] span::after{content:"✓";display:grid;place-items:center;height:100%;color:#fff;font-weight:800;text-shadow:0 1px 4px rgba(0,0,0,.6);animation:popIn .35s var(--spring)}
+/* switch */
+.switch::after{transition:transform .45s var(--spring),background .3s,width .2s}
+.switch:active::after{width:26px}
+.switch[aria-checked="true"]:active::after{transform:translateX(14px)}
+/* buttons */
+.btn,.seg button,.langs button,nav.links a{transition:background-color .3s var(--ease),color .3s,box-shadow .3s,transform .2s var(--spring),border-color .3s}
+.btn:active,.seg button:active,.langs button:active,.swatches button:active span{transform:scale(.94)}
+.btn.primary{position:relative;overflow:hidden}
+.btn.primary::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);transform:translateX(-120%)}
+.btn.primary:hover::after{transform:translateX(120%);transition:transform .8s var(--ease)}
+.seg button[aria-pressed="true"],.langs button[aria-pressed="true"]{animation:pick .4s var(--spring)}
+nav.links a:hover{transform:translateY(-1px)}
+/* jam shake + flash */
+.shake{animation:shake .45s ease-in-out}
+@keyframes shake{20%{transform:translateX(-5px) rotate(-1deg)}40%{transform:translateX(5px) rotate(1deg)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+.lanes.flash .lane{animation:flash .9s var(--ease);animation-timeline:auto;animation-range:normal}
+@keyframes flash{0%,100%{box-shadow:0 24px 48px -28px var(--glass-shade)}25%{box-shadow:0 0 0 2px var(--warn),0 0 40px -6px var(--warn)}}
+.pill{transition:color .3s,box-shadow .3s}
+.pill.jam{animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 4px color-mix(in srgb,var(--warn) 25%,transparent)}}
+/* log + result */
+.log li:first-child{animation:slideIn .45s var(--ease)}
+@keyframes slideIn{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+.result:not([hidden]){animation:popIn .6s var(--spring)}
+/* hover lift for cards */
+.card,.app,.kpi,.pipe .node{transition:transform .35s var(--ease),box-shadow .35s var(--ease),background .6s,border-color .6s}
+.card:hover,.app:hover,.kpi:hover,.pipe .node:hover{transform:translateY(-4px)}
+.stage{transition:transform .5s var(--ease),box-shadow .5s}
+.stage:hover{transform:translateY(-3px)}
+/* language swap */
+main.fade [data-i18n],main.fade [data-i18n-html]{animation:fadeTxt .45s var(--ease)}
+@keyframes fadeTxt{from{opacity:.15;filter:blur(3px)}to{opacity:1;filter:none}}
+/* page-load sequence */
+.hero > div:first-child > *{animation:rise .8s var(--ease) both}
+.hero > div:first-child > *:nth-child(2){animation-delay:.08s}
+.hero > div:first-child > *:nth-child(3){animation-delay:.16s}
+.hero > div:first-child > *:nth-child(4){animation-delay:.24s}
+.hero .stage{animation:stageIn 1.1s var(--ease) .15s both}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes stageIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
+.kpi b.big{display:inline-block}
+.kpi b.big.tick{animation:pick .5s var(--spring)}
+/* scroll reveal: only where the browser drives it from scroll, so content never waits hidden */
+@supports (animation-timeline: view()){
+  .reveal{animation:rise linear both;animation-timeline:view();animation-range:entry 0% entry 35%}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+
+<div id="bgfx" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#sim"><i></i>ViscoFlow AI</a>
+    <nav class="links">
+      <a href="#sim" data-i18n="nav_sim"></a>
+      <a href="#live" data-i18n="nav_live"></a>
+      <a href="#lab" data-i18n="nav_lab"></a>
+      <a href="#theory" data-i18n="nav_theory"></a>
+      <a href="#apps" data-i18n="nav_apps"></a>
+      <a href="#scale" data-i18n="nav_scale"></a>
+      <a href="#build" data-i18n="nav_build"></a>
+      <a href="#about" data-i18n="nav_about"></a>
+    </nav>
+    <div class="langs" role="group" aria-label="Language">
+      <button id="lang-kk" data-lang="kk">ҚАЗ</button>
+      <button id="lang-ru" data-lang="ru">РУС</button>
+      <button id="lang-en" data-lang="en">ENG</button>
+    </div>
+    <button class="btn primary present-btn" id="tour-btn" data-i18n="btn_present"></button>
+    <div class="design"><button id="design-btn" aria-expanded="false" aria-controls="design-pop" data-i18n="design_btn"></button></div>
+  </div>
+</header>
+<div class="design-pop" id="design-pop" hidden>
+  <h4 data-i18n="bg_title"></h4>
+  <div class="swatches" id="bg-swatches">
+    <button data-bg="aurora"><span class="sw-aurora"></span><em data-i18n="bg_aurora" style="font-style:normal"></em></button>
+    <button data-bg="lab"><span class="sw-lab"></span><em data-i18n="bg_lab" style="font-style:normal"></em></button>
+    <button data-bg="oil"><span class="sw-oil"></span><em data-i18n="bg_oil" style="font-style:normal"></em></button>
+    <button data-bg="light"><span class="sw-light"></span><em data-i18n="bg_light" style="font-style:normal"></em></button>
+  </div>
+  <div class="toggle"><span data-i18n="glass_label"></span><button class="switch" id="glass-sw" role="switch" aria-checked="true" aria-label="glass"></button></div>
+</div>
+
+<main>
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <div class="eyebrow" data-i18n="hero_eyebrow"></div>
+      <h1 data-i18n-html="hero_title"></h1>
+      <p class="lead" data-i18n="hero_lead"></p>
+      <div class="kpis">
+        <div class="kpi"><b class="big">−55%</b><span data-i18n="kpi1"></span></div>
+        <div class="kpi"><b>151,2 → 68,4 J</b><span data-i18n="kpi2"></span></div>
+        <div class="kpi"><b>Random Forest</b><span data-i18n="kpi3"></span></div>
+      </div>
+    </div>
+    <div class="stage" id="stage">
+      <canvas id="cv3d" aria-label="3D"></canvas>
+      <div class="hud">
+        <div class="seg" id="s3-lane"><button data-v="ai" aria-pressed="true" data-i18n="legend_ai"></button><button data-v="cl" data-i18n="legend_classic"></button></div>
+        <div class="readout"><span>PWM <b id="s3-pwm">0</b></span><span id="s3-flow">0.00</span><span id="s3-e">0.0 J</span></div>
+      </div>
+      <div class="hint" data-i18n="hint3d"></div>
+      <button class="btn s3-explode" id="s3-explode" data-i18n="explode_btn"></button>
+      <div class="s3-label" id="s3-label" hidden><b id="s3-lname"></b><span id="s3-ldesc"></span></div>
+      <div class="fallback" id="s3-fb" hidden data-i18n="fb3d"></div>
+    </div>
+  </div>
+</div>
+
+<section id="sim" style="padding-top:12px">
+<div class="wrap">
+  <div class="sec-head">
+    <div><h2 data-i18n="sim_title"></h2><p data-i18n="sim_note"></p></div>
+  </div>
+
+  <div class="panel controls">
+    <label class="field"><span data-i18n="ctl_fluid"></span>
+      <select id="fluid"><option value="tomato" data-i18n="fluid_tomato"></option><option value="starch" data-i18n="fluid_starch"></option></select>
+    </label>
+    <label class="field"><span><span data-i18n="ctl_tau"></span>: <b class="mono" id="tauv">3.5 s</b></span>
+      <input type="range" id="tau" min="1" max="8" step="0.5" value="3.5">
+    </label>
+    <div class="field"><span data-i18n="ctl_speed"></span>
+      <div class="seg" id="speed"><button data-v="1">1×</button><button data-v="3" aria-pressed="true">3×</button><button data-v="6">6×</button></div>
+    </div>
+    <div class="btns">
+      <button class="btn primary" id="run" data-i18n="btn_pause"></button>
+      <button class="btn" id="reset" data-i18n="btn_reset"></button>
+      <button class="btn danger" id="jam" data-i18n="btn_jam"></button>
+    </div>
+  </div>
+
+  <div class="lanes">
+    <div class="panel lane" style="--c:var(--classic)">
+      <header><div><h3 data-i18n="lane_classic"></h3><div class="sub" data-i18n="lane_classic_sub"></div></div><span class="pill solid" id="c-state"></span></header>
+      <canvas id="c-cv" aria-label="classic"></canvas>
+      <div class="stats">
+        <div class="stat"><small>PWM</small><b id="c-pwm">0</b><div class="pwmbar"><i id="c-bar"></i></div></div>
+        <div class="stat"><small data-i18n="st_flow"></small><b id="c-flow">0.00</b></div>
+        <div class="stat"><small data-i18n="st_vol"></small><b id="c-vol">0.0</b></div>
+        <div class="stat"><small data-i18n="st_energy"></small><b id="c-e">0.0</b></div>
+      </div>
+    </div>
+    <div class="panel lane" style="--c:var(--ai)">
+      <header><div><h3 data-i18n="lane_ai"></h3><div class="sub" data-i18n="lane_ai_sub"></div></div><span class="pill solid" id="a-state"></span></header>
+      <canvas id="a-cv" aria-label="AI"></canvas>
+      <div class="stats">
+        <div class="stat"><small>PWM</small><b id="a-pwm">0</b><div class="pwmbar"><i id="a-bar"></i></div></div>
+        <div class="stat"><small data-i18n="st_flow"></small><b id="a-flow">0.00</b></div>
+        <div class="stat"><small data-i18n="st_vol"></small><b id="a-vol">0.0</b></div>
+        <div class="stat"><small data-i18n="st_energy"></small><b id="a-e">0.0</b></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scoreboard">
+    <div class="panel score"><small data-i18n="savings_l"></small><b id="sav">0%</b><div class="formula">η = (1 − E<sub>AI</sub>/E<sub>cl</sub>)·100%</div></div>
+    <div class="panel score prod"><small data-i18n="prod_l"></small><b id="prod">—</b><div class="formula" id="tclock">t = 0.0 / 60 s</div></div>
+    <div class="panel log"><h3 data-i18n="log_title"></h3><ol id="log"></ol></div>
+  </div>
+
+  <div class="panel brain" id="brain">
+    <div class="brain-head"><div><h3 data-i18n="brain_title"></h3><p class="info" data-i18n="brain_sub"></p></div><span class="pill solid" id="brain-state"></span></div>
+    <div class="bars" id="brain-bars"></div>
+  </div>
+
+  <div class="charts">
+    <div class="panel chart">
+      <div class="chart-head"><span data-i18n="chart_pwm"></span><span class="legend"><span style="--c:var(--classic)" data-i18n="legend_classic"></span><span style="--c:var(--ai)" data-i18n="legend_ai"></span></span></div>
+      <canvas id="ch-pwm"></canvas>
+    </div>
+    <div class="panel chart">
+      <div class="chart-head"><span data-i18n="chart_energy"></span><span class="legend"><span style="--c:var(--classic)" data-i18n="legend_classic"></span><span style="--c:var(--ai)" data-i18n="legend_ai"></span></span></div>
+      <canvas id="ch-e"></canvas>
+    </div>
+  </div>
+
+  <div class="result" id="result" hidden>
+    <h3 data-i18n="res_title" style="margin-bottom:6px"></h3>
+    <p id="res-text"></p>
+    <p class="muted" style="font-family:var(--font-body);font-size:.85rem;margin-top:6px" data-i18n="res_exp"></p>
+  </div>
+
+  <h3 style="margin-top:28px;margin-bottom:10px" data-i18n="pipe_title"></h3>
+  <div class="pipe">
+    <div class="node">HC-SR04<b data-i18n="pipe_sensor"></b></div><span class="arr">→</span>
+    <div class="node">Arduino Uno<b data-i18n="pipe_ard"></b></div><span class="arr">→</span>
+    <div class="node ai" data-i18n-html="pipe_ai"></div><span class="arr">→</span>
+    <div class="node">MOSFET IRF520<b data-i18n="pipe_mos"></b></div><span class="arr">→</span>
+    <div class="node" data-i18n-html="pipe_motor"></div><span class="arr">→</span>
+    <div class="node" data-i18n-html="pipe_paste"></div><span class="arr">↺</span>
+  </div>
+</div>
+</section>
+
+<section id="live">
+<div class="wrap">
+  <div class="sec-head"><div><h2 data-i18n="live_title"></h2><p data-i18n="live_lead"></p></div></div>
+  <div class="live-grid">
+    <div class="panel live-side">
+      <div class="statusrow"><b data-i18n="live_status"></b><span class="pill solid" id="l-status"></span></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" id="l-connect" data-i18n="btn_connect"></button>
+        <button class="btn" id="l-demo" data-i18n="btn_demo"></button>
+        <button class="btn" id="l-stop" data-i18n="btn_disconnect" hidden></button>
+      </div>
+      <div class="alert" id="l-alert" hidden></div>
+      <div class="field"><span data-i18n="mode_label"></span>
+        <div class="seg" id="l-mode"><button data-v="monitor" aria-pressed="true" data-i18n="mode_monitor"></button><button data-v="classic" data-i18n="mode_classic"></button><button data-v="ai" data-i18n="mode_ai"></button></div>
+      </div>
+      <p class="info" data-i18n="live_need_sketch"></p>
+      <label class="field"><span data-i18n="set_pmax"></span><input type="number" id="l-pmax" value="2.52" step="0.01" min="0.1"></label>
+      <label class="field"><span data-i18n="set_thr"></span><input type="number" id="l-thr" value="0.3" step="0.05" min="0.05"></label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" id="l-rec" data-i18n="btn_rec"></button>
+        <button class="btn" id="l-csv" data-i18n="btn_csv"></button>
+        <button class="btn" id="l-copy" data-i18n="btn_copy"></button>
+      </div>
+      <p class="info" data-i18n="live_req"></p>
+    </div>
+    <div class="live-main">
+      <div class="live-stats">
+        <div class="stat"><small data-i18n="live_dist"></small><b id="l-dist">—</b></div>
+        <div class="stat"><small data-i18n="live_flow"></small><b id="l-flow">—</b></div>
+        <div class="stat"><small>PWM</small><b id="l-pwm">—</b></div>
+        <div class="stat"><small data-i18n="live_energy"></small><b id="l-e">0.0</b></div>
+        <div class="stat"><small data-i18n="live_rows"></small><b id="l-rows">0</b></div>
+      </div>
+      <div class="panel chart"><div class="chart-head"><span data-i18n="live_chart_dist"></span></div><canvas id="lc-dist"></canvas></div>
+      <div class="panel chart"><div class="chart-head"><span data-i18n="live_chart_pwm"></span></div><canvas id="lc-pwm"></canvas></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="lab">
+<div class="wrap">
+  <div class="sec-head"><div><h2 data-i18n="lab_title"></h2><p data-i18n="lab_lead"></p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <label class="btn primary" for="lab-file" style="display:inline-flex;align-items:center"><span data-i18n="lab_upload"></span></label>
+      <input type="file" id="lab-file" accept=".csv,.txt,text/csv" hidden>
+      <button class="btn" id="lab-demo" data-i18n="lab_demo"></button>
+    </div>
+  </div>
+  <p class="lab-note" id="lab-note"></p>
+  <div class="lab-stats">
+    <div class="stat"><small data-i18n="lab_rows"></small><b id="lab-rows">—</b></div>
+    <div class="stat"><small data-i18n="lab_r2"></small><b id="lab-r2">—</b></div>
+    <div class="stat"><small data-i18n="lab_mae"></small><b id="lab-mae">—</b></div>
+    <div class="stat"><small data-i18n="lab_energy"></small><b id="lab-e">—</b></div>
+    <div class="stat"><small data-i18n="lab_k"></small><b id="lab-k">—</b></div>
+  </div>
+  <div class="panel chart" style="margin-top:16px">
+    <div class="chart-head"><span data-i18n="lab_chart"></span><span class="legend"><span style="--c:var(--paste)" data-i18n="lg_real"></span><span style="--c:var(--classic)" data-i18n="lg_model"></span><span style="--c:var(--ai)" data-i18n="lg_rf"></span></span></div>
+    <canvas id="lab-chart" style="height:240px"></canvas>
+  </div>
+  <div class="lab-grid">
+    <div class="panel chart"><div class="chart-head"><span data-i18n="lab_scatter"></span></div><canvas id="lab-scatter" style="height:240px"></canvas></div>
+    <div class="panel chart"><div class="chart-head"><span data-i18n="lab_imp"></span></div>
+      <div class="imp" id="lab-imp"></div>
+      <p class="info" data-i18n="lab_fmt" style="margin-top:14px"></p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="theory">
+<div class="wrap">
+  <div class="sec-head"><div><h2 data-i18n="th_title"></h2></div></div>
+  <div class="theory">
+    <div class="cards">
+      <div class="card"><h3 data-i18n="th1_h"></h3><p data-i18n="th1_p"></p></div>
+      <div class="card"><h3 data-i18n="th2_h"></h3><p data-i18n="th2_p"></p></div>
+      <div class="card"><h3 data-i18n="th3_h"></h3><p data-i18n="th3_p"></p></div>
+      <div class="card"><h3 data-i18n="th4_h"></h3><p data-i18n="th4_p"></p></div>
+      <div class="card"><h3 data-i18n="th5_h"></h3><p data-i18n="th5_p"></p>
+        <div class="eq">E = P·t = U·I·t &nbsp;·&nbsp; η = (1 − 68.4 / 151.2)·100% ≈ 55%</div></div>
+    </div>
+    <div>
+      <div class="panel"><figure>
+        <svg viewBox="0 0 340 250" role="img" aria-label="flow curves">
+          <g stroke="var(--line)" stroke-width="1">
+            <line x1="40" y1="20" x2="40" y2="210"/><line x1="40" y1="210" x2="325" y2="210"/>
+          </g>
+          <text x="14" y="24" fill="var(--muted)" font-size="12" font-family="JetBrains Mono, monospace">τ</text>
+          <text x="312" y="230" fill="var(--muted)" font-size="12" font-family="JetBrains Mono, monospace">γ̇</text>
+          <line x1="40" y1="210" x2="300" y2="40" stroke="var(--ink)" stroke-width="2" fill="none"/>
+          <path d="M40 210 C 70 120, 140 95, 300 80" stroke="var(--ai)" stroke-width="2" fill="none"/>
+          <path d="M40 210 C 160 205, 250 160, 290 30" stroke="var(--classic)" stroke-width="2" fill="none"/>
+          <path d="M40 160 L 300 95" stroke="var(--paste)" stroke-width="2" fill="none"/>
+          <line x1="34" y1="160" x2="40" y2="160" stroke="var(--paste)" stroke-width="2"/>
+          <text x="6" y="164" fill="var(--paste)" font-size="11" font-family="JetBrains Mono, monospace">τ₀</text>
+          <text x="232" y="62" fill="var(--ink)" font-size="11" data-i18n="g_newt"></text>
+          <text x="210" y="80" fill="var(--ai)" font-size="11" dy="-6" data-i18n="g_pseudo"></text>
+          <text x="196" y="170" fill="var(--classic)" font-size="11" data-i18n="g_dil"></text>
+          <text x="130" y="152" fill="var(--paste)" font-size="11" data-i18n="g_bing"></text>
+        </svg>
+        <figcaption data-i18n="g_cap"></figcaption>
+      </figure></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="apps">
+<div class="wrap">
+  <div class="sec-head"><div><h2 data-i18n="apps_title"></h2><p data-i18n="app_scale"></p></div></div>
+  <div class="apps">
+    <div class="panel app"><div class="tag">≈ τ₀ ↑ · paraffin</div><h3 data-i18n="app1_h"></h3><p data-i18n="app1_p"></p></div>
+    <div class="panel app"><div class="tag">pump · pipe</div><h3 data-i18n="app2_h"></h3><p data-i18n="app2_p"></p></div>
+    <div class="panel app"><div class="tag">T = const</div><h3 data-i18n="app3_h"></h3><p data-i18n="app3_p"></p></div>
+  </div>
+</div>
+</section>
+
+<section id="scale">
+<div class="wrap">
+  <div class="sec-head"><div><h2 data-i18n="sc_title"></h2><p data-i18n="sc_lead"></p></div></div>
+  <div class="scale-grid">
+    <div class="panel scale-in">
+      <div class="presets" id="sc-presets">
+        <button class="btn" data-p="0.0025" data-h="2" data-i18n="pr_stand"></button>
+        <button class="btn" data-p="15" data-h="10" data-i18n="pr_pump"></button>
+        <button class="btn" data-p="90" data-h="8" data-i18n="pr_concrete"></button>
+        <button class="btn" data-p="2500" data-h="24" data-i18n="pr_oil"></button>
+      </div>
+      <label class="field"><span><span data-i18n="sc_power"></span>: <b class="mono" id="sc-pv"></b></span><input type="range" id="sc-p" min="0" max="1000" value="700" style="width:100%"></label>
+      <label class="field"><span><span data-i18n="sc_hours"></span>: <b class="mono" id="sc-hv"></b></span><input type="range" id="sc-h" min="1" max="24" value="24" style="width:100%"></label>
+      <label class="field"><span><span data-i18n="sc_save"></span>: <b class="mono" id="sc-sv"></b></span><input type="range" id="sc-s" min="5" max="55" value="30" style="width:100%"></label>
+      <label class="field"><span data-i18n="sc_tariff"></span><input type="number" id="sc-t" value="35" min="1" step="1"></label>
+    </div>
+    <div class="scale-out">
+      <div class="ladder panel" id="sc-ladder"><div class="ladder-track"><i id="sc-mark"></i></div><div class="ladder-labels"><span>1 W</span><span>1 kW</span><span>1 MW</span><span>5 MW</span></div></div>
+      <div class="panel score"><small data-i18n="sc_kwh"></small><b id="sc-kwh">0</b></div>
+      <div class="panel score prod wide"><small data-i18n="sc_money"></small><b id="sc-money" style="color:var(--classic);text-shadow:none">0</b></div>
+      <div class="panel score prod"><small data-i18n="sc_co2"></small><b id="sc-co2" style="color:var(--ok);text-shadow:none">0</b></div>
+      <p class="info" data-i18n="sc_note"></p>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="build">
+<div class="wrap">
+  <div class="sec-head"><div><h2 data-i18n="build_title"></h2><p data-i18n="build_lead"></p></div></div>
+  <div class="build">
+    <div class="panel">
+      <h3 data-i18n="parts_title"></h3>
+      <div style="overflow-x:auto"><table><tbody id="parts"></tbody></table></div>
+    </div>
+    <div class="panel">
+      <h3 data-i18n="wiring_title"></h3>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th data-i18n="w_from"></th><th data-i18n="w_to"></th></tr></thead>
+        <tbody>
+          <tr><td>HC-SR04 Trig</td><td class="mono">D9</td></tr>
+          <tr><td>HC-SR04 Echo</td><td class="mono">D10</td></tr>
+          <tr><td>HC-SR04 VCC / GND</td><td class="mono">5V / GND</td></tr>
+          <tr><td>MOSFET IRF520 SIG</td><td class="mono">D3 (PWM)</td></tr>
+          <tr><td>MOSFET VCC / GND</td><td class="mono">5V / GND</td></tr>
+          <tr><td data-i18n="w_motor"></td><td class="mono">MOSFET V+ / V−</td></tr>
+        </tbody>
+      </table></div>
+      <h3 style="margin-top:18px" data-i18n="steps_title"></h3>
+      <ol class="steps" id="steps"></ol>
+    </div>
+    <div class="panel code">
+      <div class="sec-head" style="margin:0"><div><h3 data-i18n="code_title"></h3><p class="info" data-i18n="code_note" style="margin-top:4px"></p></div><button class="btn" id="copycode" data-i18n="btn_copycode"></button></div>
+      <pre class="mono" id="sketch"></pre>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="about">
+<div class="wrap about">
+  <div>
+    <h2 data-i18n="about_title" style="margin-bottom:12px"></h2>
+    <p class="muted" data-i18n="about_topic" style="max-width:65ch"></p>
+  </div>
+  <dl>
+    <dt data-i18n="ab_authors"></dt><dd data-i18n="ab_authors_v"></dd>
+    <dt data-i18n="ab_sup"></dt><dd data-i18n="ab_sup_v"></dd>
+    <dt data-i18n="ab_school"></dt><dd data-i18n="ab_school_v"></dd>
+    <dt data-i18n="ab_dir"></dt><dd data-i18n="ab_dir_v"></dd>
+  </dl>
+  <div class="panel qr-card" id="qr-card">
+    <div class="qr" id="qr"></div>
+    <h3 data-i18n="qr_title"></h3>
+    <p class="info" data-i18n="qr_text"></p>
+    <button class="btn" id="copy-link" data-i18n="btn_copylink"></button>
+  </div>
+</div>
+</section>
+</main>
+<footer><div class="wrap" data-i18n="footer"></div></footer>
+<div class="toast" id="toast" hidden></div>
+<div class="tour" id="tour" hidden role="dialog" aria-live="polite">
+  <div class="tour-top"><span class="mono" id="tour-n"></span><div class="tour-dots" id="tour-dots"></div><button class="tour-x" id="tour-exit" aria-label="exit">✕</button></div>
+  <h3 id="tour-h"></h3>
+  <p id="tour-p"></p>
+  <div class="tour-btns"><button class="btn" id="tour-prev" data-i18n="tour_prev"></button><button class="btn primary" id="tour-next"></button></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ============ i18n ============ */
+const I18N={
+kk:{
+nav_sim:"Симулятор",nav_live:"Тікелей режим",nav_theory:"Теория",nav_apps:"Қолдану",nav_build:"Стенд жасау",nav_about:"Авторлар",
+hero_eyebrow:"Ғылыми жоба · Физика · Инженерлік ғылымдар",
+hero_title:"Қою сұйықтықты дірілмен ағызу — <em>тоқты 55% үнемдеп</em>",
+hero_lead:"Томат пастасы мен крахмал секілді ньютондық емес сұйықтықтар дірілден сұйылады. Классикалық жүйе моторды үнемі толық қуатта ұстайды, ал біздің ЖИ ағынды бақылап, қуатты тек керек кезде береді. Төменде екі режим қатар жұмыс істеп тұр.",
+kpi1:"электр энергиясы үнемі (тәжірибе)",kpi2:"60 секундтағы шығын: классика → ЖИ",kpi3:"Python-дағы ЖИ моделі",
+sim_title:"Классика мен ЖИ: қатар сынақ",
+sim_note:"Бұл модель: процесс жобадағы тәжірибе сандары бойынша есептеледі (P max = 2,52 Вт, PWM 0–255). Нақты өлшеу үшін «Тікелей режимді» қолданыңыз.",
+ctl_fluid:"Сұйықтық",fluid_tomato:"Томат пастасы (Бингам пластигі)",fluid_starch:"Крахмал суспензиясы (дилатантты)",
+ctl_tau:"Релаксация уақыты τ",ctl_speed:"Жылдамдық",
+btn_start:"Іске қосу",btn_pause:"Кідірту",btn_reset:"Басынан",btn_jam:"Кептеліс жасау",
+lane_classic:"Классикалық режим",lane_classic_sub:"Мотор үнемі PWM = 255",lane_ai:"ЖИ режимі",lane_ai_sub:"Ағынға қарай қуатты өзі реттейді",
+st_flow:"Ағын, мл/с",st_energy:"Энергия, Дж",st_vol:"Ағып шықты, мл",
+savings_l:"Энергия үнемі",prod_l:"Өнімділік: ЖИ / классика",
+chart_pwm:"Мотор қуаты, PWM",chart_energy:"Жұмсалған энергия, Дж",legend_classic:"Классика",legend_ai:"ЖИ",
+log_title:"ЖИ шешімдері",
+log_start:"{t} с: паста қатып тұр, ағын жоқ → PWM 255, сұйылтамыз",
+log_jam:"{t} с: аномалия: модель ағынды күтеді, бірақ деңгей өзгермейді. Кептеліс → PWM 255",
+log_clear:"{t} с: кептеліс жойылды, ағын қалпына келді",
+log_eco:"{t} с: ағын тұрақты → PWM {p}, релаксация есебінен үнем режимі",
+log_thick:"{t} с: күшті дірілде крахмал қоюланады → PWM {p}, орташа діріл тиімдірек",
+log_user:"{t} с: шприцте кептеліс пайда болды",
+res_title:"Нәтиже, 60 секунд",
+res_exp:"Салыстыру үшін нағыз стендтегі тәжірибе: E класс = 151,2 Дж, E ЖИ = 68,4 Дж, η = 55%.",
+st_flowing:"Ағып жатыр",st_jam:"Кептеліс",st_solid:"Қатып тұр",
+pipe_title:"Жүйе қалай жұмыс істейді",pipe_sensor:"деңгейді өлшейді",pipe_ard:"деректерді жібереді",pipe_ai:"ЖИ моделі<b>ағынды болжайды</b>",pipe_mos:"токты реттейді",pipe_motor:"Вибромотор<b>діріл береді</b>",pipe_paste:"Паста<b>сұйылып ағады</b>",
+live_title:"Тікелей режим: нағыз стендті қосу",
+live_lead:"Arduino-ны USB арқылы қосыңыз. Сайт HC-SR04 датчигінің деректерін оқиды, графиктерді салады, деректерді CSV-ге жазады және моторды басқарады. Стенд жоқ болса, «Демо деректерді» басыңыз.",
+live_status:"Күйі",st_off:"Қосылмаған",st_on:"Arduino қосылды",st_demo:"Демо",
+btn_connect:"Arduino қосу",btn_disconnect:"Ажырату",btn_demo:"Демо деректер",
+mode_label:"Моторды басқару",mode_monitor:"Тек бақылау",mode_classic:"Классика 255",mode_ai:"ЖИ",
+btn_rec:"Жазуды бастау",btn_recstop:"Жазуды тоқтату",btn_csv:"CSV жүктеу",btn_copy:"CSV көшіру",
+live_dist:"Қашықтық, мм",live_flow:"Ағын, мм/с",live_energy:"Энергия, Дж",live_rows:"Жазылған жол",
+live_chart_dist:"Датчиктен паста бетіне дейінгі қашықтық, мм (соңғы 60 с)",live_chart_pwm:"Мотор қуаты, PWM (соңғы 60 с)",
+set_pmax:"Мотордың max қуаты, Вт",set_thr:"Кептеліс шегі, мм/с",
+live_need_sketch:"Моторды сайттан басқару үшін Arduino-ға төмендегі жаңартылған скетчті жүктеңіз.",
+live_req:"Chrome немесе Edge керек. Сілтеме арқылы ашылған бетте USB-ге рұқсат болмауы мүмкін: онда ViscoFlow-AI-offline.html файлын Chrome-да ашыңыз.",
+err_noserial:"Бұл браузерде Web Serial жоқ. Офлайн файлды Chrome немесе Edge-те ашыңыз, немесе демо деректерді қолданыңыз.",
+err_blocked:"Бұл бетте USB портқа рұқсат жоқ. ViscoFlow-AI-offline.html файлын Chrome-да ашыңыз, немесе демо деректерді қолданыңыз.",
+err_generic:"Қосылу сәтсіз: {m}",
+copied:"Көшірілді",csv_empty:"Алдымен деректерді жазыңыз",csv_saved:"CSV файлы сақталды",copy_fail:"Көшіру мүмкін болмады — мәтінді қолмен белгілеңіз",
+th_title:"Теория қысқаша",
+th1_h:"Ньютондық және ньютондық емес",th1_p:"Су, спирт, бензиннің тұтқырлығы тұрақты: олар ньютондық. Қан, мұнай, пасталар, бояулардың тұтқырлығы әсерге қарай өзгереді: олар ньютондық емес, ішкі құрылымы күрделі.",
+th2_h:"Тиксотропия",th2_p:"Тыныштықта қою, шайқағанда сұйылатын қасиет. Дірілден құрылымдық байланыстар бұзылады, ал әсер тоқтаған соң біртіндеп қайта қалпына келеді.",
+th3_h:"Релаксация уақыты τ",th3_p:"Кернеу e есе (≈2,7 есе) азаятын уақыт. Су үшін шамамен 10⁻¹¹ с, ал пастаға бірнеше секунд. ЖИ осы секундтарды пайдаланады: паста әлі сұйық болғанда мотор қуатын төмендетеді.",
+th4_h:"Виброфлюидизация",th4_p:"Діріл пастаның ішкі құрылымын бұзып, тиімді тұтқырлықты төмендетеді, сонда паста өз салмағымен ағады. Крахмал керісінше: күшті дірілде қоюланады, сондықтан оған орташа діріл тиімді.",
+th5_h:"Энергияны есептеу",th5_p:"Мотор тұтынатын энергия қуат пен уақытқа тең. Бірдей 60 секундта екі режимді салыстырып, үнем пайызын табамыз.",
+g_newt:"Ньютондық",g_pseudo:"Псевдопластик",g_dil:"Дилатантты",g_bing:"Бингам (паста)",g_cap:"Ығысу кернеуі τ мен ығысу жылдамдығы γ̇ байланысы. Бингам пластигі τ₀ шегінен кейін ғана ағады.",
+apps_title:"Қайда қолдануға болады",app_scale:"Шприц 100 мл мен құбыр желісінің принципі бірдей: датчик → ЖИ → жетек.",
+app1_h:"Маңғыстаудың қою мұнайы",app1_p:"Парафинді, тұтқыр мұнайды құбырмен айдағанда сорғылардың жүктемесін азайтып, тоқты үнемдеу.",
+app2_h:"Бетон айдау",app2_p:"Бетон қоспасын құбырда қатып қалу қаупінсіз айдайтын ақылды қауіпсіздік жүйелері.",
+app3_h:"Тамақ өнеркәсібі",app3_p:"Пасталар мен кремдерді қыздырмай дозалау: өнімнің сапасы сақталады.",
+build_title:"Стендті өзіңіз жасаңыз",build_lead:"Барлық бөлшек қолжетімді, жинауға бір-екі күн жеткілікті.",
+parts_title:"Бөлшектер",wiring_title:"Қосылу схемасы",w_from:"Бөлшек",w_to:"Arduino пині",w_motor:"Вибромотор",steps_title:"Жинау ретi",
+parts:[["Arduino Uno","басқару «миы»"],["HC-SR04","деңгейді контактісіз өлшейді"],["MOSFET IRF520 модулі","моторға токты реттейді"],["Вибромотор-«таблетка»","діріл көзі"],["Шприц 100 мл, поршенсіз","резервуар"],["Мөлдір акрил платформа","дірілді сұйықтыққа жеткізеді"],["4 поролон губка","амортизатор"],["Ағаш тұғыр, металл штатив","датчикті қозғалмай ұстайды"],["Breadboard 400, Dupont сымдары","дәнекерлеусіз қосу"],["Таразы","ағып шыққан масса"]],
+steps:["Тұғырға штатив пен губкаларды, олардың үстіне акрил платформаны орнатыңыз.","Шприцті платформаға тік бекітіңіз, датчикті шприц үстіне қозғалмайтын штативке орнатыңыз.","Сымдарды кестедегі схема бойынша жалғаңыз.","Arduino IDE арқылы төмендегі скетчті жүктеңіз.","Осы беттегі «Тікелей режимде» «Arduino қосу» батырмасын басыңыз."],
+code_title:"Arduino скетчі (сайтпен жұмыс істейтін нұсқа)",code_note:"Жобадағы скетчке екі нәрсе қосылды: компьютерден P180 сияқты бұйрықты қабылдау және деректерді әр 0,2 с сайын жіберу.",btn_copycode:"Кодты көшіру",
+about_title:"Жоба туралы",about_topic:"Серпімді-тұтқыр-пластикалық сұйықтықтардың дірілдік флюидизациясы: ағу қасиетін энергия тиімді басқарудың физикалық заңдылықтары мен инженерлік қолданыстары.",
+ab_authors:"Авторлар",ab_authors_v:"Азаматұлы Естияр, Жалғас Мейрамбек, 10 сынып",ab_sup:"Жетекші",ab_sup_v:"Демегенов Жәнібек",ab_school:"Мектеп",ab_school_v:"«Білім-Инновация» лицей-интернаты, Ақтау",ab_dir:"Бағыты",ab_dir_v:"Физика · Инженерлік ғылымдар · 2026",
+footer:"ViscoFlow AI · ғылыми жоба, Ақтау 2026",
+design_btn:"Дизайн",bg_title:"Фон",bg_aurora:"Аврора",bg_lab:"Зертхана",bg_oil:"Мұнай",bg_light:"Жарық",glass_label:"Сұйық шыны",
+hint3d:"Сүйреп айналдырыңыз, бөлшекті басып көріңіз",
+nav_lab:"Деректер",nav_scale:"Масштаб",btn_present:"Презентация",
+brain_title:"ЖИ миы: келесі 1,5 секундқа болжам",brain_sub:"Әр 0,25 с сайын ЖИ әр PWM мәні үшін ағынды модельмен болжайды да, ағын 95%-дан төмен түспейтін ең үнемді мәнді таңдайды. Жасыл сызық — 95% шегі.",brain_pick:"Таңдалды",brain_jam:"Кептеліс: PWM 255",
+explode_btn:"Бөлшектерге бөлу",assemble_btn:"Жинау",
+p3:{base:["Ағаш тұғыр","Бүкіл стендтің берік негізі, тұрақтылық береді."],foam:["Поролон губкалар","Амортизатор: сыртқы дірілді жұтып, өлшеу дәлдігін сақтайды."],platform:["Акрил платформа","Мөлдір жұмыс алаңы, дірілді сұйықтыққа жеткізеді."],motor:["Вибромотор","Эксцентрик айналып, діріл тудырады. Қуаты PWM 0–255."],arduino:["Arduino Uno","Стендтің «миы»: датчикті оқып, деректерді компьютерге жібереді."],mosfet:["MOSFET IRF520","Электронды кілт: Arduino сигналымен мотордың тогын реттейді."],cup:["Стақан","Ағып шыққан пастаны жинайды, массасын таразымен өлшейміз."],syringe:["Шприц 100 мл","Поршенсіз резервуар: паста тек салмағы мен діріл есебінен ағады."],paste:["Томат пастасы","Бингам пластигі: тыныштықта қатып, дірілден сұйылады."],stand:["Металл штатив","Датчикті дірілден бөлек, қозғалмай ұстайды."],sensor:["HC-SR04 датчигі","Ультрадыбыспен паста деңгейін контактісіз, мм дәлдікпен өлшейді."]},
+lab_title:"Деректер зертханасы",lab_lead:"Стендтен жазылған CSV файлын жүктеңіз: сайт нақты қисықты физикалық модельмен салыстырып, Random Forest моделін дәл браузерде оқытады.",lab_upload:"CSV жүктеу",lab_demo:"Мысал деректер",
+lab_fmt:"Формат: уақыт, PWM, қашықтық (мм). «Тікелей режимдегі» CSV те, Python скриптінің CSV-і де жарайды. Деректер 80% оқыту / 20% тексеру болып бөлінеді, 40 ағаш.",
+lab_example_note:"Қазір мысал деректер көрсетілген (симуляциядан алынған, нақты өлшем емес). Стендтен CSV жүктесеңіз, оның орнына сіздің деректеріңіз шығады.",lab_real_note:"Сіздің нақты деректеріңіз: {n} жол.",lab_err:"Файлды оқу мүмкін болмады: уақыт, PWM, қашықтық бағандары бар кемінде 10 жол керек.",
+lab_rows:"Жолдар",lab_r2:"R² (тест 20%)",lab_mae:"Орташа қате, мм",lab_energy:"Энергия, Дж",lab_k:"Калибровка, мм/мл",
+lab_chart:"Датчикке дейінгі қашықтық, мм: өлшем, физикалық модель және Random Forest",lg_real:"Өлшем",lg_model:"Физикалық модель",lg_rf:"Random Forest",lab_scatter:"Болжам мен нақты мән (тест жиыны)",lab_imp:"Белгілердің маңыздылығы",f_time:"Уақыт",f_pwm:"Мотор PWM",
+sc_title:"Шприцтен құбыр желісіне",sc_lead:"Стендтегі принципті нақты сорғыларға көшіріп, жылдық үнемді есептеңіз.",sc_power:"Жетек қуаты",sc_hours:"Жұмыс уақыты, сағ/тәулік",sc_save:"Үнем пайызы",sc_tariff:"Тариф, ₸/кВт·сағ",
+sc_kwh:"Үнемделген энергия, кВт·сағ/жыл",sc_money:"Үнем, ₸/жыл",sc_co2:"CO₂ азаяды, т/жыл",
+sc_note:"Есептеу болжамға негізделген: тариф пен үнем пайызын өзгертуге болады. Зертханадағы 55% өнеркәсіпте төмен болуы мүмкін, сондықтан әдепкі мән 30%. CO₂ коэффициенті шамамен 0,6 кг/кВт·сағ.",
+pr_stand:"Біздің стенд",pr_pump:"Шағын сорғы",pr_concrete:"Бетон сорғысы",pr_oil:"Мұнай айдау станциясы",
+qr_title:"Телефоннан ашу",qr_text:"QR кодты сканерлеңіз. Сілтеме басқаларға ашылуы үшін оны Share мәзірі арқылы бөлісіңіз.",btn_copylink:"Сілтемені көшіру",
+tour_prev:"Артқа",tour_next:"Келесі",tour_done:"Аяқтау",
+tour:[["Мәселе","Қою мұнай, бетон, пасталар тыныштықта қатып, құбырды бітейді. Оларды айдау үшін зауыттар көп электр энергиясын жұмсайды."],["Біздің стенд","Arduino, HC-SR04 датчигі, MOSFET және вибромотор. Модель бөлшектерге бөлінді: кез келген детальды басып, не істейтінін көруге болады."],["Классика мен ЖИ","Екі шприц қатар жұмыс істейді: классика моторды үнемі 255-те ұстайды, ЖИ қуатты ағынға қарай өзі таңдайды."],["ЖИ қалай ойлайды","Әр 0,25 с сайын модель әр PWM үшін ағынды болжайды. ЖИ ағынды сақтайтын ең үнемді нұсқаны таңдайды, ал кептелісті аномалия ретінде анықтайды."],["Нәтиже","Бірдей 60 секундта ЖИ энергияны шамамен 55% аз жұмсайды, ал өнімділік сақталады. Тәжірибеде: 151,2 Дж → 68,4 Дж."],["Деректер және Random Forest","Стендтен жазылған CSV жүктелгенде, Random Forest моделі дәл осы жерде оқытылады: R², болжам графигі және белгілердің маңыздылығы."],["Масштаб","Сол принцип мұнай айдау станциясына көшірілсе, жылдық үнем миллиондаған теңгеге жетуі мүмкін."],["Рақмет!","Сайтты телефоннан ашу үшін QR кодты сканерлеңіз. Сұрақтарыңызға дайынбыз."]],fb3d:"3D модель жүктелмеді: интернет байланысын тексеріңіз."
+},
+ru:{
+nav_sim:"Симулятор",nav_live:"Живой режим",nav_theory:"Теория",nav_apps:"Применение",nav_build:"Собрать стенд",nav_about:"Авторы",
+hero_eyebrow:"Научный проект · Физика · Инженерные науки",
+hero_title:"Густая жидкость течёт от вибрации — <em>с экономией энергии 55%</em>",
+hero_lead:"Неньютоновские жидкости, такие как томатная паста и крахмал, разжижаются от вибрации. Классическая система держит мотор на полной мощности всегда, а наш ИИ следит за потоком и даёт мощность только когда нужно. Ниже оба режима работают рядом.",
+kpi1:"экономия электроэнергии (эксперимент)",kpi2:"расход за 60 секунд: классика → ИИ",kpi3:"модель ИИ на Python",
+sim_title:"Классика против ИИ: параллельный тест",
+sim_note:"Это модель: процесс рассчитан по числам из эксперимента проекта (P max = 2,52 Вт, PWM 0–255). Для реальных измерений используйте «Живой режим».",
+ctl_fluid:"Жидкость",fluid_tomato:"Томатная паста (пластик Бингама)",fluid_starch:"Крахмальная суспензия (дилатантная)",
+ctl_tau:"Время релаксации τ",ctl_speed:"Скорость",
+btn_start:"Запустить",btn_pause:"Пауза",btn_reset:"Сначала",btn_jam:"Создать затор",
+lane_classic:"Классический режим",lane_classic_sub:"Мотор всегда на PWM = 255",lane_ai:"Режим ИИ",lane_ai_sub:"Сам подбирает мощность по потоку",
+st_flow:"Поток, мл/с",st_energy:"Энергия, Дж",st_vol:"Вытекло, мл",
+savings_l:"Экономия энергии",prod_l:"Производительность: ИИ / классика",
+chart_pwm:"Мощность мотора, PWM",chart_energy:"Затраченная энергия, Дж",legend_classic:"Классика",legend_ai:"ИИ",
+log_title:"Решения ИИ",
+log_start:"{t} с: паста застыла, потока нет → PWM 255, разжижаем",
+log_jam:"{t} с: аномалия: модель ждёт поток, но уровень не меняется. Затор → PWM 255",
+log_clear:"{t} с: затор устранён, поток восстановлен",
+log_eco:"{t} с: поток стабилен → PWM {p}, экономный режим за счёт релаксации",
+log_thick:"{t} с: при сильной вибрации крахмал густеет → PWM {p}, средняя вибрация эффективнее",
+log_user:"{t} с: в шприце образовался затор",
+res_title:"Результат за 60 секунд",
+res_exp:"Для сравнения, эксперимент на реальном стенде: E класс = 151,2 Дж, E ИИ = 68,4 Дж, η = 55%.",
+st_flowing:"Течёт",st_jam:"Затор",st_solid:"Застыла",
+pipe_title:"Как работает система",pipe_sensor:"измеряет уровень",pipe_ard:"передаёт данные",pipe_ai:"Модель ИИ<b>предсказывает поток</b>",pipe_mos:"регулирует ток",pipe_motor:"Вибромотор<b>создаёт вибрацию</b>",pipe_paste:"Паста<b>разжижается и течёт</b>",
+live_title:"Живой режим: подключите настоящий стенд",
+live_lead:"Подключите Arduino по USB. Сайт читает датчик HC-SR04, строит графики, записывает данные в CSV и управляет мотором. Если стенда нет под рукой, нажмите «Демо-данные».",
+live_status:"Статус",st_off:"Не подключено",st_on:"Arduino подключён",st_demo:"Демо",
+btn_connect:"Подключить Arduino",btn_disconnect:"Отключить",btn_demo:"Демо-данные",
+mode_label:"Управление мотором",mode_monitor:"Только наблюдение",mode_classic:"Классика 255",mode_ai:"ИИ",
+btn_rec:"Начать запись",btn_recstop:"Остановить запись",btn_csv:"Скачать CSV",btn_copy:"Копировать CSV",
+live_dist:"Расстояние, мм",live_flow:"Поток, мм/с",live_energy:"Энергия, Дж",live_rows:"Записано строк",
+live_chart_dist:"Расстояние от датчика до пасты, мм (последние 60 с)",live_chart_pwm:"Мощность мотора, PWM (последние 60 с)",
+set_pmax:"Макс. мощность мотора, Вт",set_thr:"Порог затора, мм/с",
+live_need_sketch:"Чтобы управлять мотором с сайта, загрузите в Arduino обновлённый скетч ниже.",
+live_req:"Нужен Chrome или Edge. На странице, открытой по ссылке, доступ к USB может быть закрыт: тогда откройте файл ViscoFlow-AI-offline.html в Chrome.",
+err_noserial:"В этом браузере нет Web Serial. Откройте офлайн-файл в Chrome или Edge либо используйте демо-данные.",
+err_blocked:"На этой странице доступ к USB-порту запрещён. Откройте ViscoFlow-AI-offline.html в Chrome либо используйте демо-данные.",
+err_generic:"Не удалось подключиться: {m}",
+copied:"Скопировано",csv_empty:"Сначала запишите данные",csv_saved:"CSV-файл сохранён",copy_fail:"Не удалось скопировать — выделите текст вручную",
+th_title:"Теория кратко",
+th1_h:"Ньютоновские и неньютоновские",th1_p:"У воды, спирта, бензина вязкость постоянна: они ньютоновские. У крови, нефти, паст и красок вязкость меняется от воздействия: они неньютоновские и имеют сложную внутреннюю структуру.",
+th2_h:"Тиксотропия",th2_p:"Свойство быть густым в покое и разжижаться при встряхивании. Вибрация разрушает структурные связи, а после остановки они постепенно восстанавливаются.",
+th3_h:"Время релаксации τ",th3_p:"Время, за которое напряжение уменьшается в e раз (≈2,7 раза). У воды около 10⁻¹¹ с, у пасты несколько секунд. ИИ использует эти секунды: пока паста ещё жидкая, он снижает мощность мотора.",
+th4_h:"Виброфлюидизация",th4_p:"Вибрация разрушает внутреннюю структуру пасты и снижает эффективную вязкость, и паста течёт под своим весом. Крахмал ведёт себя наоборот: густеет при сильной вибрации, поэтому ему подходит средняя.",
+th5_h:"Расчёт энергии",th5_p:"Энергия мотора равна мощности, умноженной на время. Сравниваем два режима за одинаковые 60 секунд и получаем процент экономии.",
+g_newt:"Ньютоновская",g_pseudo:"Псевдопластик",g_dil:"Дилатантная",g_bing:"Бингам (паста)",g_cap:"Связь напряжения сдвига τ и скорости сдвига γ̇. Пластик Бингама течёт только после предела τ₀.",
+apps_title:"Где это применить",app_scale:"Шприц на 100 мл и трубопровод работают по одному принципу: датчик → ИИ → привод.",
+app1_h:"Тяжёлая нефть Мангистау",app1_p:"Снижение нагрузки на насосы и экономия энергии при перекачке парафинистой вязкой нефти по трубам.",
+app2_h:"Перекачка бетона",app2_p:"Умные системы безопасности, которые перекачивают бетонную смесь без риска её застывания в трубе.",
+app3_h:"Пищевая промышленность",app3_p:"Дозирование паст и кремов без нагрева: качество продукта сохраняется.",
+build_title:"Соберите стенд сами",build_lead:"Все детали доступны, на сборку хватит одного-двух дней.",
+parts_title:"Детали",wiring_title:"Схема подключения",w_from:"Деталь",w_to:"Пин Arduino",w_motor:"Вибромотор",steps_title:"Порядок сборки",
+parts:[["Arduino Uno","«мозг» управления"],["HC-SR04","бесконтактно измеряет уровень"],["Модуль MOSFET IRF520","регулирует ток мотора"],["Вибромотор-«таблетка»","источник вибрации"],["Шприц 100 мл без поршня","резервуар"],["Прозрачная акриловая платформа","передаёт вибрацию жидкости"],["4 поролоновые губки","амортизатор"],["Деревянное основание, металлический штатив","держит датчик неподвижно"],["Breadboard 400, провода Dupont","соединение без пайки"],["Весы","масса вытекшего"]],
+steps:["Установите на основание штатив и губки, а сверху акриловую платформу.","Закрепите шприц вертикально на платформе, датчик — над шприцем на неподвижном штативе.","Соедините провода по схеме из таблицы.","Загрузите скетч ниже через Arduino IDE.","В «Живом режиме» на этой странице нажмите «Подключить Arduino»."],
+code_title:"Скетч Arduino (версия для работы с сайтом)",code_note:"К скетчу из проекта добавлено две вещи: приём команд вида P180 с компьютера и отправка данных каждые 0,2 с.",btn_copycode:"Копировать код",
+about_title:"О проекте",about_topic:"Вибрационная флюидизация упруго-вязко-пластичных жидкостей: физические закономерности энергоэффективного управления текучестью и инженерные применения.",
+ab_authors:"Авторы",ab_authors_v:"Азаматұлы Естияр, Жалғас Мейрамбек, 10 класс",ab_sup:"Руководитель",ab_sup_v:"Демегенов Жәнібек",ab_school:"Школа",ab_school_v:"Лицей-интернат «Білім-Инновация», Актау",ab_dir:"Направление",ab_dir_v:"Физика · Инженерные науки · 2026",
+footer:"ViscoFlow AI · научный проект, Актау 2026",
+design_btn:"Дизайн",bg_title:"Фон",bg_aurora:"Аврора",bg_lab:"Лаборатория",bg_oil:"Нефть",bg_light:"Светлый",glass_label:"Жидкое стекло",
+hint3d:"Тяните, чтобы повернуть; нажмите на деталь",
+nav_lab:"Данные",nav_scale:"Масштаб",btn_present:"Презентация",
+brain_title:"Мозг ИИ: прогноз на 1,5 секунды вперёд",brain_sub:"Каждые 0,25 с ИИ прогоняет модель для каждого значения PWM и выбирает самое экономное, при котором поток не падает ниже 95%. Зелёная линия — порог 95%.",brain_pick:"Выбрано",brain_jam:"Затор: PWM 255",
+explode_btn:"Разобрать",assemble_btn:"Собрать",
+p3:{base:["Деревянное основание","Прочная опора всего стенда, даёт устойчивость."],foam:["Поролоновые губки","Амортизатор: гасят внешнюю вибрацию и сохраняют точность измерений."],platform:["Акриловая платформа","Прозрачная рабочая площадка, передаёт вибрацию жидкости."],motor:["Вибромотор","Эксцентрик вращается и создаёт вибрацию. Мощность PWM 0–255."],arduino:["Arduino Uno","«Мозг» стенда: читает датчик и передаёт данные на компьютер."],mosfet:["MOSFET IRF520","Электронный ключ: регулирует ток мотора по сигналу Arduino."],cup:["Стакан","Собирает вытекшую пасту, её массу измеряем на весах."],syringe:["Шприц 100 мл","Резервуар без поршня: паста течёт только за счёт веса и вибрации."],paste:["Томатная паста","Пластик Бингама: в покое застывает, от вибрации разжижается."],stand:["Металлический штатив","Держит датчик неподвижно, отдельно от вибрации."],sensor:["Датчик HC-SR04","Ультразвуком бесконтактно измеряет уровень пасты с точностью до мм."]},
+lab_title:"Лаборатория данных",lab_lead:"Загрузите CSV, записанный со стенда: сайт сравнит реальную кривую с физической моделью и обучит Random Forest прямо в браузере.",lab_upload:"Загрузить CSV",lab_demo:"Пример данных",
+lab_fmt:"Формат: время, PWM, расстояние (мм). Подходит и CSV из «Живого режима», и CSV из Python-скрипта. Данные делятся 80% обучение / 20% проверка, 40 деревьев.",
+lab_example_note:"Сейчас показан пример данных (из симуляции, это не реальное измерение). Загрузите CSV со стенда, и вместо него появятся ваши данные.",lab_real_note:"Ваши реальные данные: {n} строк.",lab_err:"Не удалось прочитать файл: нужно минимум 10 строк со столбцами время, PWM, расстояние.",
+lab_rows:"Строк",lab_r2:"R² (тест 20%)",lab_mae:"Средняя ошибка, мм",lab_energy:"Энергия, Дж",lab_k:"Калибровка, мм/мл",
+lab_chart:"Расстояние до датчика, мм: измерение, физическая модель и Random Forest",lg_real:"Измерение",lg_model:"Физическая модель",lg_rf:"Random Forest",lab_scatter:"Прогноз против факта (тестовая выборка)",lab_imp:"Важность признаков",f_time:"Время",f_pwm:"PWM мотора",
+sc_title:"От шприца к трубопроводу",sc_lead:"Перенесите принцип стенда на реальные насосы и посчитайте годовую экономию.",sc_power:"Мощность привода",sc_hours:"Время работы, ч/сутки",sc_save:"Процент экономии",sc_tariff:"Тариф, ₸/кВт·ч",
+sc_kwh:"Сэкономлено энергии, кВт·ч/год",sc_money:"Экономия, ₸/год",sc_co2:"Меньше CO₂, т/год",
+sc_note:"Расчёт оценочный: тариф и процент экономии можно менять. Лабораторные 55% в промышленности могут быть ниже, поэтому по умолчанию стоит 30%. Коэффициент CO₂ около 0,6 кг/кВт·ч.",
+pr_stand:"Наш стенд",pr_pump:"Малый насос",pr_concrete:"Бетононасос",pr_oil:"Нефтеперекачивающая станция",
+qr_title:"Открыть на телефоне",qr_text:"Отсканируйте QR-код. Чтобы ссылка открывалась у других, поделитесь ею через меню Share.",btn_copylink:"Копировать ссылку",
+tour_prev:"Назад",tour_next:"Далее",tour_done:"Завершить",
+tour:[["Проблема","Густая нефть, бетон и пасты застывают в покое и забивают трубы. На их перекачку заводы тратят много электроэнергии."],["Наш стенд","Arduino, датчик HC-SR04, MOSFET и вибромотор. Модель разобрана на детали: нажмите на любую, чтобы узнать, что она делает."],["Классика против ИИ","Два шприца работают рядом: классика всегда держит мотор на 255, ИИ сам подбирает мощность по потоку."],["Как думает ИИ","Каждые 0,25 с модель предсказывает поток для каждого PWM. ИИ выбирает самый экономный вариант, сохраняющий поток, а затор распознаёт как аномалию."],["Результат","За одинаковые 60 секунд ИИ тратит примерно на 55% меньше энергии без потери производительности. В эксперименте: 151,2 Дж → 68,4 Дж."],["Данные и Random Forest","Когда загружен CSV со стенда, Random Forest обучается прямо здесь: R², график прогноза и важность признаков."],["Масштаб","Если перенести этот принцип на нефтеперекачивающую станцию, годовая экономия может достигать миллионов тенге."],["Спасибо!","Отсканируйте QR-код, чтобы открыть сайт на телефоне. Готовы ответить на вопросы."]],fb3d:"3D-модель не загрузилась: проверьте подключение к интернету."
+},
+en:{
+nav_sim:"Simulator",nav_live:"Live mode",nav_theory:"Theory",nav_apps:"Applications",nav_build:"Build the rig",nav_about:"Authors",
+hero_eyebrow:"Research project · Physics · Engineering",
+hero_title:"Thick fluids flow under vibration — <em>with 55% less energy</em>",
+hero_lead:"Non-Newtonian fluids such as tomato paste and starch thin out under vibration. A classic system keeps the motor at full power all the time; our AI watches the flow and spends power only when it is needed. Both modes run side by side below.",
+kpi1:"electricity saved (experiment)",kpi2:"energy in 60 seconds: classic → AI",kpi3:"AI model in Python",
+sim_title:"Classic vs AI: side-by-side test",
+sim_note:"This is a model: the process is computed from the project's experimental figures (P max = 2.52 W, PWM 0–255). Use Live mode for real measurements.",
+ctl_fluid:"Fluid",fluid_tomato:"Tomato paste (Bingham plastic)",fluid_starch:"Starch suspension (dilatant)",
+ctl_tau:"Relaxation time τ",ctl_speed:"Speed",
+btn_start:"Start",btn_pause:"Pause",btn_reset:"Restart",btn_jam:"Cause a jam",
+lane_classic:"Classic mode",lane_classic_sub:"Motor always at PWM = 255",lane_ai:"AI mode",lane_ai_sub:"Adjusts power to the flow",
+st_flow:"Flow, ml/s",st_energy:"Energy, J",st_vol:"Dispensed, ml",
+savings_l:"Energy saved",prod_l:"Throughput: AI / classic",
+chart_pwm:"Motor power, PWM",chart_energy:"Energy used, J",legend_classic:"Classic",legend_ai:"AI",
+log_title:"AI decisions",
+log_start:"{t} s: paste is solid, no flow → PWM 255 to fluidize",
+log_jam:"{t} s: anomaly: the model expects flow but the level is not moving. Jam → PWM 255",
+log_clear:"{t} s: jam cleared, flow restored",
+log_eco:"{t} s: flow is stable → PWM {p}, saving energy thanks to relaxation",
+log_thick:"{t} s: strong vibration thickens starch → PWM {p}, moderate vibration works better",
+log_user:"{t} s: a jam formed in the syringe",
+res_title:"Result after 60 seconds",
+res_exp:"For comparison, the real rig experiment: E classic = 151.2 J, E AI = 68.4 J, η = 55%.",
+st_flowing:"Flowing",st_jam:"Jammed",st_solid:"Solid",
+pipe_title:"How the system works",pipe_sensor:"measures the level",pipe_ard:"sends the data",pipe_ai:"AI model<b>predicts the flow</b>",pipe_mos:"controls current",pipe_motor:"Vibration motor<b>shakes the platform</b>",pipe_paste:"Paste<b>thins and flows</b>",
+live_title:"Live mode: connect the real rig",
+live_lead:"Plug the Arduino in over USB. The site reads the HC-SR04 sensor, draws charts, records data to CSV and drives the motor. No rig at hand? Press Demo data.",
+live_status:"Status",st_off:"Not connected",st_on:"Arduino connected",st_demo:"Demo",
+btn_connect:"Connect Arduino",btn_disconnect:"Disconnect",btn_demo:"Demo data",
+mode_label:"Motor control",mode_monitor:"Monitor only",mode_classic:"Classic 255",mode_ai:"AI",
+btn_rec:"Start recording",btn_recstop:"Stop recording",btn_csv:"Download CSV",btn_copy:"Copy CSV",
+live_dist:"Distance, mm",live_flow:"Flow, mm/s",live_energy:"Energy, J",live_rows:"Rows recorded",
+live_chart_dist:"Distance from sensor to paste, mm (last 60 s)",live_chart_pwm:"Motor power, PWM (last 60 s)",
+set_pmax:"Motor max power, W",set_thr:"Jam threshold, mm/s",
+live_need_sketch:"To drive the motor from the site, upload the updated sketch below to the Arduino.",
+live_req:"Requires Chrome or Edge. A page opened from a share link may not get USB access: open ViscoFlow-AI-offline.html in Chrome instead.",
+err_noserial:"This browser has no Web Serial. Open the offline file in Chrome or Edge, or use demo data.",
+err_blocked:"USB access is blocked on this page. Open ViscoFlow-AI-offline.html in Chrome, or use demo data.",
+err_generic:"Could not connect: {m}",
+copied:"Copied",csv_empty:"Record some data first",csv_saved:"CSV file saved",copy_fail:"Copy failed — select the text manually",
+th_title:"Theory in brief",
+th1_h:"Newtonian and non-Newtonian",th1_p:"Water, alcohol and petrol have constant viscosity: they are Newtonian. Blood, crude oil, pastes and paints change viscosity under load: they are non-Newtonian, with a complex inner structure.",
+th2_h:"Thixotropy",th2_p:"Thick at rest, thin when shaken. Vibration breaks structural bonds, and once it stops they slowly rebuild.",
+th3_h:"Relaxation time τ",th3_p:"The time for stress to fall by a factor of e (≈2.7). About 10⁻¹¹ s for water, several seconds for paste. The AI uses those seconds: while the paste is still fluid, it lowers motor power.",
+th4_h:"Vibro-fluidization",th4_p:"Vibration breaks the paste's inner structure and lowers its effective viscosity, so it flows under its own weight. Starch does the opposite: it thickens under strong vibration, so moderate vibration suits it.",
+th5_h:"Energy calculation",th5_p:"Motor energy is power times time. Comparing both modes over the same 60 seconds gives the percentage saved.",
+g_newt:"Newtonian",g_pseudo:"Pseudoplastic",g_dil:"Dilatant",g_bing:"Bingham (paste)",g_cap:"Shear stress τ versus shear rate γ̇. A Bingham plastic flows only above the yield stress τ₀.",
+apps_title:"Where it applies",app_scale:"A 100 ml syringe and a pipeline follow the same principle: sensor → AI → actuator.",
+app1_h:"Heavy oil of Mangystau",app1_p:"Lower pump load and energy use when moving waxy, viscous crude through pipelines.",
+app2_h:"Concrete pumping",app2_p:"Smart safety systems that pump concrete mix without the risk of it setting inside the pipe.",
+app3_h:"Food industry",app3_p:"Dosing pastes and creams without heating, so product quality is preserved.",
+build_title:"Build the rig yourself",build_lead:"Every part is easy to find; assembly takes a day or two.",
+parts_title:"Parts",wiring_title:"Wiring",w_from:"Part",w_to:"Arduino pin",w_motor:"Vibration motor",steps_title:"Assembly order",
+parts:[["Arduino Uno","the controller"],["HC-SR04","measures the level without contact"],["MOSFET IRF520 module","switches motor current"],["Coin vibration motor","vibration source"],["100 ml syringe, no plunger","reservoir"],["Clear acrylic platform","passes vibration to the fluid"],["4 foam sponges","damper"],["Wooden base, metal stand","holds the sensor still"],["400-point breadboard, Dupont wires","solderless wiring"],["Scale","mass dispensed"]],
+steps:["Mount the stand and sponges on the base, then the acrylic platform on top.","Fix the syringe upright on the platform and the sensor above it on the fixed stand.","Wire everything as in the table.","Upload the sketch below with the Arduino IDE.","Open Live mode on this page and press Connect Arduino."],
+code_title:"Arduino sketch (website-ready version)",code_note:"Two additions to the project sketch: it accepts commands like P180 from the computer and sends data every 0.2 s.",btn_copycode:"Copy code",
+about_title:"About the project",about_topic:"Vibration-induced fluidization of viscoelastic-plastic fluids: physical laws of energy-efficient flow control and engineering applications.",
+ab_authors:"Authors",ab_authors_v:"Azamatuly Estiyar, Zhalgas Meirambek, grade 10",ab_sup:"Supervisor",ab_sup_v:"Demegenov Zhanibek",ab_school:"School",ab_school_v:"Bilim-Innovation boarding lyceum, Aktau",ab_dir:"Field",ab_dir_v:"Physics · Engineering · 2026",
+footer:"ViscoFlow AI · research project, Aktau 2026",
+design_btn:"Design",bg_title:"Background",bg_aurora:"Aurora",bg_lab:"Lab",bg_oil:"Crude",bg_light:"Light",glass_label:"Liquid glass",
+hint3d:"Drag to rotate, click a part",
+nav_lab:"Data",nav_scale:"Scale",btn_present:"Present",
+brain_title:"AI brain: forecast 1.5 s ahead",brain_sub:"Every 0.25 s the AI runs the model for each PWM value and picks the cheapest one that keeps flow at or above 95%. The green line is the 95% threshold.",brain_pick:"Chosen",brain_jam:"Jam: PWM 255",
+explode_btn:"Explode",assemble_btn:"Assemble",
+p3:{base:["Wooden base","The solid foundation of the whole rig."],foam:["Foam sponges","Dampers: absorb outside vibration and keep measurements accurate."],platform:["Acrylic platform","Clear work surface that passes vibration to the fluid."],motor:["Vibration motor","A spinning eccentric makes the vibration. Power is PWM 0–255."],arduino:["Arduino Uno","The rig's brain: reads the sensor and sends data to the computer."],mosfet:["MOSFET IRF520","Electronic switch: controls motor current from the Arduino signal."],cup:["Cup","Collects the dispensed paste; its mass is weighed on a scale."],syringe:["100 ml syringe","Plunger-free reservoir: paste flows only by its weight and vibration."],paste:["Tomato paste","A Bingham plastic: solid at rest, fluid under vibration."],stand:["Metal stand","Holds the sensor still, isolated from vibration."],sensor:["HC-SR04 sensor","Measures the paste level by ultrasound, contact-free, to the millimetre."]},
+lab_title:"Data lab",lab_lead:"Upload a CSV recorded on the rig: the site compares the real curve with the physics model and trains a Random Forest right in the browser.",lab_upload:"Upload CSV",lab_demo:"Example data",
+lab_fmt:"Format: time, PWM, distance (mm). Both the Live-mode CSV and the Python script CSV work. Data is split 80% train / 20% test, 40 trees.",
+lab_example_note:"Example data is shown now (from the simulation, not a real measurement). Upload a CSV from the rig to see your own data instead.",lab_real_note:"Your real data: {n} rows.",lab_err:"Could not read the file: it needs at least 10 rows with time, PWM and distance columns.",
+lab_rows:"Rows",lab_r2:"R² (20% test)",lab_mae:"Mean error, mm",lab_energy:"Energy, J",lab_k:"Calibration, mm/ml",
+lab_chart:"Distance to sensor, mm: measurement, physics model and Random Forest",lg_real:"Measured",lg_model:"Physics model",lg_rf:"Random Forest",lab_scatter:"Predicted vs actual (test set)",lab_imp:"Feature importance",f_time:"Time",f_pwm:"Motor PWM",
+sc_title:"From syringe to pipeline",sc_lead:"Carry the rig's principle over to real pumps and estimate yearly savings.",sc_power:"Drive power",sc_hours:"Run time, h/day",sc_save:"Savings",sc_tariff:"Tariff, ₸/kWh",
+sc_kwh:"Energy saved, kWh/year",sc_money:"Savings, ₸/year",sc_co2:"Less CO₂, t/year",
+sc_note:"This is an estimate: tariff and savings can be changed. The lab's 55% may be lower in industry, so the default is 30%. CO₂ factor is about 0.6 kg/kWh.",
+pr_stand:"Our rig",pr_pump:"Small pump",pr_concrete:"Concrete pump",pr_oil:"Oil pumping station",
+qr_title:"Open on a phone",qr_text:"Scan the QR code. To let others open the link, share it from the Share menu.",btn_copylink:"Copy link",
+tour_prev:"Back",tour_next:"Next",tour_done:"Finish",
+tour:[["The problem","Heavy oil, concrete and pastes set at rest and clog pipes. Plants spend a lot of electricity pumping them."],["Our rig","Arduino, HC-SR04 sensor, MOSFET and a vibration motor. The model is exploded into parts: click any one to see what it does."],["Classic vs AI","Two syringes run side by side: classic keeps the motor at 255, the AI picks power to match the flow."],["How the AI thinks","Every 0.25 s the model predicts flow for each PWM. The AI picks the cheapest option that keeps the flow and flags a jam as an anomaly."],["Result","Over the same 60 seconds the AI uses about 55% less energy with no loss of throughput. Experiment: 151.2 J → 68.4 J."],["Data and Random Forest","When a CSV from the rig is loaded, the Random Forest trains right here: R², a prediction chart and feature importance."],["Scale","Applied to an oil pumping station, the same principle could save millions of tenge a year."],["Thank you!","Scan the QR code to open the site on your phone. We are happy to take questions."]],fb3d:"The 3D model did not load: check your internet connection."
+}};
+let LANG='kk';
+try{const s=localStorage.getItem('vf_lang');if(s&&I18N[s])LANG=s;}catch(e){}
+const t=(k,v)=>{let s=(I18N[LANG][k]??I18N.kk[k]??k);if(v)for(const x in v)s=s.replaceAll('{'+x+'}',v[x]);return s};
+function applyLang(){
+  document.documentElement.lang=LANG==='kk'?'kk':LANG;
+  document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));
+  document.querySelectorAll('[data-i18n-html]').forEach(el=>el.innerHTML=t(el.dataset.i18nHtml));
+  document.querySelectorAll('.langs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lang===LANG));
+  document.getElementById('parts').innerHTML=I18N[LANG].parts.map(p=>`<tr><td><b>${p[0]}</b></td><td class="muted">${p[1]}</td></tr>`).join('');
+  document.getElementById('steps').innerHTML=I18N[LANG].steps.map(s=>`<li>${s}</li>`).join('');
+  sim && updateRunBtn(); live && updateLiveUI(); renderLog();
+  if(typeof relangFeatures==='function')relangFeatures();
+}
+document.querySelectorAll('.langs button').forEach(b=>b.onclick=()=>{if(LANG===b.dataset.lang)return;LANG=b.dataset.lang;try{localStorage.setItem('vf_lang',LANG)}catch(e){};applyLang();
+  const m=document.querySelector('main');m.classList.remove('fade');void m.offsetWidth;m.classList.add('fade')});
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>el.hidden=true,2200)}
+
+/* ============ design: backdrop + liquid glass ============ */
+const DS={bg:'aurora',glass:'on'};
+try{const b=localStorage.getItem('vf_bg'),g=localStorage.getItem('vf_glass');if(['aurora','lab','oil','light'].includes(b))DS.bg=b;if(g==='on'||g==='off')DS.glass=g}catch(e){}
+function applyDesign(save){
+  const r=document.documentElement;r.dataset.bg=DS.bg;r.dataset.glass=DS.glass;
+  document.querySelectorAll('#bg-swatches button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.bg===DS.bg));
+  document.getElementById('glass-sw').setAttribute('aria-checked',DS.glass==='on');
+  try{readColors()}catch(e){}
+  if(save)try{localStorage.setItem('vf_bg',DS.bg);localStorage.setItem('vf_glass',DS.glass)}catch(e){}
+}
+applyDesign(false);
+(function(){
+  const btn=document.getElementById('design-btn'),pop=document.getElementById('design-pop');
+  const set=o=>{pop.hidden=!o;btn.setAttribute('aria-expanded',o)};
+  btn.onclick=e=>{e.stopPropagation();set(pop.hidden)};
+  pop.onclick=e=>e.stopPropagation();
+  document.addEventListener('click',()=>set(false));
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')set(false)});
+  document.querySelectorAll('#bg-swatches button').forEach(b=>b.onclick=e=>{
+    if(DS.bg===b.dataset.bg)return;
+    b.classList.remove('pick');void b.offsetWidth;b.classList.add('pick');
+    if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+      const w=document.createElement('div');w.className='bg-wave';
+      w.style.left=(e.clientX||innerWidth-60)+'px';w.style.top=(e.clientY||70)+'px';
+      w.style.background={aurora:'#4F80FF',lab:'#24345A',oil:'#FF7A1A',light:'#F4F7FC'}[b.dataset.bg];
+      document.body.appendChild(w);setTimeout(()=>w.remove(),1200);
+    }
+    DS.bg=b.dataset.bg;applyDesign(true);
+  });
+  document.getElementById('glass-sw').onclick=()=>{DS.glass=DS.glass==='on'?'off':'on';applyDesign(true)};
+})();
+
+/* ============ colors & canvas helpers ============ */
+let C={};
+function readColors(){const cs=getComputedStyle(document.documentElement);['bg','surface','surface2','ink','muted','line','paste','starch','ai','classic','warn','ok'].forEach(k=>C[k]=cs.getPropertyValue('--'+k).trim())}
+readColors();
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{readColors()})}catch(e){}
+new MutationObserver(readColors).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function fit(cv){const r=cv.getBoundingClientRect(),d=window.devicePixelRatio||1;const w=Math.max(1,Math.round(r.width*d)),h=Math.max(1,Math.round(r.height*d));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}const x=cv.getContext('2d');x.setTransform(d,0,0,d,0,0);return [x,r.width,r.height]}
+function drawChart(cv,series,o){
+  const [x,W,H]=fit(cv);x.clearRect(0,0,W,H);
+  const L=40,R=10,T=8,B=22,pw=W-L-R,ph=H-T-B;
+  const sx=v=>L+(v-o.x0)/(o.x1-o.x0)*pw, sy=v=>T+ph-(v/o.ymax)*ph;
+  x.font='11px "JetBrains Mono",monospace';x.fillStyle=C.muted;x.strokeStyle=C.line;x.lineWidth=1;
+  o.yt.forEach(v=>{const y=Math.round(sy(v))+.5;x.beginPath();x.moveTo(L,y);x.lineTo(W-R,y);x.stroke();x.textAlign='right';x.fillText(o.ylab?o.ylab(v):v,L-6,y+4)});
+  const step=(o.x1-o.x0)>30?10:5;
+  for(let v=Math.ceil(o.x0/step)*step;v<=o.x1+1e-6;v+=step){x.textAlign='center';x.fillText(Math.round(v)+(v===o.x1?' s':''),sx(v),H-6)}
+  series.forEach(s=>{if(!s.d.length)return;x.strokeStyle=s.c;x.lineWidth=2;x.lineJoin='round';x.beginPath();
+    s.d.forEach((p,i)=>{const X=sx(p[0]),Y=sy(Math.min(o.ymax,p[1]));i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke();
+    if(s.fill){x.lineTo(sx(s.d[s.d.length-1][0]),sy(0));x.lineTo(sx(s.d[0][0]),sy(0));x.closePath();x.globalAlpha=.10;x.fillStyle=s.c;x.fill();x.globalAlpha=1}
+    const p=s.d[s.d.length-1];x.fillStyle=s.c;x.beginPath();x.arc(sx(p[0]),sy(Math.min(o.ymax,p[1])),3.5,0,7);x.fill()});
+}
+
+/* ============ physics model ============ */
+const PMAX=2.52, DT=0.05, TEND=60, CANDS=[0,50,80,100,120,150,180,210,255];
+const FLUIDS={
+  tomato:{tau:3.5,kb:4,kt:0,thr:1,ly:0.7,lrest:1,lstart:1,qmax:1.2,col:'paste'},
+  starch:{tau:1.5,kb:4,kt:12,thr:0.55,ly:0.65,lrest:0.45,lstart:0.45,qmax:1.4,col:'starch'}
+};
+function lamStep(l,A,f,tau,dt){const th=f.kt*Math.max(0,A-f.thr)**2;const d=(f.lrest-l)/tau+th*(1-l)-f.kb*A*A*l;return Math.min(1,Math.max(0,l+d*dt))}
+function flowOf(l,f){return f.qmax*Math.min(1,Math.max(0,(f.ly-l)/0.35))}
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+class Lane{
+  constructor(ai){this.ai=ai}
+  reset(f){this.f=f;this.lam=f.lstart;this.lamHat=f.lstart;this.plug=f.lstart>=1?1:0;this.vol=100;this.out=0;this.E=0;this.pwm=ai0(this.ai);this.flow=0;this.hist=[];this.jam=false;this.low=0;this.next=0;this.drops=[];this.dacc=0;this.cup=0;this.prevPwm=-1;this.ecoLogged=false}
+  decide(tm,tau,rnd){
+    const f=this.f,qm=this.flow*(1+(rnd()-.5)*.08),qp=flowOf(this.lamHat,f);
+    if(!this.jam){
+      if(qp>0.6*f.qmax&&qm<0.25*f.qmax)this.low++;else this.low=0;
+      if(this.low>=2){this.jam=true;this.low=0;addLog('log_jam',{t:tm.toFixed(1)},'j')}
+    }else if(qm>0.7*f.qmax){this.jam=false;addLog('log_clear',{t:tm.toFixed(1)});this.lamHat=Math.min(this.lamHat,f.ly-0.35*qm/f.qmax)}
+    if(this.jam){this.pwm=255;this.cands=null;return}
+    if(qm<0.98*f.qmax&&qm>0.02*f.qmax&&!this.plug)this.lamHat=f.ly-0.35*qm/f.qmax;
+    let best=null,bestAvg=-1,bestC=255;this.cands=[];
+    for(const c of CANDS){let l=this.lamHat,mn=1e9,s=0;for(let k=0;k<30;k++){l=lamStep(l,c/255,f,tau,DT);const q=flowOf(l,f);mn=Math.min(mn,q);s+=q}
+      this.cands.push({c,mn:mn/f.qmax});
+      if(best===null){if(mn>=0.95*f.qmax)best=c;else if(s>bestAvg+1e-9){bestAvg=s;bestC=c}}}
+    const p=best===null?bestC:best;
+    if(tm<0.3&&p>=200)addLog('log_start',{t:tm.toFixed(1)});
+    if(!this.ecoLogged&&p<=120&&tm>0.5){this.ecoLogged=true;addLog(f.kt?'log_thick':'log_eco',{t:tm.toFixed(1),p:p})}
+    this.pwm=p;
+  }
+  step(tau){
+    const f=this.f,A=this.pwm/255;
+    this.lam=lamStep(this.lam,A,f,tau,DT);this.lamHat=lamStep(this.lamHat,A,f,tau,DT);
+    if(this.plug>0){this.plug=Math.max(0,this.plug-Math.max(0,A-0.7)*2.2*DT);this.flow=0}
+    else this.flow=flowOf(this.lam,f);
+    const q=Math.min(this.flow*DT,this.vol);this.vol-=q;this.out+=q;if(this.vol<=0)this.flow=0;
+    this.E+=PMAX*A*DT;this.dacc+=q*1.6;
+  }
+  state(){return this.plug>0?'jam':(this.flow>0.05?'flowing':'solid')}
+}
+function ai0(ai){return ai?255:255}
+
+const sim={t:0,running:true,speed:3,acc:0,fluid:'tomato',tau:3.5,jams:[12,31,47],ji:0,log:[],rnd:mulberry(7),
+  cl:new Lane(false),ai:new Lane(true)};
+function addLog(k,v,cls){sim.log.push({k,v,cls});renderLog()}
+function renderLog(){const ol=document.getElementById('log');if(!ol||!sim)return;ol.innerHTML=sim.log.slice().reverse().map(e=>`<li class="${e.cls||''}">${t(e.k,e.v)}</li>`).join('')}
+function simReset(){
+  const f=FLUIDS[sim.fluid];sim.t=0;sim.acc=0;sim.ji=0;sim.log=[];sim.rnd=mulberry(7);
+  sim.cl.reset(f);sim.ai.reset(f);document.getElementById('result').hidden=true;renderLog();record();
+}
+function record(){for(const L of [sim.cl,sim.ai])L.hist.push([sim.t,L.pwm,L.E])}
+function simStep(){
+  if(sim.ji<sim.jams.length&&sim.t>=sim.jams[sim.ji]){sim.ji++;injectJam(false)}
+  if(sim.t>=sim.ai.next){sim.ai.decide(sim.t,sim.tau,sim.rnd);sim.ai.next+=0.25}
+  sim.cl.pwm=255;
+  sim.cl.step(sim.tau);sim.ai.step(sim.tau);
+  sim.t=Math.round((sim.t+DT)*1000)/1000;
+  if(Math.abs(sim.t*4-Math.round(sim.t*4))<1e-6)record();
+  if(sim.t>=TEND){sim.running=false;updateRunBtn();showResult()}
+}
+function injectJam(user){for(const L of [sim.cl,sim.ai])if(L.vol>1)L.plug=1;if(user)addLog('log_user',{t:sim.t.toFixed(1)},'j')}
+function showResult(){
+  const ec=sim.cl.E,ea=sim.ai.E,eta=(1-ea/ec)*100;
+  document.getElementById('res-text').innerHTML=`E<sub>cl</sub> = ${ec.toFixed(1)} J &nbsp;·&nbsp; E<sub>AI</sub> = ${ea.toFixed(1)} J &nbsp;·&nbsp; η = (1 − ${ea.toFixed(1)}/${ec.toFixed(1)})·100% = <b>${eta.toFixed(1)}%</b> &nbsp;·&nbsp; V<sub>AI</sub>/V<sub>cl</sub> = ${(sim.ai.out/sim.cl.out*100).toFixed(0)}%`;
+  document.getElementById('result').hidden=false;
+}
+function updateRunBtn(){const b=document.getElementById('run');b.textContent=t(sim.running?'btn_pause':'btn_start')}
+
+/* drawing a lane */
+function drawLane(cv,L,time){
+  const [x,W,H]=fit(cv);x.clearRect(0,0,W,H);
+  const A=L.pwm/255,jit=RM?0:Math.sin(time*0.09)*A*2.4+Math.sin(time*0.23)*A*1.2;
+  const cx=W/2,bw=Math.min(78,W*0.3),top=44,bot=200,nb=bot+22,platY=284;
+  // fixed stand + sensor
+  x.fillStyle=C.muted;x.fillRect(cx+bw/2+26,10,4,platY-10);x.fillRect(cx-36,10,cx+bw/2+30-(cx-36),4);
+  x.fillStyle=C.ink;x.fillRect(cx-30,14,60,14);x.fillStyle=C.surface2;
+  [cx-14,cx+14].forEach(px=>{x.beginPath();x.arc(px,21,5,0,7);x.fill()});
+  x.font='10px "JetBrains Mono",monospace';x.fillStyle=C.muted;x.textAlign='right';x.fillText('HC-SR04',cx-36,25);
+  // moving group
+  x.save();x.translate(jit,0);
+  const lh=(bot-top)*L.vol/100,sy=bot-lh;
+  // paste
+  const pc=C[L.f.col];x.fillStyle=pc;
+  x.beginPath();x.moveTo(cx-bw/2+3,bot);
+  const wav=(1-Math.min(1,L.lam))*A*3+(RM?0:0);
+  for(let i=0;i<=20;i++){const px=cx-bw/2+3+(bw-6)*i/20;x.lineTo(px,sy+Math.sin(i*0.9+time*0.02)*wav)}
+  x.lineTo(cx+bw/2-3,bot);x.lineTo(cx+4,nb);x.lineTo(cx-4,nb);x.closePath();x.fill();
+  // barrel
+  x.strokeStyle=C.ink;x.lineWidth=2;x.beginPath();x.moveTo(cx-bw/2,top-6);x.lineTo(cx-bw/2,bot);x.lineTo(cx-5,nb);x.lineTo(cx-5,nb+10);
+  x.moveTo(cx+bw/2,top-6);x.lineTo(cx+bw/2,bot);x.lineTo(cx+5,nb);x.lineTo(cx+5,nb+10);x.stroke();
+  x.lineWidth=1;x.strokeStyle=C.muted;x.fillStyle=C.muted;x.textAlign='right';
+  for(let m=0;m<=100;m+=20){const y=bot-(bot-top)*m/100;x.beginPath();x.moveTo(cx-bw/2,y);x.lineTo(cx-bw/2+8,y);x.stroke();x.fillText(m,cx-bw/2-4,y+3)}
+  // jam marker
+  if(L.plug>0){x.strokeStyle=C.warn;x.lineWidth=3;x.beginPath();x.moveTo(cx-9,nb+2);x.lineTo(cx+9,nb+14);x.moveTo(cx+9,nb+2);x.lineTo(cx-9,nb+14);x.stroke()}
+  // cup
+  const cupT=236,cupB=platY-2,cw=60;
+  const fillH=(cupB-cupT-4)*Math.min(1,L.out/100);
+  x.fillStyle=pc;x.fillRect(cx-cw/2+2,cupB-fillH,cw-4,fillH);
+  x.strokeStyle=C.ink;x.lineWidth=2;x.beginPath();x.moveTo(cx-cw/2,cupT);x.lineTo(cx-cw/2,cupB);x.lineTo(cx+cw/2,cupB);x.lineTo(cx+cw/2,cupT);x.stroke();
+  // drops
+  if(!RM){while(L.dacc>=1){L.dacc-=1;L.drops.push({y:nb+10,v:0})}
+    x.fillStyle=pc;L.drops=L.drops.filter(d=>{d.v+=0.35;d.y+=d.v;if(d.y>cupB-fillH-2)return false;x.beginPath();x.ellipse(cx,d.y,3,4.5,0,0,7);x.fill();return true})}
+  else L.dacc=0;
+  // platform, motor
+  x.fillStyle=C.line;x.fillRect(cx-W*0.36,platY,W*0.72,8);
+  x.fillStyle=A>0?(L.ai?C.ai:C.classic):C.muted;x.beginPath();x.arc(cx+W*0.22,platY+16,8,0,7);x.fill();
+  x.restore();
+  // sensor beam
+  x.setLineDash([3,4]);x.strokeStyle=C.ai;x.lineWidth=1;x.beginPath();x.moveTo(cx,28);x.lineTo(cx,sy-2);x.stroke();x.setLineDash([]);
+  x.fillStyle=C.muted;x.textAlign='left';x.font='10px "JetBrains Mono",monospace';x.fillText((20+(100-L.vol)).toFixed(0)+' mm',cx+6,top+12);
+  // foam + base
+  x.fillStyle=C.surface2;x.strokeStyle=C.line;
+  for(let i=0;i<4;i++){const fx=cx-W*0.33+i*(W*0.66-22)/3;x.fillRect(fx,platY+28,22,14);x.strokeRect(fx,platY+28,22,14)}
+  x.fillStyle=C.muted;x.fillRect(cx-W*0.42,platY+42,W*0.84,4);
+}
+function updLaneStats(p,L){
+  const g=id=>document.getElementById(p+id);
+  g('-pwm').textContent=L.pwm;g('-bar').style.width=(L.pwm/255*100)+'%';
+  g('-flow').textContent=L.flow.toFixed(2);g('-vol').textContent=L.out.toFixed(1);g('-e').textContent=L.E.toFixed(1);
+  const s=L.state(),pill=g('-state');pill.className='pill '+s;pill.textContent=t('st_'+s);
+}
+
+/* ============ live mode ============ */
+const live={src:null,port:null,reader:null,writer:null,pipe:null,demo:null,mode:'monitor',rec:false,rows:[],buf:[],E:0,last:null,flow:0,pwm:null,dist:null,ctl:{jam:false,lowSince:null,hold:0},sent:null,err:''};
+function updateLiveUI(){
+  const st=document.getElementById('l-status');
+  const k=live.src==='serial'?'st_on':live.src==='demo'?'st_demo':'st_off';st.textContent=t(k);st.className='pill '+(live.src?'flow':'solid');
+  document.getElementById('l-connect').hidden=!!live.src;document.getElementById('l-demo').hidden=!!live.src;document.getElementById('l-stop').hidden=!live.src;
+  document.getElementById('l-rec').textContent=t(live.rec?'btn_recstop':'btn_rec');
+  const al=document.getElementById('l-alert');al.hidden=!live.err;al.textContent=live.err?t(live.err.k,live.err.v):'';
+  document.querySelectorAll('#l-mode button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===live.mode));
+}
+async function connectSerial(){
+  live.err='';
+  if(!('serial' in navigator)){live.err={k:'err_noserial'};updateLiveUI();return}
+  try{
+    const port=await navigator.serial.requestPort();await port.open({baudRate:9600});
+    live.port=port;live.src='serial';resetLiveData();
+    const dec=new TextDecoderStream();live.pipe=port.readable.pipeTo(dec.writable).catch(()=>{});
+    live.reader=dec.readable.getReader();live.writer=port.writable.getWriter();updateLiveUI();
+    let pend='';
+    while(true){const {value,done}=await live.reader.read();if(done)break;pend+=value;let i;
+      while((i=pend.indexOf('\n'))>=0){const line=pend.slice(0,i).trim();pend=pend.slice(i+1);const p=line.split(',').map(Number);
+        if(p.length>=3&&p.every(n=>isFinite(n)))onSample(p[0],p[1],p[2])}}
+  }catch(e){
+    const blocked=e&&(e.name==='SecurityError'||/permission|policy|allowed/i.test(e.message||''));
+    if(e&&e.name==='NotFoundError'){}else live.err=blocked?{k:'err_blocked'}:{k:'err_generic',v:{m:(e&&e.message)||e}};
+    await disconnect(true);
+  }
+}
+async function disconnect(keepErr){
+  if(live.demo){clearInterval(live.demo.h);live.demo=null}
+  try{if(live.reader){await live.reader.cancel();live.reader.releaseLock()}}catch(e){}
+  try{if(live.writer){live.writer.releaseLock()}}catch(e){}
+  try{if(live.pipe)await live.pipe}catch(e){}
+  try{if(live.port)await live.port.close()}catch(e){}
+  live.port=live.reader=live.writer=live.pipe=null;live.src=null;if(!keepErr)live.err='';updateLiveUI();
+}
+function resetLiveData(){live.buf=[];live.E=0;live.last=null;live.flow=0;live.ctl={jam:false,lowSince:null,hold:0};live.sent=null;live.t0=null}
+function sendPwm(v){
+  if(live.sent===v)return;live.sent=v;
+  if(live.src==='demo'&&live.demo){live.demo.pwm=v;return}
+  if(live.writer){live.writer.write(new TextEncoder().encode('P'+v+'\n')).catch(()=>{})}
+}
+function onSample(ts,pwm,dist){
+  if(live.t0==null)live.t0=ts;const tt=ts-live.t0;
+  if(live.last){const dt=tt-live.last.t;if(dt>0&&dt<5){const q=(dist-live.last.d)/dt;live.flow=live.flow*0.6+q*0.4;
+      live.E+=(parseFloat(document.getElementById('l-pmax').value)||PMAX)*(pwm/255)*dt}}
+  live.last={t:tt,d:dist};live.pwm=pwm;live.dist=dist;
+  live.buf.push([tt,dist,pwm]);while(live.buf.length&&live.buf[0][0]<tt-60)live.buf.shift();
+  if(live.rec)live.rows.push([ts.toFixed(2),pwm,dist,live.flow.toFixed(3),live.E.toFixed(2)]);
+  if(live.mode==='classic')sendPwm(255);
+  else if(live.mode==='ai'){
+    const thr=parseFloat(document.getElementById('l-thr').value)||0.3,c=live.ctl;
+    if(live.flow<thr){if(c.lowSince==null)c.lowSince=tt;if(tt-c.lowSince>1)c.jam=true}else{c.lowSince=null;if(c.jam&&live.flow>thr*2){c.jam=false;c.hold=tt+0.6}}
+    sendPwm(c.jam||tt<c.hold?255:110);
+  }
+  liveDraw();
+}
+function liveDraw(){
+  document.getElementById('l-dist').textContent=live.dist==null?'—':Math.round(live.dist);
+  document.getElementById('l-flow').textContent=live.last?live.flow.toFixed(2):'—';
+  document.getElementById('l-pwm').textContent=live.pwm==null?'—':live.pwm;
+  document.getElementById('l-e').textContent=live.E.toFixed(1);
+  document.getElementById('l-rows').textContent=live.rows.length;
+  const last=live.buf.length?live.buf[live.buf.length-1][0]:0,x1=Math.max(60,last),x0=x1-60;
+  const dmax=Math.max(140,...live.buf.map(b=>b[1]));const ym=Math.ceil(dmax/40)*40;
+  drawChart(document.getElementById('lc-dist'),[{d:live.buf.map(b=>[b[0],b[1]]),c:C.paste,fill:true}],{x0,x1,ymax:ym,yt:[0,ym/4,ym/2,ym*3/4,ym]});
+  drawChart(document.getElementById('lc-pwm'),[{d:live.buf.map(b=>[b[0],b[2]]),c:C.ai,fill:true}],{x0,x1,ymax:255,yt:[0,85,170,255]});
+}
+function startDemo(){
+  live.err='';live.src='demo';resetLiveData();
+  const f=FLUIDS.tomato,L=new Lane(false);L.reset(f);const r=mulberry(11);
+  live.demo={pwm:150,t:0,L,h:null,nextJam:14};
+  live.demo.h=setInterval(()=>{const d=live.demo;if(!d)return;
+    for(let i=0;i<4;i++){L.pwm=d.pwm;L.step(3.5);d.t+=DT}
+    if(d.t>d.nextJam){L.plug=1;d.nextJam=d.t+12+r()*10}
+    if(L.vol<3){L.vol=100;L.out=0}
+    onSample(d.t,d.pwm,Math.round(20+(100-L.vol)+(r()-.5)*1.2))},200);
+  updateLiveUI();
+}
+function csvText(){return 'time_s,pwm,distance_mm,flow_mm_s,energy_J\n'+live.rows.map(r=>r.join(',')).join('\n')}
+async function copyText(s){try{await navigator.clipboard.writeText(s);toast(t('copied'))}catch(e){toast(t('copy_fail'))}}
+
+/* ============ wiring UI ============ */
+document.getElementById('run').onclick=()=>{if(sim.t>=TEND)simReset();sim.running=!sim.running;updateRunBtn()};
+document.getElementById('reset').onclick=()=>{simReset();sim.running=true;updateRunBtn()};
+const replay=(el,c)=>{el.classList.remove(c);void el.offsetWidth;el.classList.add(c)};
+document.getElementById('jam').onclick=e=>{injectJam(true);replay(e.currentTarget,'shake');replay(document.querySelector('.lanes'),'flash')};
+document.getElementById('fluid').onchange=e=>{sim.fluid=e.target.value;sim.tau=FLUIDS[sim.fluid].tau;document.getElementById('tau').value=sim.tau;document.getElementById('tauv').textContent=sim.tau+' s';simReset();sim.running=true;updateRunBtn()};
+document.getElementById('tau').oninput=e=>{sim.tau=parseFloat(e.target.value);document.getElementById('tauv').textContent=sim.tau+' s'};
+document.querySelectorAll('#speed button').forEach(b=>b.onclick=()=>{sim.speed=+b.dataset.v;document.querySelectorAll('#speed button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+document.getElementById('l-connect').onclick=connectSerial;
+document.getElementById('l-demo').onclick=startDemo;
+document.getElementById('l-stop').onclick=()=>disconnect(false);
+document.querySelectorAll('#l-mode button').forEach(b=>b.onclick=()=>{live.mode=b.dataset.v;live.sent=null;live.ctl={jam:false,lowSince:null,hold:0};updateLiveUI()});
+document.getElementById('l-rec').onclick=()=>{live.rec=!live.rec;if(live.rec)live.rows=[];updateLiveUI();liveDraw()};
+document.getElementById('l-copy').onclick=()=>{if(!live.rows.length){toast(t('csv_empty'));return}copyText(csvText())};
+document.getElementById('l-csv').onclick=()=>{if(!live.rows.length){toast(t('csv_empty'));return}
+  let framed=true;try{framed=window.self!==window.top}catch(e){}
+  if(framed){copyText(csvText());return}
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csvText()],{type:'text/csv'}));a.download='viscoflow_'+new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')+'.csv';document.body.appendChild(a);a.click();a.remove();toast(t('csv_saved'))}catch(e){copyText(csvText())}};
+
+const SKETCH=`// ViscoFlow AI — Arduino Uno скетчі (сайтпен жұмыс істейтін нұсқа)
+// Деректер форматы: Уақыт_с,PWM,Қашықтық_мм  (әр 200 мс)
+// Бұйрық: "P0".."P255" + жаңа жол  -> мотор қуатын өзгертеді
+
+const int trigPin = 9;    // HC-SR04 Trig
+const int echoPin = 10;   // HC-SR04 Echo
+const int mosfetPin = 3;  // MOSFET IRF520 SIG (ШИМ пині)
+
+int motorSpeed = 150;     // Бастапқы ШИМ мәні (0..255)
+unsigned long lastSend = 0;
+String cmd = "";
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(mosfetPin, OUTPUT);
+  analogWrite(mosfetPin, motorSpeed);
+}
+
+long readDistanceMm() {
+  digitalWrite(trigPin, LOW);  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH); delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  long duration = pulseIn(echoPin, HIGH, 30000); // 30 мс күту шегі
+  return duration * 0.17;      // мкс -> мм (0.034 см/мкс / 2 * 10)
+}
+
+void readCommands() {
+  while (Serial.available()) {
+    char c = Serial.read();
+    if (c == '\\n') {
+      if (cmd.startsWith("P")) {
+        motorSpeed = constrain(cmd.substring(1).toInt(), 0, 255);
+        analogWrite(mosfetPin, motorSpeed);   // ЖИ бұйрығы бойынша жаңа қуат
+      }
+      cmd = "";
+    } else if (c != '\\r') {
+      cmd += c;
+    }
+  }
+}
+
+void loop() {
+  readCommands();
+  if (millis() - lastSend >= 200) {
+    lastSend = millis();
+    long distance = readDistanceMm();
+    Serial.print(millis() / 1000.0);
+    Serial.print(",");
+    Serial.print(motorSpeed);
+    Serial.print(",");
+    Serial.println(distance);
+  }
+}
+`;
+document.getElementById('sketch').textContent=SKETCH;
+document.getElementById('copycode').onclick=()=>copyText(SKETCH);
+
+/* ============ 3D twin of the rig ============ */
+const S3={lane:'ai',update:null,ex:0,exT:0,sel:null};
+function init3D(){
+  const fb=()=>{document.getElementById('s3-fb').hidden=false;document.getElementById('s3-explode').hidden=true};
+  if(typeof THREE==='undefined'){fb();return}
+  const cv=document.getElementById('cv3d');let R;
+  try{R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true})}catch(e){fb();return}
+  R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+  const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(34,1,0.1,100);
+  scene.add(new THREE.HemisphereLight(0xffffff,0x3a4660,0.85));
+  const key=new THREE.DirectionalLight(0xffffff,0.85);key.position.set(3.5,7,4.5);key.castShadow=true;key.shadow.mapSize.set(1024,1024);
+  Object.assign(key.shadow.camera,{left:-4,right:4,top:4,bottom:-4,near:1,far:20});scene.add(key);
+  const rim=new THREE.DirectionalLight(0x8fa8ff,0.45);rim.position.set(-5,3,-4);scene.add(rim);
+  const M=(c,o)=>new THREE.MeshStandardMaterial(Object.assign({color:c,roughness:.6,metalness:0},o||{}));
+  const glass=o=>new THREE.MeshPhysicalMaterial(Object.assign({color:0xffffff,transparent:true,opacity:.25,roughness:.05,metalness:0,side:THREE.DoubleSide,depthWrite:false},o||{}));
+  const metal=M(0xb4bcc6,{metalness:.85,roughness:.28});
+  const mesh=(g,m,p,shared)=>{const x=new THREE.Mesh(g,shared?m:m.clone());x.castShadow=x.receiveShadow=true;if(p)x.position.set(p[0],p[1],p[2]);return x};
+  const root=new THREE.Group();scene.add(root);
+  const groups={};
+  const P=(name,parent,off)=>{const g=new THREE.Group();g.userData={part:name,off:new THREE.Vector3(off[0],off[1],off[2])};parent.add(g);groups[name]=g;return g};
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(14,14),new THREE.ShadowMaterial({opacity:.16}));ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;root.add(ground);
+  const grid=new THREE.GridHelper(12,24,0x4f80ff,0x1e2a42);grid.material.transparent=true;grid.material.opacity=.55;grid.position.y=0.002;root.add(grid);
+  const disc=new THREE.Mesh(new THREE.CircleGeometry(2.6,64),new THREE.MeshBasicMaterial({color:0x4f80ff,transparent:true,opacity:.07,depthWrite:false}));disc.rotation.x=-Math.PI/2;disc.position.y=0.004;root.add(disc);
+  const glowL=new THREE.PointLight(0xff5a36,0.9,4,2);glowL.position.set(-0.25,1.9,0.9);scene.add(glowL);
+  const blueL=new THREE.PointLight(0x4f80ff,0.8,5,2);blueL.position.set(-0.25,3.0,0.6);scene.add(blueL);
+  // base, foam, electronics on the base
+  P('base',root,[0,-0.55,0]).add(mesh(new THREE.BoxGeometry(3.3,0.16,1.9),M(0x9b6b40,{roughness:.85}),[0,0.08,0]));
+  const gFoam=P('foam',root,[0,-0.2,0]);const foamM=M(0xf0c94a,{roughness:1});
+  [[-1.15,-.55],[1.15,-.55],[-1.15,.55],[1.15,.55]].forEach(([x,z])=>gFoam.add(mesh(new THREE.BoxGeometry(0.42,0.26,0.42),foamM,[x,0.29,z])));
+  const gArd=P('arduino',root,[-0.5,0.05,1.4]);
+  gArd.add(mesh(new THREE.BoxGeometry(0.62,0.04,0.44),M(0x0f7c8c,{roughness:.45}),[-0.45,0.185,0.2]));
+  gArd.add(mesh(new THREE.BoxGeometry(0.14,0.08,0.12),metal,[-0.72,0.23,0.08]));
+  gArd.add(mesh(new THREE.BoxGeometry(0.2,0.04,0.06),M(0x111111),[-0.4,0.225,0.38]));
+  const gMos=P('mosfet',root,[0.55,0.05,1.4]);
+  gMos.add(mesh(new THREE.BoxGeometry(0.3,0.03,0.2),M(0xb3242a,{roughness:.5}),[0.15,0.18,0.3]));
+  gMos.add(mesh(new THREE.BoxGeometry(0.1,0.12,0.03),M(0x222222),[0.15,0.25,0.25]));
+  // vibrating group
+  const vib=new THREE.Group();vib.position.y=0.42;root.add(vib);
+  P('platform',vib,[0,0.15,0]).add(mesh(new THREE.BoxGeometry(2.9,0.07,1.5),new THREE.MeshPhysicalMaterial({color:0xcfe6ff,transparent:true,opacity:.5,roughness:.08,clearcoat:1}),[0,0.035,0]));
+  const gMot=P('motor',vib,[0.5,-0.25,0.5]);
+  const motor=mesh(new THREE.CylinderGeometry(0.17,0.17,0.08,40),metal,[0.95,-0.045,0.35]);gMot.add(motor);
+  motor.add(mesh(new THREE.BoxGeometry(0.16,0.02,0.04),M(0x30343a),[0,-0.04,0]));
+  gMot.add(mesh(new THREE.BoxGeometry(0.5,0.02,0.02),M(0xd23a2a),[1.3,-0.05,0.38]));gMot.add(mesh(new THREE.BoxGeometry(0.5,0.02,0.02),M(0x222222),[1.3,-0.05,0.32]));
+  const sx=-0.25,pasteM=M(0xe0452b,{roughness:.45}),tipM=M(0xdfe5ec,{roughness:.2});
+  const gCup=P('cup',vib,[0,0.25,1.1]);
+  gCup.add(mesh(new THREE.CylinderGeometry(0.36,0.29,0.56,48,1,true),glass({opacity:.3}),[sx,0.07+0.28,0]));
+  const cupBot=mesh(new THREE.CircleGeometry(0.29,40),glass({opacity:.3}),[sx,0.075,0]);cupBot.rotation.x=-Math.PI/2;gCup.add(cupBot);
+  const cupFill=mesh(new THREE.CylinderGeometry(0.33,0.285,1,48),pasteM,[sx,0.08,0],true);gCup.add(cupFill);
+  const gSyr=P('syringe',vib,[0,0.75,0]);
+  gSyr.add(mesh(new THREE.BoxGeometry(0.08,2.6,0.08),metal,[sx+0.75,1.37,0]));
+  gSyr.add(mesh(new THREE.BoxGeometry(0.46,0.06,0.08),metal,[sx+0.52,2.0,0]));
+  const ring=mesh(new THREE.TorusGeometry(0.33,0.035,12,48),metal,[sx,2.0,0]);ring.rotation.x=Math.PI/2;gSyr.add(ring);
+  const B0=1.3,BH=1.5;
+  gSyr.add(mesh(new THREE.CylinderGeometry(0.31,0.31,BH,48,1,true),glass({opacity:.22}),[sx,B0+BH/2,0]));
+  gSyr.add(mesh(new THREE.CylinderGeometry(0.48,0.48,0.04,48),glass({opacity:.35}),[sx,B0+BH,0]));
+  gSyr.add(mesh(new THREE.CylinderGeometry(0.31,0.05,0.26,48,1,true),glass({opacity:.3}),[sx,B0-0.13,0]));
+  gSyr.add(mesh(new THREE.CylinderGeometry(0.045,0.045,0.2,20),tipM,[sx,B0-0.36,0],true));
+  for(let i=1;i<=4;i++)gSyr.add(mesh(new THREE.BoxGeometry(0.02,0.01,0.12),M(0x5a6377),[sx-0.31,B0+BH*i/5,0.12]));
+  const gPaste=P('paste',gSyr,[0,0,0]);
+  const pasteTaper=mesh(new THREE.CylinderGeometry(0.29,0.04,0.24,48),pasteM,[sx,B0-0.13,0],true);gPaste.add(pasteTaper);
+  const paste=mesh(new THREE.CylinderGeometry(0.29,0.29,1,48),pasteM,[sx,B0,0],true);gPaste.add(paste);
+  // fixed stand + HC-SR04
+  const rodX=sx-1.05,gStand=P('stand',root,[-0.7,0,-0.5]);
+  gStand.add(mesh(new THREE.CylinderGeometry(0.045,0.045,3.3,16),metal,[rodX,1.8,-0.55]));
+  gStand.add(mesh(new THREE.BoxGeometry(1.1,0.07,0.07),metal,[rodX+0.55,3.35,-0.55]));
+  gStand.add(mesh(new THREE.BoxGeometry(0.07,0.07,0.55),metal,[sx,3.35,-0.28]));
+  const gSen=P('sensor',root,[0,0.9,0]);
+  gSen.add(mesh(new THREE.BoxGeometry(0.78,0.05,0.34),M(0x1f5fbf,{roughness:.5}),[sx,3.26,0]));
+  [-0.2,0.2].forEach(dx=>{gSen.add(mesh(new THREE.CylinderGeometry(0.12,0.12,0.14,32),metal,[sx+dx,3.17,0]));
+    const m2=mesh(new THREE.CircleGeometry(0.1,28),M(0x2a2f36,{roughness:.9}),[sx+dx,3.099,0]);m2.rotation.x=Math.PI/2;gSen.add(m2)});
+  // sensor beam
+  const beamG=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(sx,3.09,0),new THREE.Vector3(sx,2,0)]);
+  const beamM=new THREE.LineDashedMaterial({color:0x2f5bff,dashSize:0.07,gapSize:0.06,transparent:true,opacity:.9});
+  const beam=new THREE.Line(beamG,beamM);root.add(beam);
+  // drops
+  const drops=[];for(let i=0;i<14;i++){const d=mesh(new THREE.SphereGeometry(0.045,12,10),pasteM,null,true);d.visible=false;d.userData={v:0};vib.add(d);drops.push(d)}
+  let dacc=0;
+  // picking
+  const ray=new THREE.Raycaster(),ndc=new THREE.Vector2();let hover=null;
+  const pickables=[];Object.values(groups).forEach(g=>g.traverse(o=>{if(o.isMesh)pickables.push(o)}));
+  function partAt(e){const r=cv.getBoundingClientRect();ndc.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(ndc,cam);
+    const hit=ray.intersectObjects(pickables,false)[0];if(!hit)return null;let o=hit.object;while(o&&!(o.userData&&o.userData.part))o=o.parent;return o?o.userData.part:null}
+  function tint(name,on){const g=groups[name];if(!g)return;g.traverse(o=>{if(o.isMesh&&o.material.emissive){o.material.emissive.setHex(on?0x4f80ff:0);o.material.emissiveIntensity=on?0.45:0}});
+    if(name==='syringe'||name==='paste')groups.paste.traverse(o=>{if(o.isMesh&&o.material.emissive&&name==='syringe'){o.material.emissive.setHex(on?0x4f80ff:0);o.material.emissiveIntensity=on?0.3:0}})}
+  function setSel(name){if(S3.sel===name)name=null;if(S3.sel)tint(S3.sel,false);S3.sel=name;if(name)tint(name,true);
+    const lb=document.getElementById('s3-label');lb.hidden=!name;if(name){const p=I18N[LANG].p3[name];document.getElementById('s3-lname').textContent=p[0];document.getElementById('s3-ldesc').textContent=p[1]}}
+  S3.relabel=()=>{if(S3.sel){const s=S3.sel;S3.sel=null;setSel(s)}};
+  // camera orbit
+  let th=0.75,ph=0.26,rad=9.2,drag=null,idle=0,moved=0;const tgt=new THREE.Vector3(0,1.55,0);
+  cv.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};moved=0;idle=0;cv.setPointerCapture(e.pointerId)});
+  cv.addEventListener('pointermove',e=>{
+    if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;moved+=Math.abs(dx)+Math.abs(dy);th-=dx*0.008;ph=Math.min(1.1,Math.max(0.05,ph+dy*0.006));drag={x:e.clientX,y:e.clientY};return}
+    const h=partAt(e);if(h!==hover){if(hover&&hover!==S3.sel)tint(hover,false);hover=h;if(h&&h!==S3.sel)tint(h,true)}cv.classList.toggle('hovering',!!h)});
+  cv.addEventListener('pointerleave',()=>{if(hover&&hover!==S3.sel)tint(hover,false);hover=null;cv.classList.remove('hovering')});
+  const end=e=>{if(drag&&moved<6&&e.type==='pointerup'){setSel(partAt(e))}drag=null};
+  cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
+  const exBtn=document.getElementById('s3-explode');
+  S3.setExplode=v=>{S3.exT=v?1:0;exBtn.textContent=t(v?'assemble_btn':'explode_btn');exBtn.dataset.on=v?'1':''};
+  exBtn.onclick=()=>S3.setExplode(!S3.exT);
+  let visible=true;try{new IntersectionObserver(es=>{visible=es[0].isIntersecting}).observe(cv)}catch(e){}
+  function size(){const r=cv.getBoundingClientRect();if(!r.width)return;R.setSize(r.width,r.height,false);cam.aspect=r.width/r.height;rad=(r.width<480?10.5:9.2)*Math.max(1,0.95/cam.aspect);cam.updateProjectionMatrix()}
+  try{new ResizeObserver(size).observe(cv)}catch(e){window.addEventListener('resize',size)}size();
+  document.querySelectorAll('#s3-lane button').forEach(b=>b.onclick=()=>{S3.lane=b.dataset.v;document.querySelectorAll('#s3-lane button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+  const col=new THREE.Color(),box=new THREE.Box3(),v3=new THREE.Vector3();let last=performance.now();
+  S3.update=function(){
+    const now=performance.now(),dt=Math.min(0.1,(now-last)/1000);last=now;
+    const L=S3.lane==='ai'?sim.ai:sim.cl,A=L.pwm/255;
+    document.getElementById('s3-pwm').textContent=L.pwm;
+    document.getElementById('s3-flow').textContent=L.flow.toFixed(2)+(LANG==='en'?' ml/s':' мл/с');
+    document.getElementById('s3-e').textContent=L.E.toFixed(1)+(LANG==='en'?' J':' Дж');
+    if(!visible)return;
+    S3.ex+=(S3.exT-S3.ex)*(RM?1:Math.min(1,dt*4));
+    const ek=S3.ex*S3.ex*(3-2*S3.ex);
+    Object.values(groups).forEach(g=>g.position.copy(g.userData.off).multiplyScalar(ek));
+    col.set(C[L.f.col]||'#e0452b');pasteM.color.copy(col);
+    const jam=L.plug>0;tipM.emissive.setHex(jam?0xff2a1a:(S3.sel==='syringe'?0x4f80ff:0));tipM.emissiveIntensity=jam?0.9:(S3.sel==='syringe'?0.45:0);
+    const j=RM?0:1;vib.position.x=j*(Math.sin(now*0.11)*0.016+Math.sin(now*0.047)*0.008)*A;vib.position.z=j*Math.cos(now*0.13)*0.01*A;
+    motor.rotation.y+=A*0.9*j;
+    const lv=Math.max(0.001,L.vol/100*BH*0.97);paste.scale.y=lv;paste.position.y=B0+lv/2;pasteTaper.visible=L.vol>0.5;
+    const ch=Math.max(0.001,Math.min(1,L.out/100)*0.5);cupFill.scale.y=ch;cupFill.position.y=0.075+ch/2;
+    const so=groups.syringe.position,se=groups.sensor.position;
+    const topY=vib.position.y+so.y+B0+lv;
+    const pos=beamG.attributes.position;pos.setXYZ(0,sx+se.x,3.09+se.y,se.z);pos.setXYZ(1,sx+vib.position.x+so.x,topY+0.01,so.z);pos.needsUpdate=true;beam.computeLineDistances();beamM.color.set(C.ai||'#2f5bff');
+    beam.visible=S3.ex<0.05;
+    if(S3.ex<0.05)dacc+=L.flow*dt*5;
+    drops.forEach(d=>{if(!d.visible&&dacc>=1&&!RM){dacc-=1;d.visible=true;d.position.set(sx,B0-0.48,0);d.userData.v=0}
+      if(d.visible){d.userData.v+=dt*5;d.position.y-=d.userData.v*dt*3;if(d.position.y<0.075+ch+0.03||S3.ex>0.05)d.visible=false}});
+    if(dacc>3)dacc=3;
+    if(!drag&&!RM&&!S3.sel){idle+=dt;if(idle>1.5)th+=dt*0.18}
+    const rr=rad*(1+0.22*ek),ty=tgt.y+0.35*ek;
+    cam.position.set(tgt.x+rr*Math.cos(ph)*Math.sin(th),ty+rr*Math.sin(ph),tgt.z+rr*Math.cos(ph)*Math.cos(th));cam.lookAt(tgt.x,ty,tgt.z);
+    if(S3.sel){box.setFromObject(groups[S3.sel]);box.getCenter(v3);v3.y=box.max.y;v3.project(cam);
+      const r=cv.getBoundingClientRect(),lb=document.getElementById('s3-label');
+      lb.style.left=Math.min(r.width-120,Math.max(120,(v3.x+1)/2*r.width))+'px';lb.style.top=Math.max(90,(1-v3.y)/2*r.height)+'px'}
+    R.render(scene,cam);
+  };
+  S3.setExplode(false);
+}
+
+/* ============ AI brain ============ */
+const brainBars=document.getElementById('brain-bars');
+brainBars.innerHTML=CANDS.map(c=>`<div class="bar" data-c="${c}"><div class="col"><i style="height:0"></i></div><small>${c}</small></div>`).join('');
+const barEls=[...brainBars.children];
+function renderBrain(){
+  const L=sim.ai,st=document.getElementById('brain-state');
+  if(!L.cands){brainBars.classList.toggle('jam',L.jam);st.className='pill '+(L.jam?'jam':'solid');st.textContent=L.jam?t('brain_jam'):'—';return}
+  brainBars.classList.remove('jam');st.className='pill flow';st.textContent=t('brain_pick')+': PWM '+L.pwm;
+  L.cands.forEach((k,i)=>{const b=barEls[i];b.querySelector('i').style.height=Math.max(2,k.mn*100)+'%';
+    b.classList.toggle('ok',k.mn>=0.95&&k.c!==L.pwm);b.classList.toggle('pick',k.c===L.pwm)});
+}
+
+/* ============ data lab: CSV, physics model, Random Forest ============ */
+function parseCSV(txt){
+  const lines=txt.replace(/\r/g,'').split('\n').map(s=>s.trim()).filter(Boolean);if(lines.length<5)return null;
+  const d=[';','\t',','].find(x=>lines[0].includes(x)&&lines[1].includes(x))||',';
+  const cells=lines.map(l=>l.split(d).map(s=>s.trim()));
+  let head=null;if(cells[0].some(c=>c!==''&&isNaN(parseFloat(c.replace(',','.')))))head=cells.shift().map(s=>s.toLowerCase());
+  const find=(re,def)=>{if(head){const i=head.findIndex(h=>re.test(h));if(i>=0)return i}return def};
+  const it=find(/time|уақ|врем|sec/,0),ip=find(/pwm|шим|motor|мотор/,1),idd=find(/dist|қаш|расст|level|деңг|уров|mm/,2);
+  const rows=[];for(const c of cells){const v=[c[it],c[ip],c[idd]].map(s=>parseFloat(String(s||'').replace(',','.')));if(v.every(isFinite))rows.push({t:v[0],p:v[1],d:v[2]})}
+  if(rows.length<10)return null;rows.sort((a,b)=>a.t-b.t);const t0=rows[0].t;rows.forEach(r=>r.t-=t0);return rows;
+}
+function demoRows(){
+  const f=FLUIDS.tomato,L=new Lane(true),r=mulberry(21);L.reset(f);const rows=[];let tt=0,nx=0,jams=[14,33,49],ji=0;
+  const saveLog=sim.log;sim.log=[];
+  while(tt<60){if(ji<jams.length&&tt>=jams[ji]){ji++;L.plug=1}if(tt>=nx){L.decide(tt,3.5,r);nx+=0.25}L.step(3.5);tt+=DT;
+    if(Math.abs(tt*5-Math.round(tt*5))<1e-6)rows.push({t:+tt.toFixed(2),p:L.pwm,d:+(20+(100-L.vol)*0.9+(r()-.5)*1.4).toFixed(1)})}
+  sim.log=saveLog;renderLog();return rows;
+}
+function modelDrop(rows,tau){
+  const L=new Lane(false);L.reset(FLUIDS.tomato);const out=[];let i=0,tt=0;
+  for(const row of rows){while(tt<row.t){while(i<rows.length-1&&rows[i+1].t<=tt)i++;L.pwm=Math.round(rows[i].p);L.step(tau);tt+=DT}out.push(100-L.vol)}
+  return out;
+}
+function buildTree(X,y,idx,depth,o,imp,rnd){
+  let s=0;for(const i of idx)s+=y[i];const mean=s/idx.length;
+  if(depth>=o.depth||idx.length<2*o.minLeaf)return {v:mean};
+  let best=null;const nf=X[0].length;
+  const feats=[...Array(nf).keys()].sort(()=>rnd()-.5).slice(0,Math.max(1,o.mf||nf));
+  let sse=0;for(const i of idx)sse+=(y[i]-mean)**2;
+  for(const f of feats){
+    const ord=idx.slice().sort((a,b)=>X[a][f]-X[b][f]);let ls=0,lq=0,rs=s,rq=0;for(const i of ord)rq+=y[i]*y[i];
+    for(let k=0;k<ord.length-1;k++){const v=y[ord[k]];ls+=v;lq+=v*v;rs-=v;rq-=v*v;const nl=k+1,nr=ord.length-nl;
+      if(nl<o.minLeaf||nr<o.minLeaf)continue;const x1=X[ord[k]][f],x2=X[ord[k+1]][f];if(x1===x2)continue;
+      const err=(lq-ls*ls/nl)+(rq-rs*rs/nr),gain=sse-err;if(!best||gain>best.g)best={g:gain,f,thr:(x1+x2)/2}}
+  }
+  if(!best||best.g<=1e-9)return {v:mean};
+  imp[best.f]+=best.g;
+  const L=[],Rr=[];for(const i of idx)(X[i][best.f]<=best.thr?L:Rr).push(i);
+  return {f:best.f,thr:best.thr,l:buildTree(X,y,L,depth+1,o,imp,rnd),r:buildTree(X,y,Rr,depth+1,o,imp,rnd)};
+}
+function predTree(n,x){while(n.f!==undefined)n=x[n.f]<=n.thr?n.l:n.r;return n.v}
+function trainRF(X,y,idx,o){const rnd=mulberry(o.seed||5),imp=new Array(X[0].length).fill(0),trees=[];
+  for(let k=0;k<o.n;k++){const b=idx.map(()=>idx[Math.floor(rnd()*idx.length)]);trees.push(buildTree(X,y,b,0,o,imp,rnd))}
+  const tot=imp.reduce((a,b)=>a+b,0)||1;return {predict:x=>trees.reduce((a,tr)=>a+predTree(tr,x),0)/trees.length,imp:imp.map(v=>v/tot)}}
+const lab={rows:null,real:false,res:null,err:false};
+function runLab(rows,real){
+  lab.rows=rows;lab.real=real;lab.err=false;
+  let rs=rows;if(rs.length>2500){const st=rs.length/2500;rs=[...Array(2500)].map((_,i)=>rows[Math.floor(i*st)])}
+  const X=rs.map(r=>[r.t,r.p]),y=rs.map(r=>r.d);
+  const rnd=mulberry(42),all=[...rs.keys()].sort(()=>rnd()-.5),nt=Math.floor(all.length*0.8),tr=all.slice(0,nt),te=all.slice(nt);
+  const rf=trainRF(X,y,tr,{n:40,depth:9,minLeaf:2,mf:2,seed:7});
+  let ym=0;te.forEach(i=>ym+=y[i]);ym/=te.length;let ssr=0,sst=0,mae=0;const sc=[];
+  te.forEach(i=>{const p=rf.predict(X[i]);ssr+=(y[i]-p)**2;sst+=(y[i]-ym)**2;mae+=Math.abs(y[i]-p);sc.push([y[i],p])});
+  const md=modelDrop(rs,3.5),d0=rs[0].d;let num=0,den=0;md.forEach((m,i)=>{num+=m*(rs[i].d-d0);den+=m*m});const k=den>0?Math.max(0,num/den):0;
+  let E=0;for(let i=1;i<rs.length;i++){const dt=rs[i].t-rs[i-1].t;if(dt>0&&dt<5)E+=PMAX*(rs[i-1].p/255)*dt}
+  lab.res={rs,r2:sst>0?1-ssr/sst:0,mae:mae/te.length,k,E,sc,imp:rf.imp,model:md.map(m=>d0+k*m),rf:rs.map(r=>rf.predict([r.t,r.p]))};
+  renderLab();
+}
+function renderLab(){
+  const note=document.getElementById('lab-note');
+  if(lab.err){note.className='lab-note err';note.textContent=t('lab_err');return}
+  if(!lab.res)return;const R=lab.res;
+  note.className='lab-note'+(lab.real?' real':'');note.textContent=lab.real?t('lab_real_note',{n:lab.rows.length}):t('lab_example_note');
+  document.getElementById('lab-rows').textContent=lab.rows.length;
+  document.getElementById('lab-r2').textContent=R.r2.toFixed(3);
+  document.getElementById('lab-mae').textContent=R.mae.toFixed(2);
+  document.getElementById('lab-e').textContent=R.E.toFixed(1);
+  document.getElementById('lab-k').textContent=R.k.toFixed(2);
+  document.getElementById('lab-imp').innerHTML=[['f_time',R.imp[0]],['f_pwm',R.imp[1]]].map(([k,v])=>`<div class="imp-row"><span>${t(k)}</span><div class="trk"><i style="width:${(v*100).toFixed(0)}%"></i></div><b>${(v*100).toFixed(0)}%</b></div>`).join('');
+  drawLabCharts();
+}
+function drawLabCharts(){
+  if(!lab.res)return;const R=lab.res,rs=R.rs,x1=Math.max(10,Math.ceil(rs[rs.length-1].t/10)*10);
+  const ys=rs.map(r=>r.d).concat(R.model),lo=Math.floor(Math.min(...ys)/10)*10,hi=Math.ceil(Math.max(...ys)/10)*10;
+  const sh=a=>a.map(v=>v-lo);
+  const yt=[0,(hi-lo)/2,hi-lo];
+  drawChart(document.getElementById('lab-chart'),[
+    {d:rs.map((r,i)=>[r.t,r.d-lo]),c:C.paste,fill:true},
+    {d:rs.map((r,i)=>[r.t,R.model[i]-lo]),c:C.classic},
+    {d:rs.map((r,i)=>[r.t,R.rf[i]-lo]),c:C.ai}],{x0:0,x1,ymax:hi-lo||1,yt,ylab:v=>Math.round(v+lo)});
+  const cv=document.getElementById('lab-scatter'),[x,W,H]=fit(cv);x.clearRect(0,0,W,H);
+  const Lp=44,Rp=12,T=10,B=26,pw=W-Lp-Rp,ph=H-T-B,s=v=>(v-lo)/((hi-lo)||1);
+  x.strokeStyle=C.line;x.fillStyle=C.muted;x.font='11px "JetBrains Mono",monospace';
+  [lo,(lo+hi)/2,hi].forEach(v=>{const yy=T+ph-s(v)*ph,xx=Lp+s(v)*pw;x.beginPath();x.moveTo(Lp,yy);x.lineTo(W-Rp,yy);x.stroke();x.textAlign='right';x.fillText(Math.round(v),Lp-6,yy+4);x.textAlign='center';x.fillText(Math.round(v),xx,H-8)});
+  x.setLineDash([4,4]);x.strokeStyle=C.ok;x.beginPath();x.moveTo(Lp,T+ph);x.lineTo(Lp+pw,T);x.stroke();x.setLineDash([]);
+  x.fillStyle=C.ai;x.globalAlpha=.75;R.sc.forEach(([a,p])=>{x.beginPath();x.arc(Lp+s(a)*pw,T+ph-s(p)*ph,3,0,7);x.fill()});x.globalAlpha=1;
+}
+document.getElementById('lab-file').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{const rows=parseCSV(String(rd.result));if(!rows){lab.err=true;renderLab();return}runLab(rows,true);toast('✓ '+f.name)};rd.readAsText(f);e.target.value=''};
+document.getElementById('lab-demo').onclick=()=>runLab(demoRows(),false);
+
+/* ============ scale calculator ============ */
+const SC={p:2500,h:24};
+const pFromSlider=v=>Math.pow(10,-3+v/1000*(Math.log10(5000)+3)),sliderFromP=p=>Math.round((Math.log10(p)+3)/(Math.log10(5000)+3)*1000);
+const fmtP=kw=>kw<1?(kw*1000).toFixed(kw<0.01?1:0)+' W':kw<1000?(+kw.toPrecision(3))+' kW':(kw/1000).toFixed(2)+' MW';
+const fmtN=v=>Math.round(v).toLocaleString(LANG==='en'?'en-US':'ru-RU');
+function calcScale(){
+  const p=SC.p,h=+document.getElementById('sc-h').value,s=+document.getElementById('sc-s').value,tf=+document.getElementById('sc-t').value||0;
+  document.getElementById('sc-pv').textContent=fmtP(p);document.getElementById('sc-hv').textContent=h;document.getElementById('sc-sv').textContent=s+'%';
+  const kwh=p*h*365*s/100;
+  document.getElementById('sc-kwh').textContent=fmtN(kwh);
+  document.getElementById('sc-money').textContent=fmtN(kwh*tf)+' ₸';
+  document.getElementById('sc-co2').textContent=(kwh*0.6/1000).toFixed(kwh*0.6/1000<10?2:0);
+  document.getElementById('sc-mark').style.left=(sliderFromP(p)/10)+'%';
+  document.querySelectorAll('#sc-presets button').forEach(b=>b.setAttribute('aria-pressed',Math.abs(+b.dataset.p-p)<1e-9));
+}
+document.getElementById('sc-p').oninput=e=>{SC.p=+pFromSlider(+e.target.value).toPrecision(3);calcScale()};
+['sc-h','sc-s','sc-t'].forEach(id=>document.getElementById(id).oninput=calcScale);
+document.querySelectorAll('#sc-presets button').forEach(b=>b.onclick=()=>{SC.p=+b.dataset.p;document.getElementById('sc-p').value=sliderFromP(SC.p);document.getElementById('sc-h').value=b.dataset.h;calcScale()});
+document.getElementById('sc-p').value=sliderFromP(SC.p);
+
+/* ============ QR ============ */
+/* When the page is hosted on its own site (GitHub Pages, Netlify…), the QR points to that site itself. */
+const SITE_URL=(function(){try{const h=location.hostname;
+  if(/^https?:$/.test(location.protocol)&&window.self===window.top&&h&&!/(^|\.)claude(usercontent)?\.(ai|com)$|anthropic|^localhost$|^127\.|^\[::1\]$/.test(h))
+    return location.origin+location.pathname.replace(/index\.html$/,'');}catch(e){}
+  return 'https://claude.ai/artifact/V9w9rdanei4x5PCpwyDqrg'})();
+(function(){const el=document.getElementById('qr');
+  const u=document.createElement('div');u.className='qr-url mono';u.textContent=SITE_URL.replace(/^https?:\/\//,'');el.after(u);
+  try{new QRCode(el,{text:SITE_URL,width:300,height:300,colorDark:'#0B1220',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M})}
+  catch(e){el.style.lineHeight='1.4';el.style.width='170px';el.style.color='#0B1220';el.style.fontSize='.75rem';el.textContent=SITE_URL}})();
+document.getElementById('copy-link').onclick=()=>copyText(SITE_URL);
+
+/* ============ presentation tour ============ */
+const TOUR=[
+  {sel:'.hero'},{sel:'#stage',on:()=>S3.setExplode&&S3.setExplode(true),off:()=>S3.setExplode&&S3.setExplode(false)},
+  {sel:'.lanes',on:()=>{if(sim.t>=TEND||sim.t<0.01){simReset()}sim.running=true;updateRunBtn()}},
+  {sel:'#brain'},{sel:'.scoreboard'},{sel:'#lab .wrap',on:()=>{if(!lab.res)runLab(demoRows(),false)}},
+  {sel:'#scale .wrap',on:()=>{SC.p=2500;document.getElementById('sc-p').value=sliderFromP(SC.p);document.getElementById('sc-h').value=24;calcScale()}},
+  {sel:'#qr-card'}];
+const tour={i:-1};
+function tourShow(i){
+  const prev=TOUR[tour.i];if(prev){document.querySelector(prev.sel)?.classList.remove('spot');prev.off&&prev.off()}
+  if(i<0||i>=TOUR.length){tourEnd();return}
+  tour.i=i;const s=TOUR[i],el=document.querySelector(s.sel);s.on&&s.on();
+  if(el){el.classList.add('spot');el.scrollIntoView({behavior:RM?'auto':'smooth',block:el.offsetHeight>innerHeight*0.7?'start':'center'})}
+  const st=I18N[LANG].tour[i];document.getElementById('tour-h').textContent=st[0];document.getElementById('tour-p').textContent=st[1];
+  ['tour-h','tour-p'].forEach(id=>replay(document.getElementById(id),'x'));
+  document.getElementById('tour-n').textContent=(i+1)+' / '+TOUR.length;
+  document.getElementById('tour-dots').innerHTML=TOUR.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('');
+  document.getElementById('tour-prev').disabled=i===0;
+  document.getElementById('tour-next').textContent=t(i===TOUR.length-1?'tour_done':'tour_next');
+}
+function tourStart(){document.getElementById('tour').hidden=false;try{document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}tour.i=-1;tourShow(0)}
+function tourEnd(){const s=TOUR[tour.i];if(s){document.querySelector(s.sel)?.classList.remove('spot');s.off&&s.off()}tour.i=-1;document.getElementById('tour').hidden=true;
+  try{if(document.fullscreenElement)document.exitFullscreen()}catch(e){}}
+document.getElementById('tour-btn').onclick=tourStart;
+document.getElementById('tour-next').onclick=()=>tourShow(tour.i+1);
+document.getElementById('tour-prev').onclick=()=>tourShow(tour.i-1);
+document.getElementById('tour-exit').onclick=tourEnd;
+document.addEventListener('keydown',e=>{if(tour.i<0)return;if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();tourShow(tour.i+1)}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();if(tour.i>0)tourShow(tour.i-1)}else if(e.key==='Escape')tourEnd()});
+function relangFeatures(){renderLab();calcScale();S3.relabel&&S3.relabel();S3.setExplode&&S3.setExplode(!!S3.exT);if(tour.i>=0)tourShow(tour.i);renderBrain()}
+
+/* ============ main loop ============ */
+let frame=0,lastTs=performance.now();
+function loop(ts){
+  const dt=Math.min(0.1,(ts-lastTs)/1000);lastTs=ts;frame++;
+  if(sim.running){sim.acc+=dt*sim.speed;while(sim.acc>=DT&&sim.running){simStep();sim.acc-=DT}}
+  drawLane(document.getElementById('c-cv'),sim.cl,frame);drawLane(document.getElementById('a-cv'),sim.ai,frame);
+  updLaneStats('c',sim.cl);updLaneStats('a',sim.ai);
+  if(S3.update)try{S3.update()}catch(e){S3.update=null;console.error(e)}
+  if(frame%3===1)renderBrain();
+  if(frame%90===2&&lab.res)drawLabCharts();
+  const sav=sim.cl.E>0.5?(1-sim.ai.E/sim.cl.E)*100:0;
+  document.getElementById('sav').textContent=sav.toFixed(0)+'%';
+  document.getElementById('prod').textContent=sim.cl.out>1?(sim.ai.out/sim.cl.out*100).toFixed(0)+'%':'—';
+  document.getElementById('tclock').textContent=`t = ${sim.t.toFixed(1)} / 60 s`;
+  if(frame%3===0){
+    drawChart(document.getElementById('ch-pwm'),[{d:sim.cl.hist.map(h=>[h[0],h[1]]),c:C.classic},{d:sim.ai.hist.map(h=>[h[0],h[1]]),c:C.ai,fill:true}],{x0:0,x1:60,ymax:270,yt:[0,85,170,255]});
+    drawChart(document.getElementById('ch-e'),[{d:sim.cl.hist.map(h=>[h[0],h[2]]),c:C.classic},{d:sim.ai.hist.map(h=>[h[0],h[2]]),c:C.ai,fill:true}],{x0:0,x1:60,ymax:160,yt:[0,40,80,120,160]});
+    if(!live.src)liveDraw();
+  }
+  requestAnimationFrame(loop);
+}
+simReset();
+if(RM){sim.running=false;while(sim.t<TEND)simStep();}
+applyLang();updateLiveUI();
+try{init3D()}catch(e){console.error(e);document.getElementById('s3-fb').hidden=false}
+try{runLab(demoRows(),false)}catch(e){console.error(e)}
+calcScale();relangFeatures();
+/* scroll reveal targets + KPI count-up */
+document.querySelectorAll('section .sec-head, section .panel, .card, .app, .pipe, .about dl').forEach(el=>el.classList.add('reveal'));
+(function(){const el=document.querySelector('.kpi b.big');if(!el||RM)return;const t0=performance.now();
+  (function f(n){const k=Math.min(1,(n-t0)/1400),e=1-Math.pow(1-k,3);el.textContent='−'+Math.round(55*e)+'%';if(k<1)requestAnimationFrame(f);else el.classList.add('tick')})(t0)})();
+requestAnimationFrame(loop);
+</script>
+
+</html>
