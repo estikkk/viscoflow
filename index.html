@@ -89,7 +89,7 @@ nav.links a:hover{color:var(--ink);background:var(--tint)}
 .langs{display:flex;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--tint)}
 .langs button{border:0;background:none;padding:5px 11px;border-radius:999px;cursor:pointer;font-size:.75rem;font-weight:700;letter-spacing:.06em;color:var(--muted)}
 .langs button[aria-pressed="true"]{background:var(--ai);color:var(--on-ai);box-shadow:0 0 16px var(--glow-ai)}
-@media (max-width:1100px){nav.links{order:3;flex-basis:100%;overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start}nav.links a{white-space:nowrap}.langs{margin-left:auto}}
+@media (max-width:1380px){nav.links{order:3;flex-basis:100%;overflow-x:auto;flex-wrap:nowrap;justify-content:flex-start}nav.links a{white-space:nowrap}.langs{margin-left:auto}}
 
 /* design switcher */
 .design{position:relative}
@@ -235,7 +235,7 @@ section + section{border-top:1px solid var(--line)}
 figure{margin:0;padding:16px}
 figure svg{width:100%;height:auto;display:block}
 figcaption{font-size:.8rem;color:var(--muted);margin-top:8px}
-@media (max-width:860px){.theory{grid-template-columns:1fr}.theory > div:last-child{position:static}.cards{grid-template-columns:1fr}}
+@media (max-width:860px){.theory{grid-template-columns:minmax(0,1fr)}.theory > div:last-child{position:static}.cards{grid-template-columns:minmax(0,1fr)}}
 
 .apps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .app{padding:20px;overflow:hidden}
@@ -432,6 +432,120 @@ main.fade [data-i18n],main.fade [data-i18n-html]{animation:fadeTxt .45s var(--ea
 @supports (animation-timeline: view()){
   .reveal{animation:rise linear both;animation-timeline:view();animation-range:entry 0% entry 35%}
 }
+/* ---------- fluid library ---------- */
+.fl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.fl-card{padding:18px;display:flex;flex-direction:column;gap:10px;transition:transform .35s var(--ease),border-color .3s,box-shadow .35s var(--ease)}
+.fl-card:hover{transform:translateY(-4px)}
+.fl-card.on{border-color:var(--ai);box-shadow:0 0 0 1px var(--ai),0 24px 48px -28px var(--glow-ai)}
+.fl-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.fl-blob{width:46px;height:46px;flex:none;border-radius:46% 54% 60% 40%/50% 45% 55% 50%;background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.6),transparent 36%),var(--fc);box-shadow:0 10px 24px -10px var(--fc),inset 0 -6px 12px rgba(0,0,0,.2);animation:flblob 7s ease-in-out infinite}
+.fl-card:nth-child(2n) .fl-blob{animation-delay:-3s}
+@keyframes flblob{50%{border-radius:58% 42% 45% 55%/45% 58% 42% 55%;transform:rotate(8deg)}}
+.fl-card h3{font-size:1.05rem}
+.fl-props{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:.8rem;margin:0}
+.fl-props dt{color:var(--muted)}
+.fl-props dd{margin:0;font-family:var(--font-mono);text-align:right;white-space:nowrap}
+.fl-sav{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:end;font-size:.78rem;color:var(--muted)}
+.fl-sav b{font-family:var(--font-mono);color:var(--ink);font-size:1.15rem;line-height:1}
+.fl-sav .trk{grid-column:1/-1;height:8px;border-radius:99px;background:var(--tint);border:1px solid var(--line);overflow:hidden}
+.fl-sav .trk i{display:block;height:100%;width:var(--w);background:linear-gradient(90deg,var(--ai),var(--ok));border-radius:99px;animation:flgrow 1.1s var(--ease) both}
+@keyframes flgrow{from{width:0}}
+.fl-card p{font-size:.85rem;color:var(--muted);flex:1;margin:0}
+.fl-foot{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.fl-foot .ref{font-family:var(--font-mono);font-size:.72rem;color:var(--muted)}
+.fl-foot .btn{font-size:.78rem;padding:6px 12px}
+.fl-note{margin-top:16px}
+/* ---------- experiments ---------- */
+.ex-wrap{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:980px){.ex-wrap{grid-template-columns:minmax(0,1fr)}}
+.ex-table{padding:14px}
+.ex-table table{min-width:780px}
+.ex-table select[data-f="fluid"]{min-width:158px}
+.ex-table select[data-f="src"]{min-width:92px}
+.ex-table input[type=text]{min-width:120px}
+.ex-table td{padding:5px 5px;vertical-align:middle}
+.ex-table th{padding:6px 5px}
+.ex-table input,.ex-table select{width:100%;min-width:0;background:var(--tint);border:1px solid var(--line);border-radius:9px;padding:6px 8px;color:inherit;font:inherit;font-size:.84rem}
+.ex-table input[type=number]{font-family:var(--font-mono);width:88px}
+.ex-table input:focus,.ex-table select:focus{outline:2px solid var(--ai);outline-offset:1px}
+.ex-table option,#ex-group option{background:var(--surface2);color:var(--ink)}
+.ex-eta{font-family:var(--font-mono);font-weight:600;color:var(--ok);white-space:nowrap}
+.ex-del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:.9rem;padding:6px 8px;border-radius:8px}
+.ex-del:hover{color:var(--warn);background:var(--tint)}
+.ex-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.ex-side{display:grid;gap:12px}
+.ex-side .field select{width:100%}
+.ex-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ex-res{padding:14px 16px;font-family:var(--font-mono);font-size:.92rem;border-left:3px solid var(--ok)}
+.ex-res.need{border-left-color:var(--classic);font-family:var(--font-body);font-size:.88rem;color:var(--muted)}
+.ex-formula{font-family:var(--font-mono);font-size:.74rem;color:var(--muted);overflow-wrap:anywhere}
+.ex-photos{margin-top:22px}
+.ex-photos .ph{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:10px}
+.ex-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;border:1px solid var(--line);display:block;transition:transform .3s var(--ease)}
+.ex-photos a:hover img{transform:scale(1.03)}
+/* ---------- AR ---------- */
+.s3-ar{position:absolute;right:14px;bottom:56px;font-size:.8rem;padding:7px 14px;display:inline-flex;align-items:center;gap:6px}
+.s3-ar::before{content:"";width:12px;height:12px;border:2px solid currentColor;border-radius:3px;transform:rotate(45deg) scale(.85)}
+body.modal-open{overflow:hidden}
+.ar-modal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(5,10,20,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:arIn .25s ease both}
+.ar-modal[hidden]{display:none}
+@keyframes arIn{from{opacity:0}}
+.ar-box{width:min(900px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:18px;background:color-mix(in srgb,var(--bg) 90%,transparent);animation:arPop .35s var(--spring) both}
+@keyframes arPop{from{opacity:0;transform:translateY(10px) scale(.97)}}
+.ar-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}
+.ar-body{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:18px;align-items:center}
+@media (max-width:700px){.ar-body{grid-template-columns:minmax(0,1fr)}}
+.ar-view{position:relative;height:min(430px,58vh);border-radius:22px;overflow:hidden;background:var(--stage-bg);border:1px solid var(--line)}
+.ar-view model-viewer{width:100%;height:100%;background:transparent;--poster-color:transparent}
+.ar-load{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:.9rem;text-align:center;padding:20px}
+.ar-go{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);white-space:nowrap}
+.ar-side{display:grid;gap:14px;justify-items:start}
+.ar-side p{margin:0;font-size:.92rem;color:var(--muted)}
+.ar-side .qr img,.ar-side .qr canvas{width:170px!important;height:170px!important}
+/* ---------- references & glossary (footer) ---------- */
+.refs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:30px;font-size:.7rem;line-height:1.5;color:var(--muted);margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid var(--line)}
+@media (max-width:860px){.refs{grid-template-columns:minmax(0,1fr)}}
+.refs h4{font-family:var(--font-body);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);margin:0 0 8px;font-weight:700}
+.refs .gl p{margin:0 0 4px}
+.refs .gl b{color:var(--ink);font-weight:600}
+.refs ol{margin:0;padding-left:2.1em;display:grid;gap:2px}
+.refs ol li::marker{font-family:var(--font-mono);font-size:.65rem}
+.refs a{color:var(--ai);text-decoration:none;font-family:var(--font-mono);font-size:.64rem;overflow-wrap:anywhere}
+.refs a:hover{text-decoration:underline}
+/* ---------- printable report ---------- */
+#report{position:absolute;left:-10000px;top:0;width:720px;visibility:hidden;pointer-events:none;background:#fff;color:#111827;font-family:Inter,system-ui,sans-serif;font-size:10pt;line-height:1.45}
+#report h1{font-family:Montserrat,Inter,sans-serif;font-size:17pt;line-height:1.2;margin:2px 0 6px;color:#0B1220}
+#report h2{font-family:Montserrat,Inter,sans-serif;font-size:11.5pt;margin:14px 0 6px;color:#0B1220;border-bottom:1.5pt solid #2F62F5;padding-bottom:3px;break-after:avoid}
+#report p{margin:0 0 6px}
+#report .rp-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}
+#report .rp-brand{font-weight:800;color:#2F62F5;letter-spacing:.08em;font-size:8.5pt;text-transform:uppercase}
+#report .rp-qr{line-height:0;flex:none;text-align:center}
+#report .rp-qr img,#report .rp-qr canvas{width:88px!important;height:88px!important}
+#report .rp-meta{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:9pt;margin:8px 0}
+#report .rp-meta dt{color:#4b5563}
+#report .rp-meta dd{margin:0;font-weight:600}
+#report .rp-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+#report .rp-kpis div{border:1px solid #d1d5db;border-radius:8px;padding:6px 10px}
+#report .rp-kpis b{display:block;font-size:12.5pt;color:#0B1220}
+#report .rp-kpis span{font-size:8pt;color:#4b5563}
+#report .rp-charts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px;break-inside:avoid}
+#report figure{margin:0;break-inside:avoid}
+#report figcaption{font-size:8pt;color:#4b5563;text-align:center;margin-top:2px}
+#report canvas{width:100%;height:150px;display:block}
+#report table{width:100%;border-collapse:collapse;font-size:9pt;break-inside:avoid;margin:4px 0}
+#report th,#report td{border-bottom:1px solid #e5e7eb;padding:3px 6px;text-align:left;color:#111827}
+#report th{font-size:7.5pt;color:#4b5563;text-transform:uppercase;letter-spacing:.05em}
+#report .rp-refs{font-size:7.5pt;color:#374151;padding-left:2em;margin:0}
+#report .rp-refs li{margin-bottom:1px}
+#report .rp-foot{margin-top:12px;font-size:8pt;color:#4b5563}
+@media print{
+  @page{size:A4;margin:14mm 14mm 16mm}
+  html,body{background:#fff!important;background-image:none!important}
+  body::before{display:none!important}
+  body>*:not(#report){display:none!important}
+  #report{position:static;left:auto;width:auto;visibility:visible;pointer-events:auto}
+  #report *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -446,7 +560,9 @@ main.fade [data-i18n],main.fade [data-i18n-html]{animation:fadeTxt .45s var(--ea
       <a href="#sim" data-i18n="nav_sim"></a>
       <a href="#live" data-i18n="nav_live"></a>
       <a href="#lab" data-i18n="nav_lab"></a>
+      <a href="#exp" data-i18n="nav_exp"></a>
       <a href="#theory" data-i18n="nav_theory"></a>
+      <a href="#fluids" data-i18n="nav_fluids"></a>
       <a href="#apps" data-i18n="nav_apps"></a>
       <a href="#scale" data-i18n="nav_scale"></a>
       <a href="#build" data-i18n="nav_build"></a>
@@ -492,6 +608,7 @@ main.fade [data-i18n],main.fade [data-i18n-html]{animation:fadeTxt .45s var(--ea
         <div class="readout"><span>PWM <b id="s3-pwm">0</b></span><span id="s3-flow">0.00</span><span id="s3-e">0.0 J</span></div>
       </div>
       <div class="hint" data-i18n="hint3d"></div>
+      <button class="btn s3-ar" id="s3-ar" data-i18n="ar_btn"></button>
       <button class="btn s3-explode" id="s3-explode" data-i18n="explode_btn"></button>
       <div class="s3-label" id="s3-label" hidden><b id="s3-lname"></b><span id="s3-ldesc"></span></div>
       <div class="fallback" id="s3-fb" hidden data-i18n="fb3d"></div>
@@ -656,6 +773,45 @@ main.fade [data-i18n],main.fade [data-i18n-html]{animation:fadeTxt .45s var(--ea
 </div>
 </section>
 
+<section id="exp">
+<div class="wrap">
+  <div class="sec-head"><div><h2 data-i18n="ex_title"></h2><p data-i18n="ex_lead"></p></div>
+    <button class="btn primary" data-act="pdf" data-i18n="ex_pdf"></button>
+  </div>
+  <div class="ex-wrap">
+    <div class="panel ex-table">
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th data-i18n="ex_c_n"></th><th data-i18n="ctl_fluid"></th><th data-i18n="ex_c_ecl"></th><th data-i18n="ex_c_eai"></th><th data-i18n="ex_c_eta"></th><th data-i18n="ex_c_src"></th><th data-i18n="ex_c_note"></th><th></th></tr></thead>
+        <tbody id="ex-body"></tbody>
+      </table></div>
+      <div class="ex-btns">
+        <button class="btn" id="ex-add" data-i18n="ex_add"></button>
+        <button class="btn" id="ex-model" data-i18n="ex_model"></button>
+        <button class="btn" id="ex-csv" data-i18n="ex_csv"></button>
+        <button class="btn danger" id="ex-clear" data-i18n="ex_clear"></button>
+      </div>
+      <p class="info" style="margin-top:10px" data-i18n="ex_hint"></p>
+    </div>
+    <div class="ex-side">
+      <label class="field"><span data-i18n="ex_group_l"></span><select id="ex-group"></select></label>
+      <div class="ex-stats">
+        <div class="stat"><small data-i18n="ex_st_n"></small><b id="ex-n">—</b></div>
+        <div class="stat"><small data-i18n="ex_st_mean"></small><b id="ex-mean">—</b></div>
+        <div class="stat"><small data-i18n="ex_st_sd"></small><b id="ex-sd">—</b></div>
+        <div class="stat"><small data-i18n="ex_st_cv"></small><b id="ex-cv">—</b></div>
+      </div>
+      <div class="panel ex-res" id="ex-res"></div>
+      <div class="ex-formula">x̄ = Σxᵢ / n &nbsp;·&nbsp; s = √(Σ(xᵢ − x̄)² / (n − 1)) &nbsp;·&nbsp; Δ = t<sub>0.975; n−1</sub> · s / √n</div>
+    </div>
+  </div>
+  <div class="charts" style="margin-top:16px">
+    <div class="panel chart"><div class="chart-head"><span data-i18n="ex_ch1"></span><span class="legend"><span style="--c:var(--classic)" data-i18n="legend_classic"></span><span style="--c:var(--ai)" data-i18n="legend_ai"></span></span></div><canvas id="ex-cv1"></canvas></div>
+    <div class="panel chart"><div class="chart-head"><span data-i18n="ex_ch2"></span><span class="legend"><span style="--c:var(--ai)" data-i18n="ex_lg_trial"></span><span style="--c:var(--ok)" data-i18n="ex_lg_ci"></span></span></div><canvas id="ex-cv2"></canvas></div>
+  </div>
+  <div class="ex-photos" id="ex-photos" hidden><h3 data-i18n="ex_photos_h"></h3><div class="ph" id="ex-ph"></div></div>
+</div>
+</section>
+
 <section id="theory">
 <div class="wrap">
   <div class="sec-head"><div><h2 data-i18n="th_title"></h2></div></div>
@@ -691,6 +847,14 @@ main.fade [data-i18n],main.fade [data-i18n-html]{animation:fadeTxt .45s var(--ea
       </figure></div>
     </div>
   </div>
+</div>
+</section>
+
+<section id="fluids">
+<div class="wrap">
+  <div class="sec-head"><div><h2 data-i18n="fl_title"></h2><p data-i18n="fl_lead"></p></div></div>
+  <div class="fl-grid" id="fl-grid"></div>
+  <p class="info fl-note" data-i18n="fl_note"></p>
 </div>
 </section>
 
@@ -780,12 +944,30 @@ main.fade [data-i18n],main.fade [data-i18n-html]{animation:fadeTxt .45s var(--ea
     <div class="qr" id="qr"></div>
     <h3 data-i18n="qr_title"></h3>
     <p class="info" data-i18n="qr_text"></p>
-    <button class="btn" id="copy-link" data-i18n="btn_copylink"></button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="copy-link" data-i18n="btn_copylink"></button>
+      <button class="btn" data-act="pdf" data-i18n="ex_pdf"></button>
+    </div>
   </div>
 </div>
 </section>
 </main>
-<footer><div class="wrap" data-i18n="footer"></div></footer>
+<footer>
+  <div class="wrap refs">
+    <div class="gl"><h4 data-i18n="ft_gl_h"></h4><div id="gl-list"></div></div>
+    <div class="rf"><h4 data-i18n="ft_refs_h"></h4><ol id="ref-list"></ol></div>
+  </div>
+  <div class="wrap" data-i18n="footer"></div>
+</footer>
+<div class="ar-modal" id="ar-modal" hidden role="dialog" aria-modal="true" aria-labelledby="ar-h">
+  <div class="panel ar-box">
+    <div class="ar-head"><h3 id="ar-h" data-i18n="ar_title"></h3><button class="tour-x" id="ar-x" aria-label="close">✕</button></div>
+    <div class="ar-body">
+      <div class="ar-view" id="ar-view"><div class="ar-load" id="ar-load"></div></div>
+      <div class="ar-side"><p id="ar-msg"></p><div class="qr" id="ar-qr"></div><div class="qr-url mono" id="ar-url"></div></div>
+    </div>
+  </div>
+</div>
 <div class="toast" id="toast" hidden></div>
 <div class="tour" id="tour" hidden role="dialog" aria-live="polite">
   <div class="tour-top"><span class="mono" id="tour-n"></span><div class="tour-dots" id="tour-dots"></div><button class="tour-x" id="tour-exit" aria-label="exit">✕</button></div>
@@ -793,6 +975,7 @@ main.fade [data-i18n],main.fade [data-i18n-html]{animation:fadeTxt .45s var(--ea
   <p id="tour-p"></p>
   <div class="tour-btns"><button class="btn" id="tour-prev" data-i18n="tour_prev"></button><button class="btn primary" id="tour-next"></button></div>
 </div>
+<div id="report" aria-hidden="true"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -1095,7 +1278,7 @@ readColors();
 try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{readColors()})}catch(e){}
 new MutationObserver(readColors).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
-function fit(cv){const r=cv.getBoundingClientRect(),d=window.devicePixelRatio||1;const w=Math.max(1,Math.round(r.width*d)),h=Math.max(1,Math.round(r.height*d));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}const x=cv.getContext('2d');x.setTransform(d,0,0,d,0,0);return [x,r.width,r.height]}
+function fit(cv){const r=cv.getBoundingClientRect(),d=fit.k||window.devicePixelRatio||1;const w=Math.max(1,Math.round(r.width*d)),h=Math.max(1,Math.round(r.height*d));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}const x=cv.getContext('2d');x.setTransform(d,0,0,d,0,0);return [x,r.width,r.height]}
 function drawChart(cv,series,o){
   const [x,W,H]=fit(cv);x.clearRect(0,0,W,H);
   const L=40,R=10,T=8,B=22,pw=W-L-R,ph=H-T-B;
@@ -1154,7 +1337,7 @@ function ai0(ai){return ai?255:255}
 
 const sim={t:0,running:true,speed:3,acc:0,fluid:'tomato',tau:3.5,jams:[12,31,47],ji:0,log:[],rnd:mulberry(7),
   cl:new Lane(false),ai:new Lane(true)};
-function addLog(k,v,cls){sim.log.push({k,v,cls});renderLog()}
+function addLog(k,v,cls){if(sim.quiet)return;sim.log.push({k,v,cls});renderLog()}
 function renderLog(){const ol=document.getElementById('log');if(!ol||!sim)return;ol.innerHTML=sim.log.slice().reverse().map(e=>`<li class="${e.cls||''}">${t(e.k,e.v)}</li>`).join('')}
 function simReset(){
   const f=FLUIDS[sim.fluid];sim.t=0;sim.acc=0;sim.ji=0;sim.log=[];sim.rnd=mulberry(7);
@@ -1192,7 +1375,7 @@ function drawLane(cv,L,time){
   x.save();x.translate(jit,0);
   const lh=(bot-top)*L.vol/100,sy=bot-lh;
   // paste
-  const pc=C[L.f.col];x.fillStyle=pc;
+  const pc=C[L.f.col]||L.f.col;x.fillStyle=pc;
   x.beginPath();x.moveTo(cx-bw/2+3,bot);
   const wav=(1-Math.min(1,L.lam))*A*3+(RM?0:0);
   for(let i=0;i<=20;i++){const px=cx-bw/2+3+(bw-6)*i/20;x.lineTo(px,sy+Math.sin(i*0.9+time*0.02)*wav)}
@@ -1506,7 +1689,7 @@ function init3D(){
     S3.ex+=(S3.exT-S3.ex)*(RM?1:Math.min(1,dt*4));
     const ek=S3.ex*S3.ex*(3-2*S3.ex);
     Object.values(groups).forEach(g=>g.position.copy(g.userData.off).multiplyScalar(ek));
-    col.set(C[L.f.col]||'#e0452b');pasteM.color.copy(col);
+    col.set(C[L.f.col]||L.f.col||'#e0452b');pasteM.color.copy(col);
     const jam=L.plug>0;tipM.emissive.setHex(jam?0xff2a1a:(S3.sel==='syringe'?0x4f80ff:0));tipM.emissiveIntensity=jam?0.9:(S3.sel==='syringe'?0.45:0);
     const j=RM?0:1;vib.position.x=j*(Math.sin(now*0.11)*0.016+Math.sin(now*0.047)*0.008)*A;vib.position.z=j*Math.cos(now*0.13)*0.01*A;
     motor.rotation.y+=A*0.9*j;
@@ -1527,6 +1710,16 @@ function init3D(){
       const r=cv.getBoundingClientRect(),lb=document.getElementById('s3-label');
       lb.style.left=Math.min(r.width-120,Math.max(120,(v3.x+1)/2*r.width))+'px';lb.style.top=Math.max(90,(1-v3.y)/2*r.height)+'px'}
     R.render(scene,cam);
+  };
+  /* GLB snapshot of the assembled rig for AR (≈0.37 m tall, origin on the floor) */
+  S3.exportGLB=(done,fail)=>{
+    const hide=[ground,grid,disc,beam,...drops],vis=hide.map(o=>o.visible),gs=Object.values(groups),pos=gs.map(g=>g.position.clone()),vp=vib.position.clone();
+    hide.forEach(o=>o.visible=false);gs.forEach(g=>g.position.set(0,0,0));vib.position.set(0,0.42,0);
+    const lit=[S3.sel,hover].filter(Boolean);lit.forEach(n=>tint(n,false));
+    root.scale.setScalar(0.11);root.updateMatrixWorld(true);
+    const restore=()=>{root.scale.setScalar(1);hide.forEach((o,i)=>o.visible=vis[i]);gs.forEach((g,i)=>g.position.copy(pos[i]));vib.position.copy(vp);lit.forEach(n=>tint(n,true));root.updateMatrixWorld(true)};
+    try{new THREE.GLTFExporter().parse(root,r=>done(r),{binary:true,onlyVisible:true})}catch(e){restore();fail(e);return}
+    restore();
   };
   S3.setExplode(false);
 }
@@ -1659,7 +1852,7 @@ document.getElementById('sc-p').value=sliderFromP(SC.p);
 const SITE_URL=(function(){try{const h=location.hostname;
   if(/^https?:$/.test(location.protocol)&&window.self===window.top&&h&&!/(^|\.)claude(usercontent)?\.(ai|com)$|anthropic|^localhost$|^127\.|^\[::1\]$/.test(h))
     return location.origin+location.pathname.replace(/index\.html$/,'');}catch(e){}
-  return 'https://claude.ai/artifact/V9w9rdanei4x5PCpwyDqrg'})();
+  return 'https://estikkk.github.io/viscoflow/'})();
 (function(){const el=document.getElementById('qr');
   const u=document.createElement('div');u.className='qr-url mono';u.textContent=SITE_URL.replace(/^https?:\/\//,'');el.after(u);
   if(!/claude\.ai/.test(SITE_URL)){const p=document.querySelector('#qr-card [data-i18n="qr_text"]');if(p){p.dataset.i18n='qr_text_site';p.textContent=t('qr_text_site')}}
@@ -1696,7 +1889,383 @@ document.getElementById('tour-prev').onclick=()=>tourShow(tour.i-1);
 document.getElementById('tour-exit').onclick=tourEnd;
 document.addEventListener('keydown',e=>{if(tour.i<0)return;if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();tourShow(tour.i+1)}
   else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();if(tour.i>0)tourShow(tour.i-1)}else if(e.key==='Escape')tourEnd()});
-function relangFeatures(){renderLab();calcScale();S3.relabel&&S3.relabel();S3.setExplode&&S3.setExplode(!!S3.exT);if(tour.i>=0)tourShow(tour.i);renderBrain()}
+function relangFeatures(){renderLab();calcScale();S3.relabel&&S3.relabel();S3.setExplode&&S3.setExplode(!!S3.exT);if(tour.i>=0)tourShow(tour.i);renderBrain();if(typeof relangExtra==='function')relangExtra()}
+
+/* ============ v10 texts ============ */
+(function(){const A={
+kk:{nav_exp:"Эксперименттер",nav_fluids:"Сұйықтықтар",
+fluid_mayo:"Майонез (тиксотропты эмульсия)",fluid_tooth:"Тіс пастасы (тұтқыр-пластикалық)",fluid_concrete:"Жас бетон (тұтқыр-пластикалық)",fluid_crude:"Парафинді мұнай (гель)",fluid_honey:"Бал (ньютондық, бақылау)",
+fl_n_tomato:"Томат пастасы",fl_n_mayo:"Майонез",fl_n_tooth:"Тіс пастасы",fl_n_concrete:"Жас бетон",fl_n_crude:"Парафинді мұнай",fl_n_starch:"Крахмал суспензиясы",fl_n_honey:"Бал",
+fl_type_bing:"Бингам пластигі",fl_type_thix:"Тиксотропты",fl_type_visc:"Тұтқыр-пластикалық",fl_type_gel:"Гель",fl_type_dil:"Дилатантты",fl_type_newt:"Ньютондық",
+fl_w_tomato:"Біздің жобаның негізгі сұйықтығы. Тыныштықта қатаяды, діріл оны сұйылтады.",
+fl_w_mayo:"Тамақ өндірісі: соустар мен кремдерді құбыр арқылы айдау. Құрылымы тез қалпына келеді.",
+fl_w_tooth:"Косметика және фармацевтика: тубаларды толтыру, пасталарды айдау.",
+fl_w_concrete:"Құрылыс: бетон сорғылары. Бетонды тығыздау үшін діріл бұрыннан қолданылады.",
+fl_w_crude:"Мұнай құбырлары (Маңғыстау). Салқындағанда парафин гель түзіп, құбырды бітейді.",
+fl_w_starch:"Соққыдан қатаятын материалдар. Күшті діріл оны керісінше қоюлатады.",
+fl_w_honey:"Бақылау тәжірибесі: ньютондық сұйықтыққа діріл көмектеспейді, сондықтан ЖИ моторды дерлік сөндіреді.",
+fl_title:"Сұйықтықтар кітапханасы",fl_lead:"Әр сұйықтықтың ішкі құрылымы әртүрлі. Карточкадағы батырманы басыңыз: симулятор сол сұйықтықпен іске қосылады. Пайыз — модельдегі 60 секундтық энергия үнемі.",
+fl_tau0:"τ₀, аққыштық шегі",fl_trel:"Құрылымның қалпына келуі (модель)",fl_sav:"ЖИ үнемі (модель)",fl_open:"Симуляторда ашу",pa:"Па",
+fl_note:"τ₀ мәндері — әдебиеттегі типтік шамалардың реті (тақ жақшадағы сандар — төмендегі дереккөздер нөмірі); нақты мәні құрамға және температураға байланысты. Модель параметрлері өлшенбеген, олар сапалық салыстыру үшін таңдалған.",
+ex_title:"Біздің эксперименттер",ex_lead:"Ғылыми нәтиже бір өлшемге емес, қайталанған тәжірибелерге сүйенеді. Әр тәжірибенің энергиясын енгізіңіз: сайт орташа мәнді, стандартты ауытқуды және 95% сенім аралығын есептейді.",
+ex_pdf:"PDF есеп",ex_add:"+ Тәжірибе қосу",ex_model:"Модельден 5 тәжірибе",ex_csv:"CSV көшіру",ex_clear:"Тазалау",ex_confirm:"Растайсыз ба?",
+ex_c_n:"№",ex_c_ecl:"E классика, Дж",ex_c_eai:"E ЖИ, Дж",ex_c_eta:"Үнем, %",ex_c_src:"Дереккөз",ex_c_note:"Ескертпе",
+ex_src_real:"Стенд",ex_src_model:"Модель",ex_paper_note:"жұмыстан алынған",
+ex_hint:"Деректер осы браузерде сақталады. «Модельден» батырмасы τ мен кептеліс сәттерін кездейсоқ өзгертіп симуляция жасайды — бұл өлшем емес. Стендтің нақты деректерін «Стенд» деп белгілеңіз.",
+ex_group_l:"Статистика тобы",ex_st_n:"Тәжірибелер саны, n",ex_st_mean:"Орташа үнем, x̄",ex_st_sd:"Стандартты ауытқу, s",ex_st_cv:"Вариация коэффициенті",
+ex_result:"η = {m} ± {ci}%  (95% СА, n = {n})",ex_need:"Қателікті есептеу үшін кемінде 2 тәжірибе керек (3–5 жақсырақ).",
+ex_ch1:"Энергия: орташа ± s, Дж",ex_ch2:"Әр тәжірибенің үнемі, %",ex_lg_trial:"Тәжірибе",ex_lg_ci:"Орташа ± 95% СА",ex_photos_h:"Стенд фотосуреттері",
+ex_added:"Модельден 5 тәжірибе қосылды",ex_cleared:"Кесте тазаланды",
+ar_btn:"AR-да көру",ar_title:"Стенд сіздің үстеліңізде",ar_place:"Үстелге қою",ar_loading:"3D модель дайындалуда…",
+ar_desk:"Телефон камерасымен QR-кодты сканерлеңіз де, «Үстелге қою» батырмасын басыңыз: 3D стенд бөлмеде нақты өлшемінде (≈ 40 см) пайда болады. Мұнда модельді тінтуірмен айналдыруға болады.",
+ar_mobile:"«Үстелге қою» батырмасын басыңыз, камераны үстелге бағыттап, телефонды баяу қозғалтыңыз.",
+ar_unsup:"Бұл құрылғы немесе браузер AR-ды қолдамайды. Android-та Chrome, iPhone-да Safari арқылы ашып көріңіз.",
+ar_fail:"AR модулі жүктелмеді: интернетті тексеріңіз.",
+rp_title:"Ғылыми жоба есебі",rp_date:"Күні",rp_goal_h:"Мақсат",
+rp_goal:"Діріл арқылы сұйылту кезінде тұтқыр-серпімді-пластикалық сұйықтықтарға жұмсалатын энергияны жасанды интеллектпен басқару арқылы азайту.",
+rp_sim_h:"Симуляция нәтижесі (60 с)",rp_sim:"{f}, τ = {tau} с. Классикалық режим: {ec} Дж, ЖИ: {ea} Дж. Үнем η = {eta}%, өнімділік {prod}%.",
+rp_exp_h:"Эксперименттер",rp_exp_none:"Тәжірибе деректері әлі енгізілмеген.",rp_fl_h:"Сұйықтықтарды салыстыру (модель)",rp_type:"Түрі",
+rp_sc_h:"Масштаб бағасы",rp_sc:"Қуат {p}, жұмыс {h} сағ/тәулік, үнем {s}%: {kwh} кВт·сағ/жыл, {money}/жыл, CO₂ шығарындысы {co2} т/жыл аз.",
+rp_concl_h:"Қорытынды",rp_concl:"ЖИ діріл қуатын сұйықтықтың күйіне қарай таңдайды: толық қуатты тек кептеліс кезінде қосады, қалған уақытта ағынды сақтайтын ең үнемді режимді ұстайды. Модельде бұл өнімділікті жоғалтпай энергияны {eta}%-ға азайтады.",
+rp_open:"Интерактивті нұсқасы:",rp_hint:"Басып шығару терезесінде «PDF ретінде сақтау» таңдаңыз",rp_framed:"Басып шығару терезесі ашылмаса, сайтты өз сілтемесі арқылы ашыңыз",
+ft_gl_h:"Глоссарий",ft_refs_h:"Әдебиеттер",
+gl:[["Тиксотропия","тыныштықта құрылым қалпына келіп, сұйықтық қоюланады, ал ығысу немесе діріл кезінде құрылым бұзылып, сұйылады [7, 8]."],["Аққыштық шегі τ₀","материал аға бастайтын ең аз жанама кернеу [1, 11]."],["Релаксация уақыты","бұзылған құрылымның қайта қалпына келуіне кететін тән уақыт [8]."],["Дилатанттық","ығысу жылдамдығы артқанда тұтқырлықтың өсуі, мысалы, крахмал суспензиясында [12]."],["ШИМ (PWM)","қуатты импульс ұзақтығы арқылы басқару: 0 — мотор сөндірулі, 255 — толық қуат."],["Random Forest","көптеген шешім ағаштарының болжамын орташалайтын машиналық оқыту әдісі [17, 18]."],["Болжамды басқару (MPC)","модельдің бірнеше қадам алға жасаған болжамы бойынша әрекет таңдау [19]."]],
+tour_x:[["Қайталанатын нәтиже","Бір өлшем — әлі дәлел емес. Тәжірибелер қайталанады, ал сайт орташа үнемді және 95% сенім аралығын есептейді."],["Әртүрлі сұйықтықтар","Әдіс бір сұйықтыққа байланбаған: томат пастасынан бетон мен мұнайға дейін. Ньютондық бал — бақылау: оған діріл керек емес."]]},
+ru:{nav_exp:"Эксперименты",nav_fluids:"Жидкости",
+fluid_mayo:"Майонез (тиксотропная эмульсия)",fluid_tooth:"Зубная паста (вязкопластичная)",fluid_concrete:"Свежий бетон (вязкопластичный)",fluid_crude:"Парафинистая нефть (гель)",fluid_honey:"Мёд (ньютоновская, контроль)",
+fl_n_tomato:"Томатная паста",fl_n_mayo:"Майонез",fl_n_tooth:"Зубная паста",fl_n_concrete:"Свежий бетон",fl_n_crude:"Парафинистая нефть",fl_n_starch:"Крахмальная суспензия",fl_n_honey:"Мёд",
+fl_type_bing:"Пластик Бингама",fl_type_thix:"Тиксотропная",fl_type_visc:"Вязкопластичная",fl_type_gel:"Гель",fl_type_dil:"Дилатантная",fl_type_newt:"Ньютоновская",
+fl_w_tomato:"Основная жидкость нашего проекта. В покое застывает, вибрация её разжижает.",
+fl_w_mayo:"Пищевое производство: перекачка соусов и кремов. Структура восстанавливается быстро.",
+fl_w_tooth:"Косметика и фармацевтика: заполнение туб, перекачка паст.",
+fl_w_concrete:"Строительство: бетононасосы. Вибрацию давно применяют для уплотнения бетона.",
+fl_w_crude:"Нефтепроводы (Мангистау). При остывании парафин образует гель и закупоривает трубу.",
+fl_w_starch:"Материалы, твердеющие от удара. Сильная вибрация её, наоборот, загущает.",
+fl_w_honey:"Контрольный опыт: ньютоновской жидкости вибрация не помогает, поэтому ИИ почти выключает мотор.",
+fl_title:"Библиотека жидкостей",fl_lead:"У каждой жидкости своя внутренняя структура. Нажмите кнопку на карточке — симулятор запустится с этой жидкостью. Процент — экономия энергии ИИ за 60 секунд в модели.",
+fl_tau0:"τ₀, предел текучести",fl_trel:"Восстановление структуры (модель)",fl_sav:"Экономия ИИ (модель)",fl_open:"Открыть в симуляторе",pa:"Па",
+fl_note:"Значения τ₀ — порядок типичных величин из литературы (числа в квадратных скобках — номера источников внизу); точное значение зависит от состава и температуры. Параметры модели не измерены и подобраны для качественного сравнения.",
+ex_title:"Наши эксперименты",ex_lead:"Научный результат опирается не на одно измерение, а на повторные опыты. Внесите энергию каждого опыта: сайт посчитает среднее, стандартное отклонение и 95% доверительный интервал.",
+ex_pdf:"PDF-отчёт",ex_add:"+ Добавить опыт",ex_model:"5 опытов из модели",ex_csv:"Копировать CSV",ex_clear:"Очистить",ex_confirm:"Точно очистить?",
+ex_c_n:"№",ex_c_ecl:"E классика, Дж",ex_c_eai:"E ИИ, Дж",ex_c_eta:"Экономия, %",ex_c_src:"Источник",ex_c_note:"Примечание",
+ex_src_real:"Стенд",ex_src_model:"Модель",ex_paper_note:"из текста работы",
+ex_hint:"Данные сохраняются в этом браузере. Кнопка «из модели» запускает симуляцию со случайными τ и моментами заторов — это не измерения. Реальные данные стенда отмечайте как «Стенд».",
+ex_group_l:"Группа для статистики",ex_st_n:"Число опытов, n",ex_st_mean:"Средняя экономия, x̄",ex_st_sd:"Стандартное отклонение, s",ex_st_cv:"Коэффициент вариации",
+ex_result:"η = {m} ± {ci}%  (95% ДИ, n = {n})",ex_need:"Для погрешности нужно минимум 2 опыта (лучше 3–5).",
+ex_ch1:"Энергия: среднее ± s, Дж",ex_ch2:"Экономия в каждом опыте, %",ex_lg_trial:"Опыт",ex_lg_ci:"Среднее ± 95% ДИ",ex_photos_h:"Фото стенда",
+ex_added:"Добавлено 5 опытов из модели",ex_cleared:"Таблица очищена",
+ar_btn:"Смотреть в AR",ar_title:"Стенд у вас на столе",ar_place:"Поставить на стол",ar_loading:"Готовим 3D-модель…",
+ar_desk:"Отсканируйте QR-код камерой телефона и нажмите «Поставить на стол»: 3D-стенд появится в комнате в натуральную величину (≈ 40 см). Здесь модель можно вращать мышью.",
+ar_mobile:"Нажмите «Поставить на стол», наведите камеру на стол и медленно поводите телефоном.",
+ar_unsup:"Это устройство или браузер не поддерживает AR. Попробуйте Chrome на Android или Safari на iPhone.",
+ar_fail:"AR-модуль не загрузился: проверьте интернет.",
+rp_title:"Отчёт по научному проекту",rp_date:"Дата",rp_goal_h:"Цель",
+rp_goal:"Снизить затраты энергии на вибрационное разжижение вязкоупругопластичных жидкостей с помощью управления на основе искусственного интеллекта.",
+rp_sim_h:"Результат симуляции (60 с)",rp_sim:"{f}, τ = {tau} с. Классический режим: {ec} Дж, ИИ: {ea} Дж. Экономия η = {eta}%, производительность {prod}%.",
+rp_exp_h:"Эксперименты",rp_exp_none:"Данные опытов ещё не внесены.",rp_fl_h:"Сравнение жидкостей (модель)",rp_type:"Тип",
+rp_sc_h:"Оценка масштаба",rp_sc:"Мощность {p}, работа {h} ч/сут, экономия {s}%: {kwh} кВт·ч/год, {money}/год, выбросы CO₂ меньше на {co2} т/год.",
+rp_concl_h:"Вывод",rp_concl:"ИИ подбирает мощность вибрации по состоянию жидкости: полную мощность включает только при заторе, а остальное время держит самый экономный режим, при котором сохраняется поток. В модели это снижает затраты энергии на {eta}% без потери производительности.",
+rp_open:"Интерактивная версия:",rp_hint:"В окне печати выберите «Сохранить как PDF»",rp_framed:"Если окно печати не открылось, откройте сайт по прямой ссылке",
+ft_gl_h:"Глоссарий",ft_refs_h:"Литература",
+gl:[["Тиксотропия","в покое структура восстанавливается и жидкость густеет, а при сдвиге или вибрации структура разрушается и жидкость разжижается [7, 8]."],["Предел текучести τ₀","минимальное касательное напряжение, при котором материал начинает течь [1, 11]."],["Время релаксации","характерное время восстановления разрушенной структуры [8]."],["Дилатансия","рост вязкости при увеличении скорости сдвига, например в крахмальной суспензии [12]."],["ШИМ (PWM)","управление мощностью через длительность импульсов: 0 — мотор выключен, 255 — полная мощность."],["Random Forest","метод машинного обучения, усредняющий прогнозы многих деревьев решений [17, 18]."],["Прогнозирующее управление (MPC)","выбор действия по прогнозу модели на несколько шагов вперёд [19]."]],
+tour_x:[["Повторяемость","Одно измерение — ещё не доказательство. Опыты повторяются, а сайт считает среднюю экономию и 95% доверительный интервал."],["Разные жидкости","Метод не привязан к одной жидкости: от томатной пасты до бетона и нефти. Ньютоновский мёд — контроль: вибрация ему не нужна."]]},
+en:{nav_exp:"Experiments",nav_fluids:"Fluids",
+fluid_mayo:"Mayonnaise (thixotropic emulsion)",fluid_tooth:"Toothpaste (viscoplastic)",fluid_concrete:"Fresh concrete (viscoplastic)",fluid_crude:"Waxy crude oil (gel)",fluid_honey:"Honey (Newtonian, control)",
+fl_n_tomato:"Tomato paste",fl_n_mayo:"Mayonnaise",fl_n_tooth:"Toothpaste",fl_n_concrete:"Fresh concrete",fl_n_crude:"Waxy crude oil",fl_n_starch:"Starch suspension",fl_n_honey:"Honey",
+fl_type_bing:"Bingham plastic",fl_type_thix:"Thixotropic",fl_type_visc:"Viscoplastic",fl_type_gel:"Gel",fl_type_dil:"Dilatant",fl_type_newt:"Newtonian",
+fl_w_tomato:"The main fluid of our project. It sets at rest, and vibration thins it.",
+fl_w_mayo:"Food production: pumping sauces and creams. Its structure rebuilds quickly.",
+fl_w_tooth:"Cosmetics and pharma: filling tubes, pumping pastes.",
+fl_w_concrete:"Construction: concrete pumps. Vibration has long been used to compact concrete.",
+fl_w_crude:"Oil pipelines (Mangystau). On cooling, wax forms a gel and plugs the pipe.",
+fl_w_starch:"Impact-hardening materials. Strong vibration actually thickens it.",
+fl_w_honey:"Control test: vibration does not help a Newtonian fluid, so the AI almost switches the motor off.",
+fl_title:"Fluid library",fl_lead:"Every fluid has its own inner structure. Press the button on a card to run the simulator with that fluid. The percentage is the AI's energy saving over 60 seconds in the model.",
+fl_tau0:"τ₀, yield stress",fl_trel:"Structure recovery (model)",fl_sav:"AI saving (model)",fl_open:"Open in simulator",pa:"Pa",
+fl_note:"τ₀ values are typical orders of magnitude from the literature (numbers in brackets refer to the references below); the exact value depends on composition and temperature. Model parameters were not measured; they were chosen for a qualitative comparison.",
+ex_title:"Our experiments",ex_lead:"A scientific result rests on repeated trials, not on a single measurement. Enter the energy of each trial: the site computes the mean, the standard deviation and the 95% confidence interval.",
+ex_pdf:"PDF report",ex_add:"+ Add trial",ex_model:"5 trials from model",ex_csv:"Copy CSV",ex_clear:"Clear",ex_confirm:"Sure?",
+ex_c_n:"#",ex_c_ecl:"E classic, J",ex_c_eai:"E AI, J",ex_c_eta:"Saving, %",ex_c_src:"Source",ex_c_note:"Note",
+ex_src_real:"Rig",ex_src_model:"Model",ex_paper_note:"from the paper",
+ex_hint:"Data is saved in this browser. The “from model” button runs simulations with random τ and jam times; these are not measurements. Mark real rig data as “Rig”.",
+ex_group_l:"Group for statistics",ex_st_n:"Trials, n",ex_st_mean:"Mean saving, x̄",ex_st_sd:"Standard deviation, s",ex_st_cv:"Coefficient of variation",
+ex_result:"η = {m} ± {ci}%  (95% CI, n = {n})",ex_need:"At least 2 trials are needed for an uncertainty (3–5 is better).",
+ex_ch1:"Energy: mean ± s, J",ex_ch2:"Saving per trial, %",ex_lg_trial:"Trial",ex_lg_ci:"Mean ± 95% CI",ex_photos_h:"Rig photos",
+ex_added:"Added 5 model trials",ex_cleared:"Table cleared",
+ar_btn:"View in AR",ar_title:"The rig on your desk",ar_place:"Place on desk",ar_loading:"Preparing the 3D model…",
+ar_desk:"Scan the QR code with a phone camera and tap “Place on desk”: the 3D rig appears in the room at real size (≈ 40 cm). Here you can rotate the model with the mouse.",
+ar_mobile:"Tap “Place on desk”, point the camera at a table and slowly move the phone.",
+ar_unsup:"This device or browser does not support AR. Try Chrome on Android or Safari on iPhone.",
+ar_fail:"The AR module did not load: check your connection.",
+rp_title:"Research project report",rp_date:"Date",rp_goal_h:"Goal",
+rp_goal:"Reduce the energy spent on vibration fluidization of viscoelastic-plastic fluids by using AI-based control.",
+rp_sim_h:"Simulation result (60 s)",rp_sim:"{f}, τ = {tau} s. Classic mode: {ec} J, AI: {ea} J. Saving η = {eta}%, throughput {prod}%.",
+rp_exp_h:"Experiments",rp_exp_none:"No trial data has been entered yet.",rp_fl_h:"Fluid comparison (model)",rp_type:"Type",
+rp_sc_h:"Scale estimate",rp_sc:"Power {p}, {h} h/day, saving {s}%: {kwh} kWh/year, {money}/year, {co2} t less CO₂ per year.",
+rp_concl_h:"Conclusion",rp_concl:"The AI picks vibration power from the state of the fluid: it uses full power only during a jam and otherwise holds the cheapest mode that keeps the flow. In the model this cuts energy use by {eta}% with no loss of throughput.",
+rp_open:"Interactive version:",rp_hint:"Choose “Save as PDF” in the print dialog",rp_framed:"If the print dialog did not open, open the site via its direct link",
+ft_gl_h:"Glossary",ft_refs_h:"References",
+gl:[["Thixotropy","at rest the structure rebuilds and the fluid thickens; under shear or vibration the structure breaks down and the fluid thins [7, 8]."],["Yield stress τ₀","the minimum shear stress at which a material starts to flow [1, 11]."],["Relaxation time","the typical time it takes a broken structure to rebuild [8]."],["Dilatancy","viscosity rising with shear rate, as in a starch suspension [12]."],["PWM","controlling power by pulse width: 0 means the motor is off, 255 means full power."],["Random Forest","a machine-learning method that averages the predictions of many decision trees [17, 18]."],["Model predictive control (MPC)","choosing an action from a model forecast several steps ahead [19]."]],
+tour_x:[["Repeatability","One measurement is not proof yet. Trials are repeated, and the site computes the mean saving and a 95% confidence interval."],["Different fluids","The method is not tied to one fluid: from tomato paste to concrete and crude oil. Newtonian honey is the control: it does not need vibration."]]}
+};for(const l in A)Object.assign(I18N[l],A[l]);
+/* extra tour steps: repeatability + fluid library, inserted after "Result" */
+TOUR.splice(5,0,{sel:'#exp .wrap'},{sel:'#fluids .wrap'});
+for(const l in A)I18N[l].tour.splice(5,0,...A[l].tour_x);
+})();
+
+/* ============ references (verified via Crossref) ============ */
+const REFS=[
+ ['Bingham E. C. Fluidity and Plasticity. — New York: McGraw-Hill, 1922.'],
+ ['Barnes H. A., Hutton J. F., Walters K. An Introduction to Rheology. — Amsterdam: Elsevier, 1989.'],
+ ['Малкин А. Я., Исаев А. И. Реология: концепции, методы, приложения. — СПб.: Профессия, 2007.'],
+ ['Шрамм Г. Основы практической реологии и реометрии / пер. с англ. — М.: КолосС, 2003.'],
+ ['Coussot P. Rheometry of Pastes, Suspensions, and Granular Materials. — Hoboken: Wiley, 2005.','10.1002/0471720577'],
+ ['Rao M. A. Rheology of Fluid, Semisolid, and Solid Foods: Principles and Applications. 3rd ed. — New York: Springer, 2014.','10.1007/978-1-4614-9230-6'],
+ ['Barnes H. A. Thixotropy — a review // Journal of Non-Newtonian Fluid Mechanics. 1997. Vol. 70. P. 1–33.','10.1016/S0377-0257(97)00004-9'],
+ ['Mewis J., Wagner N. J. Thixotropy // Advances in Colloid and Interface Science. 2009. Vol. 147–148. P. 214–227.','10.1016/j.cis.2008.09.005'],
+ ['Møller P. C. F., Mewis J., Bonn D. Yield stress and thixotropy: on the difficulty of measuring yield stresses in practice // Soft Matter. 2006. Vol. 2. P. 274–283.','10.1039/B517840A'],
+ ['Coussot P., Nguyen Q. D., Huynh H. T., Bonn D. Avalanche behavior in yield stress fluids // Physical Review Letters. 2002. Vol. 88. Art. 175501.','10.1103/PhysRevLett.88.175501'],
+ ['Bonn D., Denn M. M., Berthier L., Divoux T., Manneville S. Yield stress materials in soft condensed matter // Reviews of Modern Physics. 2017. Vol. 89. Art. 035005.','10.1103/RevModPhys.89.035005'],
+ ['Wagner N. J., Brady J. F. Shear thickening in colloidal dispersions // Physics Today. 2009. Vol. 62. P. 27–32.','10.1063/1.3248476'],
+ ['Deshpande N. S., Barigou M. Vibrational flow of non-Newtonian fluids // Chemical Engineering Science. 2001. Vol. 56. P. 3845–3853.','10.1016/S0009-2509(01)00059-8'],
+ ['Eesa M., Barigou M. CFD analysis of viscous non-Newtonian flow under the influence of a superimposed rotational vibration // Computers & Fluids. 2008. Vol. 37. P. 24–34.','10.1016/j.compfluid.2007.03.015'],
+ ['Chala G. T., Sulaiman S. A., Japper-Jaafar A. Flow start-up and transportation of waxy crude oil in pipelines — A review // Journal of Non-Newtonian Fluid Mechanics. 2018. Vol. 251. P. 69–87.','10.1016/j.jnnfm.2017.11.008'],
+ ['Tattersall G. H., Banfill P. F. G. The Rheology of Fresh Concrete. — London: Pitman, 1983.'],
+ ['Breiman L. Random Forests // Machine Learning. 2001. Vol. 45. P. 5–32.','10.1023/A:1010933404324'],
+ ['Pedregosa F., Varoquaux G., Gramfort A. et al. Scikit-learn: Machine Learning in Python // Journal of Machine Learning Research. 2011. Vol. 12. P. 2825–2830.'],
+ ['Camacho E. F., Bordons C. Model Predictive Control. 2nd ed. — London: Springer, 2007.','10.1007/978-0-85729-398-5']];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const refHTML=(withDoi)=>REFS.map(([s,d])=>`<li>${esc(s)}${d&&withDoi?` <a href="https://doi.org/${d}" target="_blank" rel="noopener">doi:${d}</a>`:d?` doi:${d}`:''}</li>`).join('');
+function renderRefs(){
+  document.getElementById('ref-list').innerHTML=refHTML(true);
+  document.getElementById('gl-list').innerHTML=I18N[LANG].gl.map(([a,b])=>`<p><b>${esc(a)}</b> — ${esc(b)}</p>`).join('');
+}
+
+/* ============ fluid library ============ */
+Object.assign(FLUIDS,{
+  mayo:{tau:2.5,kb:3.2,kt:0,thr:1,ly:0.7,lrest:1,lstart:1,qmax:1.1,col:'#E3C77A'},
+  tooth:{tau:5,kb:2.6,kt:0,thr:1,ly:0.62,lrest:1,lstart:1,qmax:0.9,col:'#5EC8E5'},
+  concrete:{tau:6,kb:2.2,kt:0,thr:1,ly:0.6,lrest:1,lstart:1,qmax:0.8,col:'#9AA0A6'},
+  crude:{tau:7,kb:1.8,kt:0,thr:1,ly:0.55,lrest:1,lstart:1,qmax:1.0,col:'#8A6447'},
+  honey:{tau:3,kb:4,kt:0,thr:1,ly:0.7,lrest:0,lstart:0,qmax:0.8,col:'#E8A317'}
+});
+const FL_ORDER=['tomato','mayo','tooth','concrete','crude','starch','honey'];
+const FL_INFO={tomato:{t0:'10¹–10²',refs:'6',type:'bing'},mayo:{t0:'10¹–10²',refs:'6, 9',type:'thix'},tooth:{t0:'≈ 10²',refs:'9',type:'visc'},
+  concrete:{t0:'10²–10³',refs:'16',type:'visc'},crude:{t0:'10⁰–10²',refs:'15',type:'gel'},starch:{t0:'≈ 0',refs:'12',type:'dil'},honey:{t0:'0',refs:'2, 13',type:'newt'}};
+const fluidColor=f=>C[f.col]||f.col;
+(function(){const s=document.getElementById('fluid');s.innerHTML=FL_ORDER.map(k=>`<option value="${k}" data-i18n="fluid_${k}"></option>`).join('');s.value=sim.fluid})();
+/* same 60 s run as the on-screen simulator, without drawing */
+function runHeadless(f,tau,seed,jams,rec){
+  const cl=new Lane(false),ai=new Lane(true);cl.reset(f);ai.reset(f);const r=mulberry(seed||7);let tt=0,nx=0,ji=0;jams=jams||[12,31,47];const H={cl:[[0,255,0]],ai:[[0,255,0]]};
+  sim.quiet=true;
+  try{while(tt<TEND-1e-9){
+    if(ji<jams.length&&tt>=jams[ji]){ji++;for(const L of [cl,ai])if(L.vol>1)L.plug=1}
+    if(tt>=nx){ai.decide(tt,tau,r);nx+=0.25}
+    cl.pwm=255;cl.step(tau);ai.step(tau);tt=Math.round((tt+DT)*1000)/1000;
+    if(rec&&Math.abs(tt*4-Math.round(tt*4))<1e-6){H.cl.push([tt,cl.pwm,cl.E]);H.ai.push([tt,ai.pwm,ai.E])}}}
+  finally{sim.quiet=false}
+  return {ecl:cl.E,eai:ai.E,sav:(1-ai.E/cl.E)*100,prod:cl.out>0?ai.out/cl.out*100:0,H};
+}
+const FL_SAV={};FL_ORDER.forEach(k=>{try{FL_SAV[k]=runHeadless(FLUIDS[k],FLUIDS[k].tau)}catch(e){FL_SAV[k]={sav:0}}});
+function renderFluids(){
+  const g=document.getElementById('fl-grid');
+  g.innerHTML=FL_ORDER.map(k=>{const f=FLUIDS[k],i=FL_INFO[k],s=Math.max(0,FL_SAV[k].sav);
+    return `<article class="panel fl-card${k===sim.fluid?' on':''}" style="--fc:${fluidColor(f)}">
+      <div class="fl-top"><span class="fl-blob"></span><span class="pill solid">${t('fl_type_'+i.type)}</span></div>
+      <h3>${t('fl_n_'+k)}</h3>
+      <dl class="fl-props"><dt>${t('fl_tau0')}</dt><dd>${i.t0} ${t('pa')}</dd><dt>${t('fl_trel')}</dt><dd>${f.lrest>0?f.tau+(LANG==='en'?' s':' с'):'—'}</dd></dl>
+      <div class="fl-sav"><span>${t('fl_sav')}</span><b>${s.toFixed(0)}%</b><div class="trk"><i style="--w:${s.toFixed(1)}%"></i></div></div>
+      <p>${t('fl_w_'+k)}</p>
+      <div class="fl-foot"><span class="ref">[${i.refs}]</span><button class="btn" data-open="${k}">${t('fl_open')}</button></div>
+    </article>`}).join('');
+}
+document.getElementById('fl-grid').addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(!b)return;
+  const s=document.getElementById('fluid');s.value=b.dataset.open;s.dispatchEvent(new Event('change'));
+  document.getElementById('sim').scrollIntoView({behavior:RM?'auto':'smooth',block:'start'})});
+document.getElementById('fluid').addEventListener('change',()=>renderFluids());
+
+/* ============ experiments: repeated trials, mean ± 95% CI ============ */
+const EXP_KEY='vf_exp_v1';
+let EXP=[{fluid:'tomato',ecl:151.2,eai:68.4,src:'real',note:'@paper'}];
+try{const s=JSON.parse(localStorage.getItem(EXP_KEY)||'null');if(Array.isArray(s))EXP=s.filter(r=>r&&typeof r==='object'&&FLUIDS[r.fluid])}catch(e){}
+const expSave=()=>{try{localStorage.setItem(EXP_KEY,JSON.stringify(EXP))}catch(e){}};
+const num=v=>typeof v==='number'&&isFinite(v);
+const validRow=r=>num(r.ecl)&&r.ecl>0&&num(r.eai)&&r.eai>=0;
+const rowEta=r=>validRow(r)?(1-r.eai/r.ecl)*100:NaN;
+const T975=[12.706,4.303,3.182,2.776,2.571,2.447,2.365,2.306,2.262,2.228,2.201,2.179,2.160,2.145,2.131,2.120,2.110,2.101,2.093,2.086,2.080,2.074,2.069,2.064,2.060,2.056,2.052,2.048,2.045,2.042];
+const tcrit=df=>df<=30?T975[df-1]:1.96;
+function stats(a){const n=a.length;if(!n)return {n:0};const m=a.reduce((x,y)=>x+y,0)/n;if(n<2)return {n,m};
+  const sd=Math.sqrt(a.reduce((x,y)=>x+(y-m)**2,0)/(n-1));return {n,m,sd,ci:tcrit(n-1)*sd/Math.sqrt(n),cv:m?sd/Math.abs(m)*100:0}}
+let expGroup=null,EXP_LAST=null;
+const groupLabel=k=>{if(!k)return '—';const [s,f]=k.split('|');return t('ex_src_'+s)+' · '+t('fl_n_'+f)};
+function resultText(se){return se.n>=2?t('ex_result',{m:se.m.toFixed(1),ci:se.ci.toFixed(1),n:se.n}):se.n===1?`η = ${se.m.toFixed(1)}% (n = 1). ${t('ex_need')}`:t('ex_need')}
+function renderExp(){
+  const tb=document.getElementById('ex-body');
+  tb.innerHTML=EXP.map((r,i)=>`<tr data-i="${i}">
+    <td class="mono">${i+1}</td>
+    <td><select data-f="fluid" aria-label="${esc(t('ctl_fluid'))}">${FL_ORDER.map(k=>`<option value="${k}"${k===r.fluid?' selected':''}>${esc(t('fl_n_'+k))}</option>`).join('')}</select></td>
+    <td><input type="number" step="0.1" min="0" inputmode="decimal" placeholder="151.2" data-f="ecl" value="${num(r.ecl)?r.ecl:''}" aria-label="${esc(t('ex_c_ecl'))}"></td>
+    <td><input type="number" step="0.1" min="0" inputmode="decimal" placeholder="68.4" data-f="eai" value="${num(r.eai)?r.eai:''}" aria-label="${esc(t('ex_c_eai'))}"></td>
+    <td class="ex-eta">${validRow(r)?rowEta(r).toFixed(1):'—'}</td>
+    <td><select data-f="src" aria-label="${esc(t('ex_c_src'))}"><option value="real"${r.src==='real'?' selected':''}>${t('ex_src_real')}</option><option value="model"${r.src==='model'?' selected':''}>${t('ex_src_model')}</option></select></td>
+    <td><input type="text" data-f="note" maxlength="60" value="${esc(r.note==='@paper'?t('ex_paper_note'):(r.note||''))}" aria-label="${esc(t('ex_c_note'))}"></td>
+    <td><button class="ex-del" data-del="${i}" aria-label="delete">✕</button></td></tr>`).join('');
+  renderExpStats();
+}
+function renderExpStats(){
+  const m=new Map();EXP.forEach(r=>{if(!validRow(r))return;const k=r.src+'|'+r.fluid;m.set(k,(m.get(k)||0)+1)});
+  const gs=[...m.entries()].sort((a,b)=>(a[0][0]==='r'?0:1)-(b[0][0]==='r'?0:1));
+  if(!gs.some(g=>g[0]===expGroup))expGroup=gs.length?gs[0][0]:null;
+  document.getElementById('ex-group').innerHTML=gs.length?gs.map(([k,n])=>`<option value="${k}"${k===expGroup?' selected':''}>${esc(groupLabel(k))} (n = ${n})</option>`).join(''):'<option>—</option>';
+  const rows=expGroup?EXP.filter(r=>validRow(r)&&r.src+'|'+r.fluid===expGroup):[];
+  const se=stats(rows.map(rowEta)),sc=stats(rows.map(r=>r.ecl)),sa=stats(rows.map(r=>r.eai));
+  EXP_LAST={rows,se,sc,sa};
+  const set=(id,v)=>document.getElementById(id).textContent=v;
+  set('ex-n',se.n||'—');set('ex-mean',se.n?se.m.toFixed(1)+'%':'—');set('ex-sd',se.sd!=null?se.sd.toFixed(2)+'%':'—');set('ex-cv',se.cv!=null?se.cv.toFixed(1)+'%':'—');
+  const res=document.getElementById('ex-res');res.textContent=resultText(se);res.classList.toggle('need',!(se.n>=2));
+  drawExpCharts();
+}
+function rrect(x,a,b,w,h,r){x.beginPath();if(x.roundRect)x.roundRect(a,b,w,Math.max(0,h),[r,r,0,0]);else x.rect(a,b,w,Math.max(0,h))}
+function drawExpEnergy(cv,sc,sa){
+  const P=C,[x,W,H]=fit(cv);x.clearRect(0,0,W,H);
+  const L=44,R=10,T=18,B=24,pw=W-L-R,ph=H-T-B;
+  const top=Math.max(sc.m||0,sa.m||0)+Math.max(sc.sd||0,sa.sd||0),ymax=Math.max(40,Math.ceil(top*1.18/20)*20);
+  const sy=v=>T+ph-v/ymax*ph;
+  x.font='11px "JetBrains Mono",monospace';x.lineWidth=1;
+  for(let k=0;k<=4;k++){const v=ymax*k/4,y=Math.round(sy(v))+.5;x.strokeStyle=P.line;x.beginPath();x.moveTo(L,y);x.lineTo(W-R,y);x.stroke();x.fillStyle=P.muted;x.textAlign='right';x.fillText(Math.round(v),L-6,y+4)}
+  const bw=Math.min(90,pw*0.26);
+  [[sc,P.classic,t('legend_classic'),0.3],[sa,P.ai,t('legend_ai'),0.7]].forEach(([s,c,lab,fx])=>{const cx=L+pw*fx;
+    x.textAlign='center';x.fillStyle=P.muted;x.fillText(lab,cx,H-6);
+    if(!s.n)return;const y=sy(s.m);x.fillStyle=c;x.globalAlpha=.88;rrect(x,cx-bw/2,y,bw,sy(0)-y,7);x.fill();x.globalAlpha=1;
+    if(s.sd){const y1=sy(s.m+s.sd),y2=sy(Math.max(0,s.m-s.sd));x.strokeStyle=P.ink;x.lineWidth=1.6;x.beginPath();x.moveTo(cx,y1);x.lineTo(cx,y2);x.moveTo(cx-9,y1);x.lineTo(cx+9,y1);x.moveTo(cx-9,y2);x.lineTo(cx+9,y2);x.stroke()}
+    x.fillStyle=P.ink;x.fillText(s.m.toFixed(1)+(s.sd?' ± '+s.sd.toFixed(1):''),cx,Math.max(12,sy(s.m+(s.sd||0))-7))});
+}
+function drawExpTrials(cv,vals,se){
+  const P=C,[x,W,H]=fit(cv);x.clearRect(0,0,W,H);
+  const L=44,R=14,T=12,B=24,pw=W-L-R,ph=H-T-B,n=vals.length;
+  const sy=v=>T+ph-Math.max(0,Math.min(100,v))/100*ph,sx=i=>L+(n<=1?pw/2:pw*(0.06+0.88*i/(n-1)));
+  x.font='11px "JetBrains Mono",monospace';x.lineWidth=1;
+  [0,25,50,75,100].forEach(v=>{const y=Math.round(sy(v))+.5;x.strokeStyle=P.line;x.beginPath();x.moveTo(L,y);x.lineTo(W-R,y);x.stroke();x.fillStyle=P.muted;x.textAlign='right';x.fillText(v+'%',L-6,y+4)});
+  if(!n){x.fillStyle=P.muted;x.textAlign='center';x.fillText('—',L+pw/2,T+ph/2);return}
+  if(se.ci){x.fillStyle=P.ok;x.globalAlpha=.16;x.fillRect(L,sy(se.m+se.ci),pw,sy(se.m-se.ci)-sy(se.m+se.ci));x.globalAlpha=1}
+  x.setLineDash([5,4]);x.strokeStyle=P.ok;x.lineWidth=1.6;x.beginPath();x.moveTo(L,sy(se.m));x.lineTo(W-R,sy(se.m));x.stroke();x.setLineDash([]);
+  x.textAlign='left';x.fillStyle=P.ok;x.fillText('x̄ = '+se.m.toFixed(1)+'%'+(se.ci?' ± '+se.ci.toFixed(1):''),L+6,sy(se.m+(se.ci||0))-6);
+  vals.forEach((v,i)=>{x.fillStyle=P.ai;x.beginPath();x.arc(sx(i),sy(v),5,0,7);x.fill();x.fillStyle=P.muted;x.textAlign='center';if(n<=20)x.fillText(i+1,sx(i),H-6)});
+}
+function drawExpCharts(){if(!EXP_LAST)return;const E=EXP_LAST;drawExpEnergy(document.getElementById('ex-cv1'),E.sc,E.sa);drawExpTrials(document.getElementById('ex-cv2'),E.rows.map(rowEta),E.se)}
+(function(){
+  const tb=document.getElementById('ex-body');
+  tb.addEventListener('input',e=>{const el=e.target,tr=el.closest('tr');if(!tr||!el.dataset.f)return;const r=EXP[+tr.dataset.i],f=el.dataset.f;
+    if(f==='ecl'||f==='eai'){const v=parseFloat(String(el.value).replace(',','.'));r[f]=isFinite(v)?v:null;tr.querySelector('.ex-eta').textContent=validRow(r)?rowEta(r).toFixed(1):'—'}
+    else if(f==='note')r.note=el.value;
+    else r[f]=el.value;
+    expSave();renderExpStats()});
+  tb.addEventListener('click',e=>{const b=e.target.closest('[data-del]');if(!b)return;EXP.splice(+b.dataset.del,1);expSave();renderExp()});
+  document.getElementById('ex-group').onchange=e=>{expGroup=e.target.value;renderExpStats()};
+  document.getElementById('ex-add').onclick=()=>{EXP.push({fluid:sim.fluid,ecl:null,eai:null,src:'real',note:''});expSave();renderExp();
+    const ins=document.querySelectorAll('#ex-body tr:last-child input[type=number]');if(ins[0])ins[0].focus({preventScroll:true})};
+  document.getElementById('ex-model').onclick=e=>{
+    const k=sim.fluid,f=FLUIDS[k],base=EXP.length;
+    for(let i=0;i<5;i++){const r=mulberry(1009+base*31+i*17);const tau=+(f.tau*(0.85+0.3*r())).toFixed(2);
+      const jams=[6+r()*10,22+r()*12,40+r()*12].map(v=>Math.round(v*4)/4);
+      const h=runHeadless(f,tau,100+base+i,jams);EXP.push({fluid:k,ecl:+h.ecl.toFixed(1),eai:+h.eai.toFixed(1),src:'model',note:'τ = '+tau+(LANG==='en'?' s':' с')})}
+    expGroup='model|'+k;expSave();renderExp();toast(t('ex_added'));replay(e.currentTarget,'pick')};
+  document.getElementById('ex-csv').onclick=()=>{const v=EXP.filter(validRow);if(!v.length){toast(t('csv_empty'));return}
+    copyText('n,fluid,E_classic_J,E_AI_J,saving_pct,source,note\n'+v.map((r,i)=>[i+1,r.fluid,r.ecl,r.eai,rowEta(r).toFixed(2),r.src,'"'+String(r.note==='@paper'?'paper':r.note||'').replace(/"/g,'""')+'"'].join(',')).join('\n'))};
+  const clr=document.getElementById('ex-clear');let armed=null;
+  clr.onclick=()=>{if(!armed){clr.textContent=t('ex_confirm');armed=setTimeout(()=>{armed=null;clr.textContent=t('ex_clear')},3000);return}
+    clearTimeout(armed);armed=null;clr.textContent=t('ex_clear');EXP=[];expSave();renderExp();toast(t('ex_cleared'))};
+  let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(drawExpCharts,150)});
+  new MutationObserver(()=>setTimeout(()=>{drawExpCharts();renderFluids()},60)).observe(document.documentElement,{attributes:true,attributeFilter:['data-bg','data-theme']});
+  /* photos of the real rig: upload stand-1.jpg … stand-6.jpg next to index.html and they appear here */
+  if(!/claude|anthropic/.test(location.hostname)){const box=document.getElementById('ex-ph'),slots=[];
+    for(let i=1;i<=6;i++){const src='stand-'+i+'.jpg',im=new Image();im.alt='ViscoFlow rig '+i;im.loading='lazy';
+      im.onload=()=>{slots[i]=im;box.innerHTML='';slots.forEach(m=>{if(m){const a=document.createElement('a');a.href=m.src;a.target='_blank';a.rel='noopener';a.appendChild(m);box.appendChild(a)}});document.getElementById('ex-photos').hidden=false};
+      im.src=src}}
+})();
+
+/* ============ AR: the rig on a real table (model-viewer + WebXR / Quick Look) ============ */
+const AR={mv:null,url:null,mobile:/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent)),qr:false};
+const loadScript=(src,module)=>new Promise((res,rej)=>{const s=document.createElement('script');if(module)s.type='module';s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)});
+async function arPrepare(){
+  if(AR.url)return AR.url;
+  if(!S3.exportGLB)throw new Error('3D not ready');
+  if(!THREE.GLTFExporter)await loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/GLTFExporter.js');
+  const glb=await new Promise((res,rej)=>S3.exportGLB(res,rej));
+  AR.url=URL.createObjectURL(new Blob([glb],{type:'model/gltf-binary'}));return AR.url;
+}
+async function arLoadMV(){if(customElements.get('model-viewer'))return;await loadScript('https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js',true);await customElements.whenDefined('model-viewer')}
+function arText(){
+  const msg=document.getElementById('ar-msg'),can=!!(AR.mv&&AR.mv.canActivateAR);
+  msg.textContent=t(can?'ar_mobile':AR.mobile&&AR.mv?'ar_unsup':AR.mobile?'ar_mobile':'ar_desk');
+  document.getElementById('ar-qr').hidden=can;document.getElementById('ar-url').hidden=can;
+  const g=AR.mv&&AR.mv.querySelector('.ar-go');if(g)g.textContent=t('ar_place');
+  const ld=document.getElementById('ar-load');if(!ld.hidden&&!ld.dataset.err)ld.textContent=t('ar_loading');
+}
+async function arOpen(){
+  document.getElementById('ar-modal').hidden=false;document.body.classList.add('modal-open');
+  const u=SITE_URL+'#ar',ld=document.getElementById('ar-load');
+  if(!AR.qr){AR.qr=true;document.getElementById('ar-url').textContent=u.replace(/^https?:\/\//,'');
+    try{new QRCode(document.getElementById('ar-qr'),{text:u,width:300,height:300,colorDark:'#0B1220',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M})}catch(e){}}
+  arText();if(AR.mv)return;
+  ld.hidden=false;delete ld.dataset.err;ld.textContent=t('ar_loading');
+  try{
+    const [url]=await Promise.all([arPrepare(),arLoadMV()]);
+    if(AR.mv)return;
+    const mv=document.createElement('model-viewer');
+    Object.entries({src:url,alt:'ViscoFlow AI 3D rig','camera-controls':'','auto-rotate':'',ar:'','ar-modes':'webxr scene-viewer quick-look','ar-placement':'floor','ar-scale':'auto',
+      'shadow-intensity':'1','environment-image':'neutral','exposure':'1.05','camera-orbit':'35deg 72deg auto','touch-action':'pan-y','interaction-prompt':'none'}).forEach(([k,v])=>mv.setAttribute(k,v));
+    mv.innerHTML=`<button slot="ar-button" class="btn primary ar-go">${t('ar_place')}</button>`;
+    mv.addEventListener('load',()=>{ld.hidden=true;arText()});
+    mv.addEventListener('ar-status',e=>{if(e.detail&&e.detail.status==='failed')toast(t('ar_unsup'))});
+    document.getElementById('ar-view').appendChild(mv);AR.mv=mv;
+  }catch(e){console.error(e);ld.hidden=false;ld.dataset.err='1';ld.textContent=t('ar_fail')}
+}
+function arClose(){document.getElementById('ar-modal').hidden=true;document.body.classList.remove('modal-open')}
+document.getElementById('s3-ar').onclick=arOpen;
+document.getElementById('ar-x').onclick=arClose;
+document.getElementById('ar-modal').addEventListener('click',e=>{if(e.target.id==='ar-modal')arClose()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('ar-modal').hidden)arClose()});
+if(location.hash==='#ar')setTimeout(arOpen,700);
+
+/* ============ printable PDF report ============ */
+const PRINT_PAL={ink:'#111827',muted:'#4B5563',line:'#E5E7EB',ai:'#2F62F5',classic:'#D98E0B',paste:'#EA4A26',ok:'#169B5B',warn:'#D93A2B',surface2:'#F3F4F6'};
+function buildReport(){
+  const el=document.getElementById('report'),k=sim.fluid,f=FLUIDS[k],h=runHeadless(f,sim.tau,7,null,true);
+  const fx=(v,d)=>(+v).toFixed(d==null?1:d),loc=LANG==='en'?'en-GB':LANG==='kk'?'kk-KZ':'ru-RU';
+  let date;try{date=new Date().toLocaleDateString(loc,{day:'numeric',month:'long',year:'numeric'})}catch(e){date=new Date().toISOString().slice(0,10)}
+  const valid=EXP.filter(validRow),E=EXP_LAST,tx=id=>document.getElementById(id).textContent;
+  const eta=fx(h.sav),sec=(n,s)=>`<h2>${n}. ${esc(t(s))}</h2>`;
+  el.innerHTML=`
+  <div class="rp-head"><div><div class="rp-brand">ViscoFlow AI</div><h1>${esc(t('rp_title'))}</h1><p>${esc(t('about_topic'))}</p></div><div class="rp-qr" id="rp-qr"></div></div>
+  <dl class="rp-meta"><dt>${esc(t('ab_authors'))}</dt><dd>${esc(t('ab_authors_v'))}</dd><dt>${esc(t('ab_sup'))}</dt><dd>${esc(t('ab_sup_v'))}</dd><dt>${esc(t('ab_school'))}</dt><dd>${esc(t('ab_school_v'))}</dd><dt>${esc(t('rp_date'))}</dt><dd>${esc(date)}</dd></dl>
+  <div class="rp-kpis"><div><b>−55%</b><span>${esc(t('kpi1'))}</span></div><div><b>151,2 → 68,4 J</b><span>${esc(t('kpi2'))}</span></div><div><b>Random Forest</b><span>${esc(t('kpi3'))}</span></div></div>
+  ${sec(1,'rp_goal_h')}<p>${esc(t('rp_goal'))}</p>
+  ${sec(2,'rp_sim_h')}<p>${esc(t('rp_sim',{f:t('fl_n_'+k),tau:sim.tau,ec:fx(h.ecl),ea:fx(h.eai),eta,prod:fx(h.prod,0)}))}</p>
+  <div class="rp-charts"><figure><canvas id="rp-pwm"></canvas><figcaption>${esc(t('chart_pwm'))}</figcaption></figure><figure><canvas id="rp-e"></canvas><figcaption>${esc(t('chart_energy'))}</figcaption></figure></div>
+  ${sec(3,'rp_exp_h')}${valid.length?`<table><thead><tr><th>${esc(t('ex_c_n'))}</th><th>${esc(t('ctl_fluid'))}</th><th>${esc(t('ex_c_ecl'))}</th><th>${esc(t('ex_c_eai'))}</th><th>${esc(t('ex_c_eta'))}</th><th>${esc(t('ex_c_src'))}</th><th>${esc(t('ex_c_note'))}</th></tr></thead><tbody>${valid.map((r,i)=>`<tr><td>${i+1}</td><td>${esc(t('fl_n_'+r.fluid))}</td><td>${fx(r.ecl)}</td><td>${fx(r.eai)}</td><td>${fx(rowEta(r))}</td><td>${esc(t('ex_src_'+r.src))}</td><td>${esc(r.note==='@paper'?t('ex_paper_note'):(r.note||''))}</td></tr>`).join('')}</tbody></table>
+    ${E&&E.se.n?`<p><b>${esc(groupLabel(expGroup))}:</b> ${esc(resultText(E.se))}</p><div class="rp-charts"><figure><canvas id="rp-x1"></canvas><figcaption>${esc(t('ex_ch1'))}</figcaption></figure><figure><canvas id="rp-x2"></canvas><figcaption>${esc(t('ex_ch2'))}</figcaption></figure></div>`:''}`:`<p>${esc(t('rp_exp_none'))}</p>`}
+  ${sec(4,'rp_fl_h')}<table><thead><tr><th>${esc(t('ctl_fluid'))}</th><th>${esc(t('rp_type'))}</th><th>τ₀, ${esc(t('pa'))}</th><th>${esc(t('fl_sav'))}</th><th>[ ]</th></tr></thead><tbody>${FL_ORDER.map(q=>`<tr><td>${esc(t('fl_n_'+q))}</td><td>${esc(t('fl_type_'+FL_INFO[q].type))}</td><td>${FL_INFO[q].t0}</td><td>${fx(FL_SAV[q].sav,0)}%</td><td>${FL_INFO[q].refs}</td></tr>`).join('')}</tbody></table>
+  ${sec(5,'rp_sc_h')}<p>${esc(t('rp_sc',{p:tx('sc-pv'),h:tx('sc-hv'),s:tx('sc-sv').replace('%',''),kwh:tx('sc-kwh'),money:tx('sc-money'),co2:tx('sc-co2')}))}</p>
+  ${sec(6,'rp_concl_h')}<p>${esc(t('rp_concl',{eta}))}</p>${E&&E.se.n>=2?`<p><b>${esc(groupLabel(expGroup))}:</b> ${esc(resultText(E.se))}</p>`:''}
+  <h2>${esc(t('ft_refs_h'))}</h2><ol class="rp-refs">${refHTML(false)}</ol>
+  <p class="rp-foot">${esc(t('rp_open'))} ${esc(SITE_URL)}</p>`;
+  try{new QRCode(document.getElementById('rp-qr'),{text:SITE_URL,width:240,height:240,colorDark:'#0B1220',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M})}catch(e){}
+  const saved=C;C=Object.assign({},saved,PRINT_PAL);fit.k=2.5;
+  try{
+    drawChart(document.getElementById('rp-pwm'),[{d:h.H.cl.map(p=>[p[0],p[1]]),c:C.classic},{d:h.H.ai.map(p=>[p[0],p[1]]),c:C.ai,fill:true}],{x0:0,x1:60,ymax:270,yt:[0,85,170,255]});
+    drawChart(document.getElementById('rp-e'),[{d:h.H.cl.map(p=>[p[0],p[2]]),c:C.classic},{d:h.H.ai.map(p=>[p[0],p[2]]),c:C.ai,fill:true}],{x0:0,x1:60,ymax:160,yt:[0,40,80,120,160]});
+    if(document.getElementById('rp-x1')){drawExpEnergy(document.getElementById('rp-x1'),E.sc,E.sa);drawExpTrials(document.getElementById('rp-x2'),E.rows.map(rowEta),E.se)}
+  }finally{C=saved;fit.k=0}
+}
+addEventListener('beforeprint',()=>{try{buildReport()}catch(e){console.error(e)}});
+document.querySelectorAll('[data-act="pdf"]').forEach(b=>b.onclick=()=>{
+  try{buildReport()}catch(e){console.error(e)}
+  let framed=true;try{framed=window.self!==window.top}catch(e){}
+  toast(t(framed?'rp_framed':'rp_hint'));
+  setTimeout(()=>{try{window.print()}catch(e){}},350)});
+
+function relangExtra(){renderFluids();renderExp();renderRefs();if(!document.getElementById('ar-modal').hidden)arText()}
 
 /* ============ main loop ============ */
 let frame=0,lastTs=performance.now();
