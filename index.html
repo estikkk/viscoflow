@@ -512,6 +512,74 @@ body.modal-open{overflow:hidden}
 .refs ol li::marker{font-family:var(--font-mono);font-size:.65rem}
 .refs a{color:var(--ai);text-decoration:none;font-family:var(--font-mono);font-size:.64rem;overflow-wrap:anywhere}
 .refs a:hover{text-decoration:underline}
+/* ---------- game: human vs AI ---------- */
+.g-grid{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,300px) minmax(0,1fr);gap:16px}
+.g-lane{padding:14px;display:grid;gap:10px;align-content:start}
+.g-lane::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(60% 50% at 30% 0%,color-mix(in srgb,var(--c) 16%,transparent),transparent 70%)}
+.g-lane > *{position:relative}
+.g-lane header{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.g-lane h3{display:flex;align-items:center;gap:8px;font-size:1.05rem}
+.g-lane h3::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 10px var(--c)}
+.g-lane canvas{width:100%;height:330px;display:block}
+.g-lane.g-flash{animation:flash .9s var(--ease);animation-timeline:auto;animation-range:normal}
+.g-canwrap{position:relative}
+.g-alert{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);background:var(--warn);color:#fff;font-weight:800;padding:8px 14px;border-radius:999px;font-size:.82rem;white-space:nowrap;box-shadow:0 0 30px var(--warn);animation:galert .55s ease-in-out infinite alternate;pointer-events:none}
+.g-alert[hidden]{display:none}
+@keyframes galert{to{transform:translate(-50%,-50%) scale(1.08)}}
+.g-mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.g-mini .stat{padding:7px 9px}
+.g-mini .stat b{font-size:1.02rem}
+.g-ctrl{padding:18px;display:grid;gap:12px;align-content:start}
+.g-lbl{display:block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.g-time{display:flex;justify-content:space-between;gap:8px;font-family:var(--font-mono);font-size:.8rem;color:var(--muted)}
+.g-prog{height:5px;background:var(--line);border-radius:3px;overflow:hidden}
+.g-prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--ai),var(--ok))}
+.g-pwm{font-family:var(--font-display);font-weight:800;font-size:3.1rem;line-height:1;color:var(--classic);font-variant-numeric:tabular-nums;transition:color .2s}
+.g-pwm.max{color:var(--warn);text-shadow:0 0 24px color-mix(in srgb,var(--warn) 50%,transparent)}
+.g-range{-webkit-appearance:none;appearance:none;width:100%;height:14px;border-radius:99px;background:linear-gradient(90deg,var(--muted),var(--ok) 30%,var(--classic) 65%,var(--warn));outline:none;margin:8px 0;cursor:pointer}
+.g-range::-webkit-slider-thumb{-webkit-appearance:none;width:32px;height:32px;border-radius:50%;background:#fff;border:3px solid var(--classic);box-shadow:0 4px 16px rgba(0,0,0,.35);cursor:grab}
+.g-range::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--classic);box-shadow:0 4px 16px rgba(0,0,0,.35);cursor:grab}
+.g-range:focus-visible{box-shadow:0 0 0 3px color-mix(in srgb,var(--ai) 45%,transparent)}
+.g-range:disabled{opacity:.45;cursor:not-allowed}
+.g-quick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.g-quick .btn{padding:8px 0;font-family:var(--font-mono)}
+.g-boost{width:100%;padding:12px;font-size:.95rem;touch-action:none;user-select:none;-webkit-user-select:none}
+.g-boost.on{background:var(--warn);color:#fff;border-color:var(--warn);box-shadow:0 0 24px var(--warn)}
+.g-race{display:grid;gap:6px}
+.g-race .row{display:grid;grid-template-columns:34px minmax(0,1fr) 56px;gap:8px;align-items:center;font-size:.8rem}
+.g-race .trk{height:10px;background:var(--tint);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.g-race .trk i{display:block;height:100%;width:0;border-radius:99px}
+.g-race b{font-family:var(--font-mono);text-align:right;font-size:.85rem}
+.g-over{position:absolute;inset:-6px;z-index:3;display:grid;place-items:center;border-radius:calc(var(--r) + 4px);background:color-mix(in srgb,var(--bg) 58%,transparent);-webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px)}
+.g-over[hidden]{display:none}
+.g-over .box{text-align:center;max-width:460px;padding:22px;display:grid;gap:14px;justify-items:center}
+.g-over h3{font-size:1.6rem}
+.g-over p{color:var(--muted);margin:0}
+.g-startbtn{font-size:1.05rem;padding:14px 30px}
+.g-count{font-family:var(--font-display);font-weight:800;font-size:clamp(5rem,14vw,9rem);line-height:1;color:var(--ai);text-shadow:0 0 40px var(--glow-ai);animation:gcount .85s var(--spring) both}
+@keyframes gcount{from{transform:scale(1.9);opacity:0}to{transform:scale(1);opacity:1}}
+.g-res{margin-top:16px;padding:22px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px;align-items:center}
+.g-res[hidden]{display:none}
+.g-res.show{animation:arPop .55s var(--spring) both;animation-timeline:auto;animation-range:normal}
+.g-score{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:12px;align-items:center;text-align:center}
+.g-score small{display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.g-score b{display:block;font-family:var(--font-display);font-weight:800;font-size:clamp(1.9rem,4.6vw,3.1rem);line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.g-score .you b{color:var(--classic)}
+.g-score .ai b{color:var(--ai);text-shadow:0 0 30px var(--glow-ai)}
+.g-score span{font-family:var(--font-mono);font-size:.76rem;color:var(--muted)}
+.g-score .vs{font-family:var(--font-display);font-weight:800;color:var(--muted)}
+.g-score .win b{animation:pick .6s var(--spring) 2}
+.g-spent{font-size:1.05rem;margin:16px 0 4px;font-weight:600}
+.g-verdict{font-size:1.05rem;font-weight:700;margin:0 0 6px;color:var(--ai)}
+.g-verdict.win{color:var(--ok)}
+.g-verdict.stuck{color:var(--warn)}
+.g-tip{color:var(--muted);font-size:.9rem;margin:0}
+.g-res .chart canvas{height:210px}
+.g-confetti{position:fixed;inset:0;pointer-events:none;z-index:70;overflow:hidden}
+.g-confetti i{position:absolute;top:-16px;width:8px;height:14px;border-radius:2px;animation:gfall var(--d) cubic-bezier(.3,.6,.6,1) forwards}
+@keyframes gfall{to{transform:translate(var(--x),110vh) rotate(var(--r))}}
+@media (max-width:980px){.g-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.g-ctrl{grid-column:1/-1;order:3}.g-res{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:520px){.g-grid{gap:10px}.g-lane{padding:9px}.g-lane h3{font-size:.92rem}.g-lane .pill{font-size:.62rem;padding:3px 7px}.g-mini{grid-template-columns:minmax(0,1fr)}.g-mini .stat{display:flex;justify-content:space-between;align-items:baseline;gap:6px}.g-alert{font-size:.7rem;padding:6px 10px}}
 /* ---------- printable report ---------- */
 #report{position:absolute;left:-10000px;top:0;width:720px;visibility:hidden;pointer-events:none;background:#fff;color:#111827;font-family:Inter,system-ui,sans-serif;font-size:10pt;line-height:1.45}
 #report h1{font-family:Montserrat,Inter,sans-serif;font-size:17pt;line-height:1.2;margin:2px 0 6px;color:#0B1220}
@@ -558,6 +626,7 @@ body.modal-open{overflow:hidden}
     <a class="brand" href="#sim"><i></i>ViscoFlow AI</a>
     <nav class="links">
       <a href="#sim" data-i18n="nav_sim"></a>
+      <a href="#game" data-i18n="nav_game"></a>
       <a href="#live" data-i18n="nav_live"></a>
       <a href="#lab" data-i18n="nav_lab"></a>
       <a href="#exp" data-i18n="nav_exp"></a>
@@ -698,6 +767,55 @@ body.modal-open{overflow:hidden}
     <div class="node">MOSFET IRF520<b data-i18n="pipe_mos"></b></div><span class="arr">→</span>
     <div class="node" data-i18n-html="pipe_motor"></div><span class="arr">→</span>
     <div class="node" data-i18n-html="pipe_paste"></div><span class="arr">↺</span>
+  </div>
+</div>
+</section>
+
+<section id="game">
+<div class="wrap">
+  <div class="sec-head"><div><h2 data-i18n="g_title"></h2><p data-i18n="g_lead"></p></div>
+    <label class="field"><span data-i18n="ctl_fluid"></span><select id="g-fluid"></select></label>
+  </div>
+  <div class="g-grid" id="g-grid">
+    <div class="panel g-lane" id="g-hlane" style="--c:var(--classic)">
+      <header><h3 data-i18n="g_you"></h3><span class="pill solid" id="g-hstate"></span></header>
+      <div class="g-canwrap"><canvas id="g-hcv" aria-label="you"></canvas><div class="g-alert" id="g-alert" hidden data-i18n="g_jam"></div></div>
+      <div class="g-mini"><div class="stat"><small>PWM</small><b id="g-hpwm">0</b></div><div class="stat"><small data-i18n="st_flow"></small><b id="g-hflow">0.00</b></div><div class="stat"><small data-i18n="st_energy"></small><b id="g-he">0.0</b></div></div>
+    </div>
+    <div class="panel g-ctrl">
+      <div class="g-time"><span id="g-t">t = 0.0 / 60 s</span><span id="g-best"></span></div>
+      <div class="g-prog"><i id="g-prog"></i></div>
+      <div><span class="g-lbl" data-i18n="g_power"></span><div class="g-pwm" id="g-pwm">0</div></div>
+      <input type="range" class="g-range" id="g-range" min="0" max="255" step="5" value="0" aria-label="PWM">
+      <div class="g-quick" id="g-quick"><button class="btn" data-v="0">0</button><button class="btn" data-v="80">80</button><button class="btn" data-v="120">120</button><button class="btn" data-v="180">180</button></div>
+      <button class="btn danger g-boost" id="g-boost" data-i18n="g_boost"></button>
+      <p class="info" data-i18n="g_keys" style="margin:0"></p>
+      <div class="g-race">
+        <span class="g-lbl" data-i18n="g_energy"></span>
+        <div class="row"><span data-i18n="g_you"></span><div class="trk"><i id="g-be-h" style="background:var(--classic)"></i></div><b id="g-ve-h">0.0</b></div>
+        <div class="row"><span data-i18n="g_ai_short"></span><div class="trk"><i id="g-be-a" style="background:var(--ai)"></i></div><b id="g-ve-a">0.0</b></div>
+        <span class="g-lbl" data-i18n="g_volume" style="margin-top:6px"></span>
+        <div class="row"><span data-i18n="g_you"></span><div class="trk"><i id="g-bv-h" style="background:var(--classic)"></i></div><b id="g-vv-h">0.0</b></div>
+        <div class="row"><span data-i18n="g_ai_short"></span><div class="trk"><i id="g-bv-a" style="background:var(--ai)"></i></div><b id="g-vv-a">0.0</b></div>
+      </div>
+      <button class="btn" id="g-stop" data-i18n="g_stop" hidden></button>
+    </div>
+    <div class="panel g-lane" id="g-alane" style="--c:var(--ai)">
+      <header><h3 data-i18n="lane_ai"></h3><span class="pill solid" id="g-astate"></span></header>
+      <div class="g-canwrap"><canvas id="g-acv" aria-label="AI"></canvas></div>
+      <div class="g-mini"><div class="stat"><small>PWM</small><b id="g-apwm">0</b></div><div class="stat"><small data-i18n="st_flow"></small><b id="g-aflow">0.00</b></div><div class="stat"><small data-i18n="st_energy"></small><b id="g-ae">0.0</b></div></div>
+    </div>
+    <div class="g-over" id="g-over"><div class="box" id="g-box"></div></div>
+  </div>
+  <div class="panel g-res" id="g-res" hidden>
+    <div>
+      <div class="g-score" id="g-score"></div>
+      <p class="g-spent" id="g-spent"></p>
+      <p class="g-verdict" id="g-verdict"></p>
+      <p class="g-tip" id="g-tip"></p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn primary" id="g-again" data-i18n="g_again"></button></div>
+    </div>
+    <div class="chart"><div class="chart-head"><span data-i18n="g_chart"></span><span class="legend"><span style="--c:var(--classic)" data-i18n="g_you"></span><span style="--c:var(--ai)" data-i18n="g_ai_short"></span></span></div><canvas id="g-chart"></canvas></div>
   </div>
 </div>
 </section>
@@ -2265,7 +2383,155 @@ document.querySelectorAll('[data-act="pdf"]').forEach(b=>b.onclick=()=>{
   toast(t(framed?'rp_framed':'rp_hint'));
   setTimeout(()=>{try{window.print()}catch(e){}},350)});
 
-function relangExtra(){renderFluids();renderExp();renderRefs();if(!document.getElementById('ar-modal').hidden)arText()}
+/* ============ game: human vs AI ============ */
+(function(){const A={
+kk:{nav_game:"Ойын",g_title:"Адам ЖИ-ге қарсы",g_lead:"Вибромоторды өзіңіз басқарыңыз: пастаны айдап, кептелістерді жойыңыз. Қатарда дәл сол тапсырманы ЖИ шешеді. Әр миллилитрге кім аз энергия жұмсайды?",
+g_you:"Сіз",g_ai_short:"ЖИ",g_power:"Сіздің қуатыңыз (PWM)",g_boost:"⚡ Ұстап тұрыңыз = 255",g_keys:"Пернетақта: ↑ ↓ — қуат, бос орынды ұстау — максимум.",
+g_energy:"Энергия, Дж",g_volume:"Айдалды, мл",g_jam:"Кептеліс! Қуатты арттырыңыз",g_start:"Ойынды бастау",g_stop:"Тоқтату",g_again:"Тағы ойнау",g_go:"Кеттік!",
+g_rules:"Модельдің 60 секунды (экранда 30 с). Паста тыныштықта қатаяды, кейде кептеліс пайда болады. Ағынды сақтап, энергияны үнемдеңіз. Ойынға кірісу үшін ползунокты немесе батырмаларды пайдаланыңыз.",
+g_spent:"Сіз {eh} Дж жұмсадыңыз, ЖИ — {ea} Дж.",g_win:"Сіз ЖИ-ді ұттыңыз! Әр миллилитрге {k} есе аз энергия жұмсадыңыз.",g_lose:"ЖИ жеңді: ол әр миллилитрге {k} есе аз энергия жұмсады.",
+g_stuck:"Паста дерлік ақпады: дірілсіз ол қатаяды. Тағы көріңіз!",g_tip:"ЖИ құпиясы: толық қуатты тек кептеліс кезінде береді, содан кейін паста әлі ағатын ең аз қуатты ұстайды (бұл ойында — шамамен PWM {p}).",
+g_best:"Рекорд: {v} Дж/мл",g_chart:"Мотор қуаты: сіз және ЖИ",g_jml:"Дж/мл",
+tour_g:["Сіздің кезегіңіз","Мотор қуатын өзіңіз басқарып көріңіз: пастаны ЖИ-ден аз энергиямен айдай аласыз ба?"]},
+ru:{nav_game:"Игра",g_title:"Человек против ИИ",g_lead:"Управляйте вибромотором сами: прокачайте пасту и устраняйте заторы. Рядом ту же задачу решает ИИ. Кто потратит меньше энергии на каждый миллилитр?",
+g_you:"Вы",g_ai_short:"ИИ",g_power:"Ваша мощность (PWM)",g_boost:"⚡ Удерживать = 255",g_keys:"Клавиатура: ↑ ↓ — мощность, удерживать пробел — максимум.",
+g_energy:"Энергия, Дж",g_volume:"Прокачано, мл",g_jam:"Затор! Дайте мощность",g_start:"Начать игру",g_stop:"Стоп",g_again:"Сыграть ещё",g_go:"Поехали!",
+g_rules:"60 секунд модели (30 с на экране). Паста в покое застывает, иногда возникают заторы. Держите поток и экономьте энергию: управляйте ползунком или кнопками.",
+g_spent:"Вы потратили {eh} Дж, ИИ потратил {ea} Дж.",g_win:"Вы обыграли ИИ! На каждый миллилитр вы потратили в {k} раза меньше энергии.",g_lose:"ИИ победил: на каждый миллилитр он потратил в {k} раза меньше энергии.",
+g_stuck:"Паста почти не прокачалась: без вибрации она застывает. Попробуйте ещё!",g_tip:"Секрет ИИ: полная мощность только при заторе, а потом самая малая мощность, при которой паста ещё течёт (в этой игре — около PWM {p}).",
+g_best:"Рекорд: {v} Дж/мл",g_chart:"Мощность мотора: вы и ИИ",g_jml:"Дж/мл",
+tour_g:["Ваш ход","Попробуйте сами управлять мотором: сможете прокачать пасту, потратив меньше энергии, чем ИИ?"]},
+en:{nav_game:"Game",g_title:"Human vs AI",g_lead:"Control the vibration motor yourself: pump the paste and clear the jams. The AI solves the same task next to you. Who spends less energy per millilitre?",
+g_you:"You",g_ai_short:"AI",g_power:"Your power (PWM)",g_boost:"⚡ Hold = 255",g_keys:"Keyboard: ↑ ↓ — power, hold Space — maximum.",
+g_energy:"Energy, J",g_volume:"Pumped, ml",g_jam:"Jam! Add power",g_start:"Start game",g_stop:"Stop",g_again:"Play again",g_go:"Go!",
+g_rules:"60 model seconds (30 s on screen). The paste sets at rest and jams sometimes appear. Keep it flowing and save energy using the slider or the buttons.",
+g_spent:"You spent {eh} J, the AI spent {ea} J.",g_win:"You beat the AI! You used {k}× less energy per millilitre.",g_lose:"The AI won: it used {k}× less energy per millilitre.",
+g_stuck:"The paste barely moved: without vibration it sets. Try again!",g_tip:"The AI's secret: full power only during a jam, then the lowest power at which the paste still flows (about PWM {p} in this game).",
+g_best:"Best: {v} J/ml",g_chart:"Motor power: you vs AI",g_jml:"J/ml",
+tour_g:["Your turn","Try controlling the motor yourself: can you pump the paste using less energy than the AI?"]}
+};for(const l in A)Object.assign(I18N[l],A[l]);
+TOUR.splice(TOUR.length-1,0,{sel:'#game .wrap'});for(const l in A)I18N[l].tour.splice(I18N[l].tour.length-1,0,A[l].tour_g);
+})();
+const G={state:'idle',fluid:'tomato',t:0,acc:0,speed:2,h:null,ai:null,next:0,jams:[],ji:0,pwm:0,boost:false,hist:{h:[],a:[]},rnd:null,frame:0,last:0,visible:false,res:null,timers:[]};
+const gEl=id=>document.getElementById(id);
+const gJ=()=>LANG==='en'?' J':' Дж',gML=()=>LANG==='en'?' ml':' мл';
+let G_BEST={};try{G_BEST=JSON.parse(localStorage.getItem('vf_game_best')||'{}')||{}}catch(e){}
+function gReset(){
+  const f=FLUIDS[G.fluid];G.h=new Lane(false);G.ai=new Lane(true);G.h.reset(f);G.ai.reset(f);
+  G.t=0;G.acc=0;G.next=0;G.ji=0;G.pwm=0;G.boost=false;G.h.pwm=0;G.hist={h:[[0,0]],a:[[0,255]]};
+  const seed=(Date.now()%100000)+7;G.rnd=mulberry(seed);const r=mulberry(seed*3+1);
+  G.jams=[9+r()*9,26+r()*10,43+r()*9].map(v=>Math.round(v*4)/4);
+  gEl('g-range').value=0;gSetPwm(0);gDraw();
+}
+function gSetPwm(v){G.pwm=Math.max(0,Math.min(255,Math.round(v)));gEl('g-range').value=G.pwm;gShowPwm()}
+function gShowPwm(){const p=G.boost?255:G.pwm,el=gEl('g-pwm');el.textContent=p;el.classList.toggle('max',p>=230);gEl('g-boost').classList.toggle('on',G.boost)}
+function gStep(){
+  const f=FLUIDS[G.fluid];
+  if(G.ji<G.jams.length&&G.t>=G.jams[G.ji]){G.ji++;for(const L of [G.h,G.ai])if(L.vol>1)L.plug=1;replay(gEl('g-hlane'),'g-flash')}
+  if(G.t>=G.next){sim.quiet=true;try{G.ai.decide(G.t,f.tau,G.rnd)}finally{sim.quiet=false}G.next+=0.25}
+  G.h.pwm=G.boost?255:G.pwm;
+  G.h.step(f.tau);G.ai.step(f.tau);
+  G.t=Math.round((G.t+DT)*1000)/1000;
+  if(Math.abs(G.t*4-Math.round(G.t*4))<1e-6){G.hist.h.push([G.t,G.h.pwm]);G.hist.a.push([G.t,G.ai.pwm])}
+  if(G.t>=TEND)gFinish();
+}
+function gDraw(){
+  if(!G.h)return;
+  drawLane(gEl('g-hcv'),G.h,G.frame);drawLane(gEl('g-acv'),G.ai,G.frame);
+  const set=(id,v)=>{const e=gEl(id);if(e.textContent!==v)e.textContent=v};
+  [['h',G.h],['a',G.ai]].forEach(([p,L])=>{set('g-'+p+'pwm',String(L.pwm));set('g-'+p+'flow',L.flow.toFixed(2));set('g-'+p+'e',L.E.toFixed(1));
+    const s=L.state(),pill=gEl('g-'+p+'state');pill.className='pill '+s;set('g-'+p+'state',t('st_'+s))});
+  gEl('g-alert').hidden=!(G.state==='run'&&G.h.plug>0);
+  const em=PMAX*TEND,vm=Math.max(40,G.h.out,G.ai.out);
+  gEl('g-be-h').style.width=(G.h.E/em*100)+'%';gEl('g-be-a').style.width=(G.ai.E/em*100)+'%';
+  gEl('g-bv-h').style.width=(G.h.out/vm*100)+'%';gEl('g-bv-a').style.width=(G.ai.out/vm*100)+'%';
+  set('g-ve-h',G.h.E.toFixed(1));set('g-ve-a',G.ai.E.toFixed(1));set('g-vv-h',G.h.out.toFixed(1));set('g-vv-a',G.ai.out.toFixed(1));
+  set('g-t','t = '+G.t.toFixed(1)+' / 60'+(LANG==='en'?' s':' с'));gEl('g-prog').style.width=(G.t/TEND*100)+'%';
+  const b=G_BEST[G.fluid];set('g-best',b?t('g_best',{v:b.toFixed(2)}):'');
+}
+function gOverlay(mode,n){
+  const o=gEl('g-over'),box=gEl('g-box');
+  if(mode==='none'){o.hidden=true;return}
+  o.hidden=false;
+  if(mode==='idle')box.innerHTML=`<h3>${esc(t('g_title'))}</h3><p>${esc(t('g_rules'))}</p><button class="btn primary g-startbtn" id="g-start">${esc(t('g_start'))}</button>`;
+  else box.innerHTML=`<div class="g-count">${esc(String(n))}</div>`;
+  const s=gEl('g-start');if(s)s.onclick=gStart;
+}
+function gLock(run){gEl('g-fluid').disabled=run;gEl('g-stop').hidden=!run}
+function gStart(){
+  if(G.state==='count'||G.state==='run')return;
+  G.timers.forEach(clearTimeout);G.timers=[];
+  const r=gEl('g-res');r.hidden=true;r.classList.remove('show');
+  G.fluid=gEl('g-fluid').value;gReset();G.state='count';gLock(true);
+  const seq=RM?[t('g_go')]:['3','2','1',t('g_go')];
+  seq.forEach((s,i)=>G.timers.push(setTimeout(()=>gOverlay('count',s),i*650)));
+  G.timers.push(setTimeout(()=>{gOverlay('none');G.state='run';G.last=0;try{gEl('g-range').focus({preventScroll:true})}catch(e){}},seq.length*650-150));
+}
+function gStop(){G.timers.forEach(clearTimeout);G.timers=[];G.state='idle';G.boost=false;gLock(false);gReset();gOverlay('idle')}
+function gFinish(){
+  G.state='done';G.boost=false;gLock(false);gShowPwm();
+  const eh=G.h.E,ea=G.ai.E,vh=G.h.out,va=G.ai.out,jh=vh>0.5?eh/vh:Infinity,ja=va>0.5?ea/va:Infinity;
+  const stuck=vh<0.5*va,win=!stuck&&jh<=ja;
+  if(!stuck&&isFinite(jh)&&(!G_BEST[G.fluid]||jh<G_BEST[G.fluid])){G_BEST[G.fluid]=jh;try{localStorage.setItem('vf_game_best',JSON.stringify(G_BEST))}catch(e){}}
+  const mid=G.hist.a.map(p=>p[1]).filter(p=>p<255).sort((a,b)=>a-b);
+  G.res={eh,ea,vh,va,jh,ja,stuck,win,p:mid.length?mid[Math.floor(mid.length/2)]:255};
+  const r=gEl('g-res');r.hidden=false;gRenderRes(true);replay(r,'show');
+  if(win)gConfetti();
+  setTimeout(()=>r.scrollIntoView({behavior:RM?'auto':'smooth',block:'nearest'}),120);
+}
+function gRenderRes(anim){
+  const R=G.res;if(!R)return;
+  const jml=v=>isFinite(v)?v.toFixed(2)+' '+t('g_jml'):'—';
+  gEl('g-score').innerHTML=`<div class="you${R.win?' win':''}"><small>${esc(t('g_you'))}</small><b data-to="${R.eh}">${R.eh.toFixed(1)}${gJ()}</b><span>${R.vh.toFixed(1)}${gML()} · ${jml(R.jh)}</span></div>
+    <div class="vs">vs</div>
+    <div class="ai${!R.win&&!R.stuck?' win':''}"><small>${esc(t('g_ai_short'))}</small><b data-to="${R.ea}">${R.ea.toFixed(1)}${gJ()}</b><span>${R.va.toFixed(1)}${gML()} · ${jml(R.ja)}</span></div>`;
+  gEl('g-spent').textContent=t('g_spent',{eh:R.eh.toFixed(0),ea:R.ea.toFixed(0)});
+  const v=gEl('g-verdict');v.className='g-verdict'+(R.stuck?' stuck':R.win?' win':'');
+  v.textContent=R.stuck?t('g_stuck'):R.win?t('g_win',{k:(R.ja/R.jh).toFixed(2)}):t('g_lose',{k:(R.jh/R.ja).toFixed(1)});
+  gEl('g-tip').textContent=t('g_tip',{p:R.p});
+  if(anim&&!RM)gEl('g-score').querySelectorAll('b[data-to]').forEach(b=>{const to=+b.dataset.to,t0=performance.now();
+    (function f(n){const k=Math.min(1,(n-t0)/1100),e=1-Math.pow(1-k,3);b.textContent=(to*e).toFixed(1)+gJ();if(k<1)requestAnimationFrame(f)})(t0)});
+  drawChart(gEl('g-chart'),[{d:G.hist.h,c:C.classic},{d:G.hist.a,c:C.ai,fill:true}],{x0:0,x1:60,ymax:270,yt:[0,85,170,255]});
+}
+function gConfetti(){if(RM)return;const box=document.createElement('div');box.className='g-confetti';const cols=[C.ai,C.classic,C.ok,C.paste,'#ffffff'];
+  for(let i=0;i<80;i++){const s=document.createElement('i');s.style.left=(Math.random()*100)+'vw';s.style.background=cols[i%cols.length];
+    s.style.setProperty('--x',(Math.random()*30-15)+'vw');s.style.setProperty('--r',(Math.random()*900-450)+'deg');s.style.setProperty('--d',(1.8+Math.random()*1.6)+'s');s.style.animationDelay=(Math.random()*.5)+'s';box.appendChild(s)}
+  document.body.appendChild(box);setTimeout(()=>box.remove(),4500)}
+function gLoop(ts){
+  const dt=G.last?Math.min(0.1,(ts-G.last)/1000):0;G.last=ts;G.frame++;
+  if(G.state==='run'){G.acc+=dt*G.speed;while(G.acc>=DT&&G.state==='run'){gStep();G.acc-=DT}}
+  if(G.visible||G.state==='run')gDraw();
+  requestAnimationFrame(gLoop);
+}
+function gRelang(){
+  const s=gEl('g-fluid'),v=s.value||G.fluid;s.innerHTML=FL_ORDER.map(k=>`<option value="${k}">${esc(t('fl_n_'+k))}</option>`).join('');s.value=v;
+  if(G.state==='idle')gOverlay('idle');gRenderRes(false);gDraw();
+}
+(function(){
+  gEl('g-fluid').innerHTML=FL_ORDER.map(k=>`<option value="${k}">${esc(t('fl_n_'+k))}</option>`).join('');gEl('g-fluid').value=G.fluid;
+  gEl('g-fluid').onchange=e=>{G.fluid=e.target.value;if(G.state!=='run'&&G.state!=='count'){gReset()}};
+  gEl('g-range').addEventListener('input',e=>gSetPwm(+e.target.value));
+  gEl('g-quick').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(!b)return;gSetPwm(+b.dataset.v);replay(b,'pick')});
+  const bo=gEl('g-boost'),on=e=>{e.preventDefault();G.boost=true;gShowPwm()},off=()=>{G.boost=false;gShowPwm()};
+  bo.addEventListener('pointerdown',on);['pointerup','pointerleave','pointercancel'].forEach(k=>bo.addEventListener(k,off));
+  bo.addEventListener('contextmenu',e=>e.preventDefault());
+  gEl('g-stop').onclick=gStop;gEl('g-again').onclick=()=>{gEl('g-grid').scrollIntoView({behavior:RM?'auto':'smooth',block:'center'});gStart()};
+  document.addEventListener('keydown',e=>{
+    if(G.state!=='run'||tour.i>=0)return;const tg=e.target;if(tg&&tg!==gEl('g-range')&&/INPUT|SELECT|TEXTAREA/.test(tg.tagName))return;
+    if(e.key==='ArrowUp'||e.key==='ArrowRight'){e.preventDefault();gSetPwm(G.pwm+15)}
+    else if(e.key==='ArrowDown'||e.key==='ArrowLeft'){e.preventDefault();gSetPwm(G.pwm-15)}
+    else if(e.key===' '||e.code==='Space'){e.preventDefault();if(!G.boost){G.boost=true;gShowPwm()}}
+    else if(e.key==='PageUp'||e.key==='Home'){e.preventDefault();gSetPwm(255)}
+    else if(e.key==='PageDown'||e.key==='End'){e.preventDefault();gSetPwm(0)}});
+  document.addEventListener('keyup',e=>{if((e.key===' '||e.code==='Space')&&G.boost){G.boost=false;gShowPwm()}});
+  addEventListener('blur',()=>{if(G.boost){G.boost=false;gShowPwm()}});
+  let rz;const redraw=()=>{clearTimeout(rz);rz=setTimeout(()=>{if(G.res&&!gEl('g-res').hidden)drawChart(gEl('g-chart'),[{d:G.hist.h,c:C.classic},{d:G.hist.a,c:C.ai,fill:true}],{x0:0,x1:60,ymax:270,yt:[0,85,170,255]})},120)};
+  addEventListener('resize',redraw);new MutationObserver(redraw).observe(document.documentElement,{attributes:true,attributeFilter:['data-bg','data-theme']});
+  try{new IntersectionObserver(es=>{G.visible=es[0].isIntersecting}).observe(gEl('g-grid'))}catch(e){G.visible=true}
+  gReset();gOverlay('idle');requestAnimationFrame(gLoop);
+})();
+
+function relangExtra(){renderFluids();renderExp();renderRefs();if(!document.getElementById('ar-modal').hidden)arText();gRelang()}
 
 /* ============ main loop ============ */
 let frame=0,lastTs=performance.now();
