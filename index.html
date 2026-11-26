@@ -484,7 +484,10 @@ main.fade [data-i18n],main.fade [data-i18n-html]{animation:fadeTxt .45s var(--ea
 .ex-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;border:1px solid var(--line);display:block;transition:transform .3s var(--ease)}
 .ex-photos a:hover img{transform:scale(1.03)}
 /* ---------- AR ---------- */
-.s3-ar{position:absolute;right:14px;bottom:56px;font-size:.8rem;padding:7px 14px;display:inline-flex;align-items:center;gap:6px}
+.s3-btns{position:absolute;right:14px;bottom:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100% - 28px)}
+.s3-btns .s3-explode,.s3-btns .s3-ar{position:static}
+.s3-ar{font-size:.8rem;padding:7px 14px;display:inline-flex;align-items:center;gap:6px}
+@media (max-width:600px){.stage{aspect-ratio:3/4}.stage .hint{display:none}.s3-btns{left:12px;right:12px;bottom:10px;max-width:none;justify-content:center}}
 .s3-ar::before{content:"";width:12px;height:12px;border:2px solid currentColor;border-radius:3px;transform:rotate(45deg) scale(.85)}
 body.modal-open{overflow:hidden}
 .ar-modal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:16px;background:rgba(5,10,20,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:arIn .25s ease both}
@@ -608,8 +611,10 @@ body.modal-open{overflow:hidden}
         <div class="readout"><span>PWM <b id="s3-pwm">0</b></span><span id="s3-flow">0.00</span><span id="s3-e">0.0 J</span></div>
       </div>
       <div class="hint" data-i18n="hint3d"></div>
-      <button class="btn s3-ar" id="s3-ar" data-i18n="ar_btn"></button>
-      <button class="btn s3-explode" id="s3-explode" data-i18n="explode_btn"></button>
+      <div class="s3-btns" id="s3-btns">
+        <button class="btn s3-ar" id="s3-ar" data-i18n="ar_btn"></button>
+        <button class="btn s3-explode" id="s3-explode" data-i18n="explode_btn"></button>
+      </div>
       <div class="s3-label" id="s3-label" hidden><b id="s3-lname"></b><span id="s3-ldesc"></span></div>
       <div class="fallback" id="s3-fb" hidden data-i18n="fb3d"></div>
     </div>
@@ -1675,10 +1680,34 @@ function init3D(){
   S3.setExplode=v=>{S3.exT=v?1:0;exBtn.textContent=t(v?'assemble_btn':'explode_btn');exBtn.dataset.on=v?'1':''};
   exBtn.onclick=()=>S3.setExplode(!S3.exT);
   let visible=true;try{new IntersectionObserver(es=>{visible=es[0].isIntersecting}).observe(cv)}catch(e){}
-  function size(){const r=cv.getBoundingClientRect();if(!r.width)return;R.setSize(r.width,r.height,false);cam.aspect=r.width/r.height;rad=(r.width<480?10.5:9.2)*Math.max(1,0.95/cam.aspect);cam.updateProjectionMatrix()}
-  try{new ResizeObserver(size).observe(cv)}catch(e){window.addEventListener('resize',size)}size();
+  /* keep the whole rig in frame: free space = stage minus the HUD on top and the buttons at the bottom */
+  const hudEl=document.querySelector('#stage .hud'),btnsEl=document.getElementById('s3-btns'),stageEl=document.getElementById('stage');
+  function size(){const r=cv.getBoundingClientRect();if(!r.width)return;R.setSize(r.width,r.height,false);cam.aspect=r.width/r.height;
+    const st=stageEl.getBoundingClientRect(),hb=hudEl.getBoundingClientRect(),bb=btnsEl.getBoundingClientRect();
+    S3.W=r.width;S3.H=r.height;S3.mt=Math.max(0,hb.bottom-st.top)+10;S3.mb=(bb.height?Math.max(0,st.bottom-bb.top):24)+10;
+    const hint=stageEl.querySelector('.hint');if(hint){const room=st.width-bb.width-48;hint.style.maxWidth=Math.max(0,room)+'px';hint.style.visibility=room<140?'hidden':''}
+    cam.setViewOffset(r.width,r.height,0,-(S3.mt-S3.mb)/2,r.width,r.height)}
+  try{const ro=new ResizeObserver(size);ro.observe(cv);ro.observe(hudEl);ro.observe(btnsEl)}catch(e){window.addEventListener('resize',size)}size();
   document.querySelectorAll('#s3-lane button').forEach(b=>b.onclick=()=>{S3.lane=b.dataset.v;document.querySelectorAll('#s3-lane button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
   const col=new THREE.Color(),box=new THREE.Box3(),v3=new THREE.Vector3();let last=performance.now();
+  /* bounding boxes of the assembled and the exploded rig */
+  const gsArr=Object.values(groups);
+  function partBoxes(ex){gsArr.forEach(g=>g.position.copy(g.userData.off).multiplyScalar(ex?1:0));root.updateMatrixWorld(true);
+    return gsArr.map(g=>new THREE.Box3().setFromObject(g)).filter(b=>!b.isEmpty())}
+  const pbE=partBoxes(true),pbA=partBoxes(false);
+  /* camera distance so that every part fits for any rotation: each box corner sweeps a circle around the vertical axis */
+  function fitCam(ek){
+    const L=(a,b)=>a+(b-a)*ek,pts=[];let y0=1e9,y1=-1e9;
+    pbA.forEach((A,i)=>{const E=pbE[i];if(!E)return;
+      const mnx=L(A.min.x,E.min.x),mxx=L(A.max.x,E.max.x),mny=L(A.min.y,E.min.y),mxy=L(A.max.y,E.max.y),mnz=L(A.min.z,E.min.z),mxz=L(A.max.z,E.max.z);
+      y0=Math.min(y0,mny);y1=Math.max(y1,mxy);
+      for(const x of [mnx,mxx])for(const z of [mnz,mxz]){const r=Math.hypot(x-tgt.x,z-tgt.z);pts.push([r,mny],[r,mxy])}});
+    const ty=(y0+y1)/2,tv=Math.tan(cam.fov*Math.PI/360),a=cam.aspect,H=S3.H||400,nv=Math.max(0.35,1-(S3.mt+S3.mb)/H)*0.97,mx=0.94,sp=Math.sin(ph),cp=Math.cos(ph);
+    const P=[];for(let k=0;k<16;k++){const ca=Math.cos(k/16*Math.PI*2),sa=Math.sin(k/16*Math.PI*2);for(const [r,yy] of pts)P.push([r*ca,yy-ty,r*sa])}
+    const ext=d=>{let t=-1e9,b=1e9,w=0;for(const [x,y,z] of P){const dep=d-y*sp-z*cp;if(dep<0.2)return null;const ys=(y*cp-z*sp)/(dep*tv),xs=Math.abs(x)/(dep*tv*a);if(ys>t)t=ys;if(ys<b)b=ys;if(xs>w)w=xs}return {t,b,w}};
+    let lo=1,hi=80;for(let i=0;i<22;i++){const m=(lo+hi)/2,e=ext(m);if(e&&e.t-e.b<=2*nv&&e.w<=mx)hi=m;else lo=m}
+    const e=ext(hi)||{t:0,b:0};return {d:hi,ty,c:(e.t+e.b)/2};
+  }
   S3.update=function(){
     const now=performance.now(),dt=Math.min(0.1,(now-last)/1000);last=now;
     const L=S3.lane==='ai'?sim.ai:sim.cl,A=L.pwm/255;
@@ -1704,7 +1733,8 @@ function init3D(){
       if(d.visible){d.userData.v+=dt*5;d.position.y-=d.userData.v*dt*3;if(d.position.y<0.075+ch+0.03||S3.ex>0.05)d.visible=false}});
     if(dacc>3)dacc=3;
     if(!drag&&!RM&&!S3.sel){idle+=dt;if(idle>1.5)th+=dt*0.18}
-    const rr=rad*(1+0.22*ek),ty=tgt.y+0.35*ek;
+    const F=fitCam(ek),rr=F.d,ty=F.ty;
+    if(S3.W)cam.setViewOffset(S3.W,S3.H,0,-((S3.mt-S3.mb)/2+F.c*S3.H/2),S3.W,S3.H);
     cam.position.set(tgt.x+rr*Math.cos(ph)*Math.sin(th),ty+rr*Math.sin(ph),tgt.z+rr*Math.cos(ph)*Math.cos(th));cam.lookAt(tgt.x,ty,tgt.z);
     if(S3.sel){box.setFromObject(groups[S3.sel]);box.getCenter(v3);v3.y=box.max.y;v3.project(cam);
       const r=cv.getBoundingClientRect(),lb=document.getElementById('s3-label');
